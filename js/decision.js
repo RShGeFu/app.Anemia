@@ -57,7 +57,9 @@ var decision = (function() {
 
         /* Berechnungsfunktionen für Werte, die sich aus den gegeben Labordaten ergeben */
         ironNeeds:          null,
-        rpi:                null,
+        rpi:                function() {
+                            },
+                            
         tfrRIndex:          function() {
 
                             },
