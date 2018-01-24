@@ -38,7 +38,8 @@ var getTranslationList = (function() {
                         { id: "ferritine",  attr: "",       de: "Ferritin", en: "Ferritine" },
                         { id: "sTFR",       attr: "",       de: "Lösl. Transf-Rezeptor", en: "Sol. Transf-Receptor" },
                         { id: "reticulocytepc", attr: "",   de: "Retikulozyten", en: "Reticulocytes" },
-                        { id: "reticulocytehb", attr: "",   de: "Retikulozyten Hb", en: "Reticulocyte Hb" }
+                        { id: "reticulocytehb", attr: "",   de: "Retikulozyten Hb", en: "Reticulocyte Hb" },
+                        { id: "hematokrit", attr: "",       de: "Hämatokrit", en: "Hematokrit" },
                     ]        
     }
 

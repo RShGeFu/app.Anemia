@@ -134,7 +134,7 @@ function validatePatientClinicalObservations(dataset) {
 function validatePatientLaboratoryObservations(dataset) {
 
     /* Folgende IDs müssen belegt sein */
-    var content = [ "hemoglobin", "mcv", "crp", "ferritine", "sTFR", "reticulocytepc", "reticulocytehb" ];
+    var content = [ "hemoglobin", "mcv", "crp", "ferritine", "sTFR", "reticulocytepc", "reticulocytehb", "hematokrit" ];
     
     /* Nur falls das Dataset vom Typ und von der ID her passt, dann ... */
     if (dataset.type == 'key-val-ref' && dataset.id == 'labor') {
@@ -294,7 +294,18 @@ function getPatientLaboratoryObservations() {
                 unit:           "pg",
                 validMin:       0,
                 validMax:       15
-            }   
+            },
+            {
+                id:             "hematokrit",
+                name:           "Hematokrit",
+                loinc:          0,
+                value:          40,
+                refMin:         35,
+                refMax:         45,
+                unit:           "%",
+                validMin:       0,
+                validMax:       65
+            }
 
         ]
 
