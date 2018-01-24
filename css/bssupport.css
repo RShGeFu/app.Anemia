@@ -1,0 +1,53 @@
+/**
+ * Copyright bei G. Füchsl - 2018
+ */
+
+
+html,
+body {
+    height: 99%;
+}
+
+.patient {
+    background-color: rgb(240, 220, 175);        
+    margin-bottom: 15px;
+}
+
+.observations {
+    background-color:rgb(200, 220, 240);            
+    margin-bottom: 15px;    
+}
+
+.results {
+    background-color:rgb(200, 240, 210);    
+    margin-bottom: 15px;
+}
+
+.navbar {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#wrapContent {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -60px;
+    background-color: rgb(240, 240, 220);
+}
+
+#push-lg {
+    height: 60px;
+}
+
+#push-sm {
+    height: 30px;
+}
+
+#footer {
+    text-align: right;
+    height: 70px;
+    padding-top: 20px;
+    padding-left: 30px;
+    padding-right: 30px;
+    background-color: rgb(240, 220, 175);
+}

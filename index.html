@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- HEAD -->
+<head>
+  <title>Diagnostics Anemia</title>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">  
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  
+  <!-- Augmentierung Bootstrap -->
+  <link rel="stylesheet" href="css/bssupport.css" type="text/css">
+  
+  <!-- Bootstrap -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+  
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  <!-- App-spezifische Scripte -->
+  <script src="js/languages.js"></script>
+  <script src="js/fhir.request.js"></script>
+  <script src="js/decision.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/patient.js"></script>
+
+</head>
+
+<!-- BEGINN BODY -->
+<body>
+
+<!-- Navigationsleiste -->
+<div id="wrapContent">
+<nav class="navbar navbar-expand-xl justify-content-between navbar-dark bg-dark">        
+  
+  <span class="navbar-brand h2"><img src="images/a-logo.jpg" width="30" height="30" class="rounded" alt="Logo"> app.&forall;nemia</span>
+  
+  <ul class="navbar-nav mr-auto">
+    <li class="nav-item">
+        <span id="lab1" class="navbar h0">Name</span>        
+    </li>
+    <li class="nav-item active">
+      <span id="perlastname" class="navbar h0"> - </span>        
+    </li>
+    <li class="nav-item">
+        <span id="lab2" class="navbar h0">Vorname</span>        
+    </li>
+    <li class="nav-item">
+      <span id="perfirstname" class="navbar h0"> - </span>        
+    </li>
+    <li class="nav-item">
+        <span id="lab3" class="navbar h0">Geburtsdatum</span>
+    </li>
+    <li class="nav-item">
+      <span id="perbirthday" class="navbar h0"> - </span>        
+    </li>
+    <li class="nav-item">
+      <span id="lab3a" class="navbar h0">Geschlecht</span>
+    </li>
+    <li class="nav-item">
+      <span id="permf" class="navbar h0"> - </span>        
+    </li>
+    <li class="nav-item">
+        <span id="lab4" class="navbar h0">Fallnummer</span>
+    </li>
+    <li class="nav-item">
+      <span id="perencid" class="navbar h0"> - </span>        
+    </li>
+    <li class="nav-item dropdown">
+      <a id="lab5" class="nav-link dropdown-toggle" href="#" id="navbarDiagnoseMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Diagnosen
+      </a>
+      <div class="dropdown-menu" aria-labelledby="navbarDiagnoseMenuLink">
+        <div id="perdiagnose">
+          <a id="lab7a" class="dropdown-item" href="#">Keine geladen</a>
+        </div>
+      </div>
+    </li>
+  </ul>
+  
+  <ul  class="navbar-nav">
+    <button id="lab7" class="btn btn-sm btn-outline-success my-2 my-sm-0" data-toggle="modal" data-target="#messages">Daten laden</button>    
+    <li class="nav-item">
+      <a id="lab6" href="images/german.png" class="nav-item nav-link">Einstellungen</a>
+    </li>
+    <li class="nav-item">
+      <a onclick="setLanguage()" class="nav-item nav-link">
+        <img id="lang-flag" src="images/german.png" width="30" height="20" class="d-inline-block align-top" alt="Wähle Deine Sprache">    
+      </a>
+    </li>
+  </ul>
+
+</nav>
+
+<!-- Container für Daten -->
+<div id="push-sm"></div>
+<div class="container-fluid">   
+  <div class="row"> 
+    <div class="col-sm-4">
+    
+      <div id="patient-card" class="card observations">
+        <div class="card-body">
+          <h4 class="card-title">Patient</h4>          
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <th scope="row">Gewicht</th>
+                <td>-</td>
+                <td><small>-</small></td>
+              </tr>
+              <tr>
+                <th scope="row">Größe</span></th>
+                <td>-</td>
+                <td><small>-</small></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>                                    
+      
+      <div id="laboratory-card" class="card observations">
+        <div class="card-body">
+          <h4 class="card-title">Labor</h4>          
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <th scope="row">Hämoglobin</th>
+                <td>-</td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+              </tr>
+              <tr>
+                <th scope="row">MCV</th>
+                <td>-</td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+              </tr>
+              <tr>
+                <th scope="row">Ferritin</th>
+                <td>-</td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+              </tr>
+              <tr>
+                <th scope="row">CRP</th>
+                <td>-</td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+              </tr>
+              <tr>
+                <th scope="row">Lösl. Transferrin-Rez.</th>
+                <td>-</td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+              </tr>
+              <tr>
+                <th scope="row">Retikulozyten in %</th>
+                <td>-</td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+              </tr>
+              <tr>
+                <th scope="row">Retikulozyten-Hb</th>
+                <td>-</td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+                <td><small>-</small></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>            
+    </div>
+
+    <div class="col-sm-8">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="card results">
+            <div class="card-body">
+              <h4 class="card-title">Diagnose</h4>            
+              <h6 class="card-text">...</h6>
+            </div>          
+          </div>                       
+        </div>
+        <div class="col-sm-6">
+          <div class="card results">
+            <div class="card-body">
+              <h4 class="card-title">Empfohlene Untersuchungen</h4>            
+              <h6 class="card-text">...</h6>
+            </div>          
+          </div>                       
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="card results">
+            <div class="card-body">
+              <h4 class="card-title">Berechnte Werte</h4>            
+              <h6 class="card-text">Eisenbedarf</h6>
+              <h6 class="card-text">RPI</h6>
+              <h6 class="card-text">TfR-F-Index</h6>
+            </div>          
+          </div>
+        </div>                       
+        <div class="col-sm-6">
+          <div class="card results">
+            <div class="card-body">
+              <h4 class="card-title">Thomas-Plot</h4>            
+            </div>          
+          </div>                       
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<!-- Modal 'Daten laden' -->
+<div class="modal fade" id="messages" tabindex="-1" role="dialog" aria-labelledby="reloadButton" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modaltitle">Meldung</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <span id="modalmessage">Meldung</span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>        
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div id="footer">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        &copy; Copyright 2018 by G. Füchsl, Th. Parnitzke, S. Wendt
+      </div>
+    </div>    
+  </div>
+</div>
+
+<!-- ENDE BODY -->
+</body>
+</html>
