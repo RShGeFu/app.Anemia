@@ -32,34 +32,54 @@ var decision = (function() {
                         },
         
         /* Ab hier Definition von Funktionen für den gesamten Entscheidungsprozess */
-        isAnemia:       function() {
-                            if (valueSet.hemoglobin.assess === 'low') {
+
+        /* Allgemeine, abstrahierte Funktionen für die Tests */
+        hasValue:       function(val) {
+                            if (valueSet.val != null && valueSet.val != 'undefined') {
                                 return true;
-                            } else {
-                                // Fehlermeldung festlegen
+                            } else {                                
                                 return false;
                             }
                         },
-        isMicrocytic:   function() {
-                            if (valueSet.mcv.assess === 'low') {
+        isValue:        function(val, ass) {
+                            if (valueSet.val.assess === ass) {
                                 return true;
-                            } else {
-                                // Fehlermeldung festlegen
+                            } else {                                
                                 return false;
                             }
                         },
-        hasFerritine:       null,
-        ferritineIsNormal:  null,
-        hasCRP:             null,
-        crpIsNormal:        null,        
-        hasSTFR:            null,
-        stfrIsNormal:       null,
+
+        /* Konkret benötigte Entscheidungen */
+        hasHB:          valueSet.hasValue(hemoglobin),
+        isAnemia:       valueSet.isValue(hemoglobin, 'low'),
+        hasMCV:         valueSet.hasValue(mcv),
+        isMicrocytic:   valueSet.isValue(mcv, 'low'),
+        isNormocytic:   valueSet.isValue(mcv, 'ok'),
+        hasFerritine:   valueSet.hasValue(ferritine),
+        isFerritineLow: valueSet.isValue(ferritine, 'low'),        
+        hasCRP:         valueSet.hasValue(crp),
+        isCrpOK:        valueSet.isValue(crp, 'ok'),
+        hasSTFR:        valueSet.hasValue(sFTR),
+        isSFTRNormal:   valueSet.isValue(sFTR, 'ok'),
+        hasHematokrit:  valueSet.hasValue(hematokrit),
+        isRPIHigh:      function(limit = 2) {
+                            if (valueSet.rpi > limit) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        },
+        hasVB12:        valueSet.hasValue(vb12),
+        isVB12Low:      valueSet.isValue(vb12, 'low'),
+        hasFolicAcid:   valueSet.hasValue(folicAcid),
+        isFolicAcidLow: valueSet.isValue(folicAcid, 'low'),
 
         /* Berechnungsfunktionen für Werte, die sich aus den gegeben Labordaten ergeben */
         ironNeeds:          null,
         rpi:                function() {
+                                return 3; // TESTWEISE!!
                             },
-                            
+
         tfrRIndex:          function() {
 
                             },
