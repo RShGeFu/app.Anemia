@@ -149,7 +149,7 @@ function createLabCard(dataset) {
                Input-Feld mit ID und Klasse versehen, damit die Werte für das Decision-Finding standardisiert ausgelesen werden können 
                Status relativ zum Referenzbereich an das Inputfeld hängen
             */
-            decision.setItem(dataset.kval[i]['id'], dataset.kval[i]['value'], inNormRange);
+            decision.setItem(dataset.kval[i]['id'], dataset.kval[i]['value'], inNormRange.status);
             
             idOfInput = "ds_" + dataset.kval[i]['id'];
             classOfInput = "ds_values";
@@ -199,18 +199,11 @@ function composeCards() {
 
 
 /**
- * Funktion für die Bereitstellung der Datenstruktur für den Entscheidungsalgorithmus 
- */
-function getDataForDecision() {
-    return null;
-}
-
-/**
  * Patienten- und Laborkarte bei App-Start zusammenstellen und visualisieren
  */
 $(document).ready(function() {
 
-    var decData = { };    
+    var decData;    
     
     /* An den Reload-Button hängen */
     $("#lab7").click(function () {
@@ -221,6 +214,11 @@ $(document).ready(function() {
     composeCards();
 
     /* Stelle die Datenstruktur für die Entscheidung zusammen */
-    decData = getDataForDecision();
+    if (decision.result) {
+        decData = decision.result();
+    } else {
+        decData = "Kein Zugriff";
+    }
+    alert("Ergebnis: " + decData);
 });
 
