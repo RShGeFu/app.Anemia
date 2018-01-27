@@ -150,6 +150,8 @@ var decision = (function() {
                             } else {
                                 if (valueSet.hasHematokrit()) {
                                     if (valueSet.isRPIHigh(valueSet.rpi())) {
+                                        // D: Hämolyse, Akute Blutung
+                                        // E: Diagnostik und ...
                                         valueSet.executeMicrocyticDecisionBranch();
                                     } else {
                                         if (valueSet.isNormocytic()) {
@@ -186,65 +188,6 @@ var decision = (function() {
                                     // E: Hämatokrit bestimmen
                                 }
                             }
-
-                            /********************************************************************************************
-                            /* Ursprünglicher Algorithmus, in dem normozytär und makrozytär zuerst unterschieden wurden
-                            } else if (valueSet.isNormocytic()) {
-                                if (valueSet.hasHematokrit()) {
-                                    if (valueSet.isRPIHigh()) {
-                                        // D: V.a. Hämolyse, V.a. akute Blutung
-                                        // E: Diagnostik
-                                        valueSet.executeMicrocyticDecisionBranch();
-                                    } else {
-                                        // D: V.a. Hypoplastische/Infiltrative/Dyserythropoietische KM-Störung
-                                        // E: Knochenmarkszytologie    
-                                    }
-                                } else {
-                                    // D:
-                                    // E: Hämatokrit bestimmen
-                                }
-                            } else {
-                                if (valueSet.hasHematokrit()) {
-                                    if (valueSet.isRPIHigh()) {
-                                        // D: V.a. Hämolyse, V.a. akute Blutung
-                                        // E: Diagnostik
-                                        valueSet.executeMicrocyticDecisionBranch();
-                                    } else {
-                                        
-                                        if (valueSet.hasVB12()) {
-                                            if (valueSet.isVB12Low()) {
-                                                // D: VitB12-Mangel / Anämie
-                                                // E: Substitution
-                                            } else {
-                                                // D: Ausschluß Vit B12-Mangel
-                                                // E:
-                                            }
-                                        } else {
-                                            // D: 
-                                            // E: Bestimmung von Vit B12
-                                        }
-                                        
-                                        if (valueSet.hasFolicAcid()) {
-                                            if (valueSet.isFolicAcidLow()) {
-                                                // D: Folsäure-Mangel / Anämie
-                                                // E: Substitution
-                                            } else {
-                                                // D: Ausschluß Folsäure-Mangel
-                                                // E:
-                                            }
-                                        } else {
-                                            // D: 
-                                            // E: Bestimmung von Folsäure
-                                        }
-
-                                    }
-                                } else {
-                                    // D: Makrozytäre Anämie
-                                    // E: Hämatokrit bestimmen
-                                }                                
-                            }
-                            *********************************************************************/
-
                         } else {
                             // D: Anämie 
                             // E: MCV bestimmen
