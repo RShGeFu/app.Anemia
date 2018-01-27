@@ -58,7 +58,7 @@ var decision = (function() {
         isSFTRNormal:   function() { return valueSet.isValue('sFTR', 'ok'); },
         hasHematokrit:  function() { return valueSet.hasValue('hematokrit'); },
         isRPIHigh:      function(limit = 2) {
-                            if (valueSet.rpi > limit) {
+                            if (valueSet.rpi() > limit) {
                                 return true;
                             } else {
                                 return false;
@@ -79,7 +79,7 @@ var decision = (function() {
                             },
 
         /* Die eigentliche Entscheidungsfunktion */
-        executeMicrocyticDecision:
+        executeMicrocyticDecisionBranch:
             function() {
                 if (valueSet.hasFerritine()) {
                     if (valueSet.isFerritineLow()) {
@@ -93,7 +93,7 @@ var decision = (function() {
                                     // E: Diagnostik
                                 } else {
                                     // D: Eisenmangel unwahrscheinlich
-                                    // E: 
+                                    // E: Diagnostik
                                 }
                             } else {
                                 if (valueSet.hasSTFR()) {
@@ -125,11 +125,62 @@ var decision = (function() {
                     if (valueSet.isAnemia()) {
                         if (valueSet.hasMCV()) {
                             if (valueSet.isMicrocytic()) {
-                                executeMicrocyticDecision();
-                            } else if (valueSet.isNormocytic()){
-
+                                valueSet.executeMicrocyticDecisionBranch();
+                            } else if (valueSet.isNormocytic()) {
+                                if (valueSet.hasHematokrit()) {
+                                    if (valueSet.isRPIHigh()) {
+                                        // D: V.a. Hämolyse, V.a. akute Blutung
+                                        // E: Diagnostik
+                                        valueSet.executeMicrocyticDecisionBranch();
+                                    } else {
+                                        // D: V.a. Hypoplastische/Infiltrative/Dyserythropoietische KM-Störung
+                                        // E: Knochenmarkszytologie    
+                                    }
+                                } else {
+                                    // D:
+                                    // E: Hämatokrit bestimmen
+                                }
                             } else {
-                                // D: Makrozytäre Anämie                            
+                                if (valueSet.hasHematokrit()) {
+                                    if (valueSet.isRPIHigh()) {
+                                        // D: V.a. Hämolyse, V.a. akute Blutung
+                                        // E: Diagnostik
+                                        valueSet.executeMicrocyticDecisionBranch();
+                                    } else {
+                                        
+                                        if (valueSet.hasVB12()) {
+                                            if (valueSet.isVB12Low()) {
+                                                // D: VitB12-Mangel / Anämie
+                                                // E: Substitution
+                                            } else {
+                                                // D: Ausschluß Vit B12-Mangel
+                                                // E:
+                                            }
+                                        } else {
+                                            // D: 
+                                            // E: Bestimmung von Vit B12
+                                        }
+                                        
+                                        if (valueSet.hasFolicAcid()) {
+                                            if (valueSet.isFolicAcidLow()) {
+                                                // D: Folsäure-Mangel / Anämie
+                                                // E: Substitution
+                                            } else {
+                                                // D: Ausschluß Folsäure-Mangel
+                                                // E:
+                                            }
+                                        } else {
+                                            // D: 
+                                            // E: Bestimmung von Folsäure
+                                        }
+
+                                    }
+                                } else {
+                                    // D:
+                                    // E: Hämatokrit bestimmen
+                                }
+                                // D: Makrozytäre Anämie
+                                // E:                         
                             }
                         } else {
                             // D: Anämie 
@@ -140,7 +191,7 @@ var decision = (function() {
                         // E: Andere Diagnostik empfohlen
                     }
                 } else {
-                    // D: Keine Diagnose
+                    // D: Diagnose-Stellung nicht möglich
                     // E: Hb-Wert bestimmen
                 }
             },
