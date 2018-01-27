@@ -180,7 +180,6 @@ var decision = (function() {
                                                 valueSet.diagnoses.push("Folsäure bestimmen");
                                             }
                                         }
-
                                     }
                                 } else {
                                     // D: Nicht-Mikrozytäre Anämie
