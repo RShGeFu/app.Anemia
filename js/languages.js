@@ -45,9 +45,12 @@ var getTranslationList = (function() {
                         { id: "reticulocytehb", attr: "",   de: "Retikulozyten Hb", en: "Reticulocyte Hb" },
                         { id: "hematokrit", attr: "",       de: "Hämatokrit", en: "Hematokrit" },
                         // --- Diagnosenkarte
-                        { id: "diagnosis",  attr: "",       de: "Diagnose", en: "Diagnosis" },
+                        { id: "diagnosis-1",attr: "",       de: "Diagnose", en: "Diagnosis" },
+                        { id: "diag-0",     attr: "",       de: "Keine Diagnosestellung möglich", en: "No Diagnosis possible" },                        
                         // --- Karte für Empfehlungen
                         { id: "recommends", attr: "",       de: "Empfohlene Maßnahmen", en: "Recommended Activities" },
+                        { id: "recomm-0",   attr: "",       de: "BB, MCV, CRP, Ferritin, Hämatokrit, Retikulozyten, Retikulozyten-Hb, lösl. Transferrinrezeptor bestimmen", 
+                                                            en: "Determine BC, MCV, Ferritine, CRP, Hematokrit, Reticuloytes, Reticulocyte-Hb, sol. Transferrine-Receptor" },
                         // --- Karte für die Berechnungen
                         { id: "calculation",attr: "",       de: "Berechnete Werte", en: "Calculated Values" },
                         // --- Karte für den Thomas-Plot
