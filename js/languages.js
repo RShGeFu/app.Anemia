@@ -15,6 +15,7 @@ var getTranslationList = (function() {
         version:    "0.0.1",
         languages:  [ "de", "en" ],
         labels:     [
+                        // --- Navigation-Bar
                         { id: "lang-flag",  attr: "src",    de: "images/german.png", en: "images/english.png"},
                         { id: "lab1",       attr: "",       de: "Name", en: "Lastname" },
                         { id: "lab2",       attr: "",       de: "Vorname", en: "Firstname" },
@@ -26,11 +27,14 @@ var getTranslationList = (function() {
                         { id: "lab6",       attr: "href",   de: "images/german.png", en: "images/english.png"},
                         { id: "lab7",       attr: "",       de: "Patientendaten neu laden", en: "Reload patient data" },                        
                         { id: "lab7a",      attr: "",       de: "Keine Diagnosen verfügbar", en: "No diagnosis available" },
+                        // --- Modaldialog
                         { id: "modaltitle", attr: "",       de: "Bitte beachten", en: "Please note" },
                         { id: "modalmessage",attr: "",      de: "Die Patientendaten werden neu geladen", en: "The patient data are reloaded" },
+                        // --- Patientenkarte
                         { id: "patient",    attr: "",       de: "Klinische Daten", en: "Clinical Data" },
                         { id: "weight",     attr: "",       de: "Gewicht", en: "Weight" },
                         { id: "height",     attr: "",       de: "Grösse", en: "Height" },
+                        // --- Laborkarte
                         { id: "labor",      attr: "",       de: "Labordaten", en: "Laboratory Data" },
                         { id: "hemoglobin", attr: "",       de: "Hämoglobin", en: "Hemoglobin" },
                         { id: "mcv",        attr: "",       de: "MCV", en: "MCV" },
@@ -40,6 +44,14 @@ var getTranslationList = (function() {
                         { id: "reticulocytepc", attr: "",   de: "Retikulozyten", en: "Reticulocytes" },
                         { id: "reticulocytehb", attr: "",   de: "Retikulozyten Hb", en: "Reticulocyte Hb" },
                         { id: "hematokrit", attr: "",       de: "Hämatokrit", en: "Hematokrit" },
+                        // --- Diagnosenkarte
+                        { id: "diagnosis",  attr: "",       de: "Diagnose", en: "Diagnosis" },
+                        // --- Karte für Empfehlungen
+                        { id: "recommends", attr: "",       de: "Empfohlene Maßnahmen", en: "Recommended Activities" },
+                        // --- Karte für die Berechnungen
+                        { id: "calculation",attr: "",       de: "Berechnete Werte", en: "Calculated Values" },
+                        // --- Karte für den Thomas-Plot
+                        { id: "thplot",     attr: "",       de: "Eisen-Plot nach Thomas", en: "Iron-Plot / Thomas" }
                     ]        
     }
 
