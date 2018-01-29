@@ -46,13 +46,49 @@ var getTranslationList = (function() {
                         { id: "hematokrit", attr: "",       de: "Hämatokrit", en: "Hematokrit" },
                         // --- Diagnosenkarte
                         { id: "diagnosis-1",attr: "",       de: "Diagnose", en: "Diagnosis" },
-                        { id: "diag-0",     attr: "",       de: "Keine Diagnosestellung möglich", en: "No Diagnosis possible" },                        
+                        { id: "diag-0",     attr: "",       de: "Keine Diagnosestellung möglich", en: "No Diagnosis possible" },
+                        { id: "diag-1",     attr: "",       de: "Keine Anämie", en: "No Anemia" },                        
+                        { id: "diag-2",     attr: "",       de: "Anämie (indeterminiert)", en: "Anemia (indeterminated)" },
+                        { id: "diag-3",     attr: "",       de: "Anämie (nicht-mikrozytär)", en: "Anemia (non-microcytic)" },
+                        { id: "diag-4",     attr: "",       de: "Mikrozytäre Anämie", en: "Microcytic Anemia" },
+                        { id: "diag-6",     attr: "",       de: "Eisenmangelanämie", en: "Microcytic Anemia on Iron deficiency" },
+                        { id: "diag-7",     attr: "",       de: "Mikrozytäre Anämie bei V.a. Thalassämie", en: "Microcytic Anemia in Suspicion of Thalassemia" },
+                        { id: "diag-8",     attr: "",       de: "Anämie (nicht-mikrozytär) - Eisenmangel unwahrscheinlich / V.a. hypoplastische/infiltrative/dyserythropoietische Störung", 
+                                                            en: "Anemia (non-microcytic) - Iron deficiency improbable / Suspicion on hypoplastic/infiltrative/dyserythropoietic Disorder" },
+                        { id: "diag-9",     attr: "",       de: "AOD - Anämie bei chronischer Erkrankung", en: "AOD - Anemia of Chronic Disorder" },
+                        { id: "diag-10",    attr: "",       de: "Gemischte Anämie - Anämie bei chronischer Erkrankung und Eisenmangel", 
+                                                            en: "Mixed AOD - Anemia of Chronic Disorder and Iron Deficiency" },
+                        { id: "diag-12",    attr: "",       de: "V.a. Hämolyse/Akute Blutung", en: "Suspicion on Hemolysis or acute Bleeding" },
+                        { id: "diag-13",    attr: "",       de: "Makrozytäre Anämie bei VitB12-Mangel", en: "Macrocytic Anemia, Vit B12 Deficiency" },
+                        { id: "diag-14",    attr: "",       de: "Makrozytäre Anämie bei Folsäure-Mangel", en: "Macrocytic Anemia, Folic acid Deficiency" },
+                        { id: "diag-15",     attr: "",       de: "Makrozytäre Anämie", en: "Macrocytic Anemia" },
+
                         // --- Karte für Empfehlungen
-                        { id: "recommends", attr: "",       de: "Empfohlene Maßnahmen", en: "Recommended Activities" },
-                        { id: "recomm-0",   attr: "",       de: "BB, MCV, CRP, Ferritin, Hämatokrit, Retikulozyten, Retikulozyten-Hb, lösl. Transferrinrezeptor bestimmen", 
+                        { id: "recommend-1",attr: "",       de: "Empfohlene Maßnahmen", en: "Recommended Activities" },
+                        { id: "recom-0",    attr: "",       de: "BB, MCV, CRP, Ferritin, Hämatokrit, Retikulozyten, Retikulozyten-Hb, lösl. Transferrinrezeptor bestimmen", 
                                                             en: "Determine BC, MCV, Ferritine, CRP, Hematokrit, Reticuloytes, Reticulocyte-Hb, sol. Transferrine-Receptor" },
+                        { id: "recom-1",    attr: "",       de: "Beschwerdebezogene Diagnostik einleiten", en: "Examination related to Symptoms recommended" },
+                        { id: "recom-2",    attr: "",       de: "MCV bestimmen", en: "Determine MCV" },
+                        { id: "recom-3",    attr: "",       de: "Hämatokrit bestimmen", en: "Determine Hematokrit" },
+                        { id: "recom-4",    attr: "",       de: "Ferritin bestimmen", en: "Determine Ferritine" },
+                        { id: "recom-5",    attr: "",       de: "CRP bestimmen", en: "Determine CRP" },
+                        { id: "recom-6",    attr: "",       de: "Eisensubstitution", en: "Substitution of Iron" },
+                        { id: "recom-7",    attr: "",       de: "Hb-Elektrophorese empfohlen", en: "Hb-Electrophoresis recommended" },
+                        { id: "recom-8",    attr: "",       de: "Spezifische Diagnostik (Leber, Niere), Knochenmarkszytologie empfohlen", 
+                                                            en: "Specific Diagnostics (Liver, Kidney), Cytology of Bone Marrow recommended" },
+                        { id: "recom-9",    attr: "",       de: "Infekt-/Tumordiagnostik empfohlen", en: "Diagnostics for Infectious or Tumorous Diseases recommended" },
+                        { id: "recom-10",   attr: "",       de: "Infekt-/Tumordiagnostik und Eisensubstitution empfohlen", 
+                                                            en: "Diagnostics for Infectious or Tumorous Diseases and Iron Substitution recommended" },
+                        { id: "recom-11",   attr: "",       de: "Löslichen Transferrin-Rezeptor bestimmen", en: "Determine Soluble Transferrine Receptor" },
+                        { id: "recom-12",   attr: "",       de: "LDH, Haptoglobin, Coombs-Test bestimmen, Gastro-/Coloskopie", en: "Determine LDH, Haptoglobin, Coombs-Test, Perform Gastroscopy/Colonoscopy" },
+                        { id: "recom-13",   attr: "",       de: "Vit B12 - Substitution", en: "Substitution of Vitamine B12" },
+                        { id: "recom-14",   attr: "",       de: "Folsäure - Substitution", en: "Substitution of Folic acid" },
+                        { id: "recom-15",   attr: "",       de: "Vitamin B12 bestimmen", en: "Determine Vitamine B12" },
+                        { id: "recom-16",   attr: "",       de: "Folsäure bestimmen", en: "Determine Folic acid" },
+
                         // --- Karte für die Berechnungen
                         { id: "calculation",attr: "",       de: "Berechnete Werte", en: "Calculated Values" },
+
                         // --- Karte für den Thomas-Plot
                         { id: "thplot",     attr: "",       de: "Eisen-Plot nach Thomas", en: "Iron-Plot / Thomas" }
                     ]        

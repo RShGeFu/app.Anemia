@@ -197,7 +197,6 @@ function composeCards() {
     translateLabels(actualLanguage);       
 }
 
-
 /**
  * Patienten- und Laborkarte bei App-Start zusammenstellen und visualisieren
  */
@@ -213,12 +212,4 @@ $(document).ready(function() {
     /* Das UI zusammenstellen */
     composeCards();
 
-    /* Stelle die Datenstruktur für die Entscheidung zusammen */
-    if (decision.result) {
-        decData = decision.result();
-    } else {
-        decData = "Kein Zugriff";
-    }
-    alert("Ergebnis: " + decData);
 });
-
