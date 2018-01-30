@@ -61,7 +61,7 @@ var getTranslationList = (function() {
                         { id: "diag-12",    attr: "",       de: "V.a. Hämolyse/Akute Blutung", en: "Suspicion on Hemolysis or acute Bleeding" },
                         { id: "diag-13",    attr: "",       de: "Makrozytäre Anämie bei VitB12-Mangel", en: "Macrocytic Anemia, Vit B12 Deficiency" },
                         { id: "diag-14",    attr: "",       de: "Makrozytäre Anämie bei Folsäure-Mangel", en: "Macrocytic Anemia, Folic acid Deficiency" },
-                        { id: "diag-15",     attr: "",       de: "Makrozytäre Anämie", en: "Macrocytic Anemia" },
+                        { id: "diag-15",    attr: "",       de: "Makrozytäre Anämie", en: "Macrocytic Anemia" },
 
                         // --- Karte für Empfehlungen
                         { id: "recommend-1",attr: "",       de: "Empfohlene Maßnahmen", en: "Recommended Activities" },

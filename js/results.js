@@ -3,7 +3,7 @@
  */
  
 function createDiagnosisCard() {
-
+    
 }
 
 function createRecommendsCard() {
@@ -18,18 +18,43 @@ function createIronPlotCard() {
 
 }
 
+function composeResultCards() {
+
+    /* Clinical Decision ausführen und Ergebnisstruktur speichern */    
+    var resData = decision.result(),
+    
+    /* Diagnosenkarte */
+        htmlString = createDiagnosisCard(resData.diagnoses);
+    $("#diagnosis-card").html(htmlString);
+    
+    /* Empfehlungskarte */
+    htmlString = createRecommendsCard(resData.recommends);
+    $("#recommends-card").html(htmlString);
+
+    /* Karte für die Berechnungsergebnisse*/
+    htmlString = createCalcValuesCard(resData.maths);
+    $("#calcvalue-card").html(htmlString);
+
+    /* Thomas-Plot-Karte */
+    htmlString = createIronPlotCard(resData.maths);
+    $("#ironplot-card").html(htmlString);
+
+    /* Beschriftung nach eingestellter Sprache */
+    actualLanguage = $('#lang-flag').data('actual-lang');
+    translateLabels(actualLanguage);           
+}
+
 /**
  * Ergebniskarten bei App-Start zusammenstellen und visualisieren
  */
 $(document).ready(function() {
-
-    var decData;    
-
-    /* Stelle die Datenstruktur für die Entscheidung zusammen */
+    
     if (decision.result) {
-        decData = decision.result().diagnoses[0].de + " - " + decision.result().recommends[0].de;
+        resData = decision.result().diagnoses[0].de + " - " + decision.result().recommends[0].de;
     } else {
-        decData = "Kein Zugriff";
+        resData = "Kein Zugriff";
     }
-    alert("Ergebnis: " + decData);
+    alert("Ergebnis: " + resData);
+
+    composeResultCards();
 });

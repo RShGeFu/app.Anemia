@@ -24,8 +24,15 @@ var decision = (function() {
             Diese Funktion wird augerufen, wenn die Klinische Patientenkarte und die Laborkarte zusammengestellt werden,
             sowie wenn der User 'Spieldaten' eingibt.
         ******************************************************************************************************************/
-        setItem:        function(item, val, assessment) {                                                      
-                            Object.defineProperty(valueSet, item, { value: { value: val, assess: assessment } } );                            
+        setItem:        function(item, val, assessment) {
+                            // Lege die Property neu an, wenn sie nicht existiert ...
+                            if (valueSet[item] == null) {
+                                Object.defineProperty(valueSet, item, { value: { value: val, assess: assessment } } );                                
+                            // ... sonst weise ihr den aktuellen Wert zu!
+                            } else {
+                                valueSet[item]['value'] = val;
+                                valueSet[item]['assess'] = assessment;
+                            }                            
                         },
         
         /****************************************************************************** 

@@ -59,9 +59,9 @@ function createPatientCard(dataset) {
             /* ZENTRAL: Hier werden die Datenstrukturen für die Datenübergabe zum Decision-Finding festgelegt
                Input-Feld verwenden und Laborwert in das Input-Feld schreiben 
                Input-Feld mit ID und Klasse versehen, damit die Werte für das Decision-Finding standardisiert ausgelesen werden können             
-            */
+            */            
             decision.setItem(dataset.kval[i]['id'], dataset.kval[i]['value'], null);            
-
+            
             /* Built der Kartenzeile */
             idOfInput = "ds_" + dataset.kval[i]['id'];
             classOfInput = "ds_values";
@@ -71,7 +71,7 @@ function createPatientCard(dataset) {
         /* Abschluss für die Card */
         str = str + "</tbody></table></div></div>";
     }
-    
+        
     return str;
 
 }
@@ -179,12 +179,12 @@ function createLabCard(dataset) {
 function composeCards() {
     
     /* Patientenkarte */
-    let dataset = getPatientClinicalObservations(),
-        htmlString = createPatientCard(dataset);
+    let dataset = getPatientClinicalObservations();    
+    var htmlString = createPatientCard(dataset);       
     $("#patient-card").html(htmlString);
 
-    /* Laborkarte */
-    dataset = getPatientLaboratoryObservations();
+    /* Laborkarte */    
+    dataset = getPatientLaboratoryObservations();    
     htmlString = createLabCard(dataset);
     $("#laboratory-card").html(htmlString);
 
@@ -202,10 +202,8 @@ function composeCards() {
  */
 $(document).ready(function() {
 
-    var decData;    
-    
     /* An den Reload-Button hängen */
-    $("#lab7").click(function () {
+    $("#lab7").click(function () {        
         composeCards();
     });
     
