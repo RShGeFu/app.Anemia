@@ -144,7 +144,7 @@ var decision = (function() {
                                         valueSet.pushResults("diag-9", "recom-9");                              
                                     } else {
                                         // D: Eisenmangel + AOD
-                                        // E: Spezifische Diagnostik und Eisensubstiution
+                                        // E: Spezifische Diagnostik und Eisensubstiution                                        
                                         valueSet.pushResults("diag-10", "recom-10");                              
                                     }
                                 } else {
@@ -168,7 +168,13 @@ var decision = (function() {
         
         /* Hauptentscheidungsalgorithmus 'executeDecision' */
         executeDecision:    
-            function() {                
+            function() {
+                
+                // Erst die Arrays für das Ergebnis zurücksetzen...
+                valueSet.diagnoses = [];
+                valueSet.recommends = [];
+                
+                // Dann den Decision-Prozess starten!
                 if (valueSet.hasHB()) {
                     if (valueSet.isAnemia()) {
                         if (valueSet.hasMCV()) {

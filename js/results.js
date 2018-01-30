@@ -2,12 +2,22 @@
  * Copyright bei G. Füchsl - 2018
  */
  
-function createDiagnosisCard() {
-    
+function createDiagnosisCard(diag) {
+    var s = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"diagnosis-1\"></span></h4>";
+    for(var i = 0; i < diag.length; i++) {
+        s = s + "<hr><h5 class=\"card-text\"><span id=" + diag[i]['id'] + "><span></h5>";
+    }
+    s = s + "<hr></div></div>";
+    return s;
 }
 
-function createRecommendsCard() {
-
+function createRecommendsCard(rec) {
+    var s = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"recommend-1\"></span></h4>";
+    for(var i = 0; i < rec.length; i++) {
+        s = s + "<hr><h5 class=\"card-text\"><span id=" + rec[i]['id'] + "><span></h5>";
+    }
+    s = s + "<hr></div></div>";
+    return s;
 }
 
 function createCalcValuesCard() {
@@ -25,11 +35,11 @@ function composeResultCards() {
     
     /* Diagnosenkarte */
         htmlString = createDiagnosisCard(resData.diagnoses);
-    $("#diagnosis-card").html(htmlString);
+    $("#diagnosis-card").html(htmlString);    
     
     /* Empfehlungskarte */
     htmlString = createRecommendsCard(resData.recommends);
-    $("#recommends-card").html(htmlString);
+    $("#recommends-card").html(htmlString);    
 
     /* Karte für die Berechnungsergebnisse*/
     htmlString = createCalcValuesCard(resData.maths);
@@ -48,13 +58,7 @@ function composeResultCards() {
  * Ergebniskarten bei App-Start zusammenstellen und visualisieren
  */
 $(document).ready(function() {
-    
-    if (decision.result) {
-        resData = decision.result().diagnoses[0].de + " - " + decision.result().recommends[0].de;
-    } else {
-        resData = "Kein Zugriff";
-    }
-    alert("Ergebnis: " + resData);
-
+ 
     composeResultCards();
+
 });
