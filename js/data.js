@@ -118,7 +118,7 @@ function validatePatientClinicalObservations(dataset) {
         name: "Patient",
         lang: "en",
         kval: [ 
-                { id: "weight", name: "Weight", value: 83.0, unit: "kg" },
+                { id: "weight", name: "Weight", value: 79.0, unit: "kg" },
                 { id: "height", name: "Height", value: 175,  unit: "cm" },                           
               ]
         
@@ -222,7 +222,7 @@ function getPatientLaboratoryObservations() {
                 id:             "hemoglobin",
                 name:           "Hemoglobin",
                 loinc:          0,
-                value:          7,
+                value:          7.5,
                 refMin:         12.0,
                 refMax:         14.0,
                 unit:           "g/dl",

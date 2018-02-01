@@ -49,6 +49,15 @@ var decision = (function() {
                                 return false;
                             }
                         },
+        hasValueNAss:   function(val) {      
+                            // Nur wenn das Entscheidungskriterium vorhanden, dann ...                        
+                            if (valueSet[val] != null) {
+                                return true;
+                            } else {                                
+                                return false;
+                            }
+                        },
+                        
         // Wie ist die Bewertung des aufgenommen Entscheidungskriterium ausgefallen?
         isValue:        function(val, ass) {                            
                             if (valueSet[val]['assess'] === ass) {
@@ -75,16 +84,33 @@ var decision = (function() {
         isVB12Low:      function() { return valueSet.isValue('vb12', 'low'); },
         hasFolicAcid:   function() { return valueSet.hasValue('folicAcid'); },
         isFolicAcidLow: function() { return valueSet.isValue('folicAcid', 'low'); },
-        hasWeight:      function() { return valueSet.hasValue('weight'); },
+        hasWeight:      function() { return valueSet.hasValueNAss('weight'); },
+        hasHeight:      function() { return valueSet.hasValueNAss('height'); },
 
         /* Berechnungsfunktionen für Werte, die sich aus den gegeben Labordaten ergeben */
         // Eisenbedarf...
-        ironNeeds:      function() {
-                            if (valueSet.hasWeight()) {
-                                return 1;
+        ironNeeds:      function() {                            
+                            if (valueSet.hasWeight() && valueSet.hasHB()) {     // Wenn Gewicht und Hb verfügbar
+                                
+                                var targetHb1 = valueSet.hemoglobin.value + 1,  // Ziel-Hb-Wert in g/dl
+                                    targetHb2 = valueSet.hemoglobin.value + 2,  // Ziel-Hb-Wert in g/dl
+                                    ironReserve = 500;                          // Reserveeisen in mg ab einem Gewicht > 35kg
+                                if (valueSet.weight.value < 35) {
+                                    ironReserve = 15 * valueSet.weight.value;   // Reserveeisen in mg bis zu einem Gewicht < 35kg
+                                }                                
+                                return {
+                                    target1: function() { return targetHb1; },
+                                    target2: function() { return targetHb2; },
+                                    target1Iron: (targetHb1 - valueSet.hemoglobin.value) * valueSet.weight.value * 2.4 + ironReserve, // Formel nach Ganzoni
+                                    target2Iron: (targetHb2 - valueSet.hemoglobin.value) * valueSet.weight.value * 2.4 + ironReserve  // Formel nach Ganzoni)
+                                }
+                            
                             } else {
+                                
                                 return 0;
+
                             }
+
                         },
         // Retikulozyten-Produktions-Index mit Bewertungsfunktion
         rpi:            function() {
@@ -103,12 +129,21 @@ var decision = (function() {
                             return 0;
                         },
 
+        // BMI als Nebenprodukt
+        bmi:            function() {
+                            if (valueSet.hasWeight() && valueSet.hasHeight()) {
+                                return Math.round(valueSet.weight.value / (valueSet.height.value/100 * valueSet.height.value/100) * 10) / 10;
+                            }
+                            return 0;
+                        },
+
         // Zusammenfassende Funktion zur Berechnung aller Indizes
         calculateAll:   function() {                            
                             valueSet.maths = [];                            
                             valueSet.maths.push(valueSet.ironNeeds());                            
                             valueSet.maths.push(valueSet.rpi());
-                            valueSet.maths.push(valueSet.tfrRIndex());                            
+                            valueSet.maths.push(valueSet.tfrRIndex());
+                            valueSet.maths.push(valueSet.bmi());                            
                         },
 
         /*********************************
