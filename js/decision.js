@@ -84,6 +84,8 @@ var decision = (function() {
         isVB12Low:      function() { return valueSet.isValue('vb12', 'low'); },
         hasFolicAcid:   function() { return valueSet.hasValue('folicAcid'); },
         isFolicAcidLow: function() { return valueSet.isValue('folicAcid', 'low'); },
+        hasFolicAcid:   function() { return valueSet.hasValue('folicAcid'); },
+        hasReticulocytes:function() { return valueSet.hasValue('reticulocytepc'); },
         hasWeight:      function() { return valueSet.hasValueNAss('weight'); },
         hasHeight:      function() { return valueSet.hasValueNAss('height'); },
 
@@ -114,7 +116,20 @@ var decision = (function() {
                         },
         // Retikulozyten-Produktions-Index mit Bewertungsfunktion
         rpi:            function() {
-                            return 1; // TESTWEISE!!
+                            if (valueSet.hasHematokrit() && valueSet.hasReticulocytes()) {
+                                let shift = 1;
+                                if (valueSet.hematokrit.value <= 35) {
+                                    shift = 1.5;
+                                }
+                                if (valueSet.hematokrit.value <= 25) {
+                                    shift = 2;
+                                }
+                                if (valueSet.hematokrit.value <= 15) {
+                                    shift = 2.5;
+                                }                                
+                                return Math.round(valueSet.reticulocytepc.value * valueSet.hematokrit.value / shift / 45 * 10) / 10;                                
+                            }
+                            return 0;
                         },
         isRPIHigh:      function(limit = 2) {
                             if (valueSet.rpi() > limit) {
