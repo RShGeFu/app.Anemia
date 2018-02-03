@@ -90,7 +90,7 @@ var getTranslationList = (function() {
                         { id: "calculation",attr: "",       de: "Berechnete Werte", en: "Calculated Values" },
                         { id: "calc-0",     attr: "",       de: "Eisenbedarf", en: "Iron Needs" },
                         { id: "calc-1",     attr: "",       de: "Retikulozyten-Produktions-Index", en: "Reticulocytes-Production-Index" },
-                        { id: "calc-2",     attr: "",       de: "TfR-R-Index", en: "TfR-R-Index" },
+                        { id: "calc-2",     attr: "",       de: "TfRezeptor-Ferritin-Index", en: "TfReceptor-Ferritine-Index" },
                         { id: "calc-3",     attr: "",       de: "Ziel", en: "Target" },
                         { id: "calc-4",     attr: "",       de: "Eisenbedarf", en: "Iron Needs" },                        
                         { id: "calc-5",     attr: "",       de: "Ziel", en: "Target" },

@@ -107,13 +107,10 @@ var decision = (function() {
                                     target2Iron: (targetHb2 - valueSet.hemoglobin.value) * valueSet.weight.value * 2.4 + ironReserve  // Formel nach Ganzoni)
                                 }
                             
-                            } else {
-                                
-                                return 0;
-
-                            }
-
+                            }   
+                            return 0;
                         },
+
         // Retikulozyten-Produktions-Index mit Bewertungsfunktion
         rpi:            function() {
                             if (valueSet.hasHematokrit() && valueSet.hasReticulocytes()) {
@@ -134,14 +131,33 @@ var decision = (function() {
         isRPIHigh:      function(limit = 2) {
                             if (valueSet.rpi() > limit) {
                                 return true;
-                            } else {
-                                return false;
                             }
+                            return false;
                         },
     
-        // Transferrin-Rezeptor-Index
-        tfrRIndex:      function() {
+        // Transferrin-Rezeptor-Ferritin-Index mit Bewertungsfunktion 
+        tfrFIndex:      function() {
+                            if (valueSet.hasSTFR() && valueSet.hasFerritine()) {
+                                return Math.round(valueSet.sTFR.value / Math.log(valueSet.ferritine.value) * 10) / 10;
+                            }
                             return 0;
+                        },
+        isTfrFIndexHigh:function() {
+                            if (valueSet.hasCRP()) {
+                                let index = valueSet.tfrFIndex();
+                                if (valueSet.isCrpOK()) {
+                                    if (index > 3.2) {      // Grenzwert für Roche-Test - Grenzwert für Dade-Behring-Test 1.5 (Dtsch Arztebl 2005; 102(9))
+                                        return true;
+                                    }
+                                    return false;
+                                } else {
+                                    if (index > 2.0) {      // Grenzwert für Roche-Test - Grenzwert für Dade-Behring-Test 0.8 (Dtsch Arztebl 2005; 102(9))
+                                        return true;
+                                    }
+                                    return false;
+                                }
+                            }
+                            return false;
                         },
 
         // BMI als Nebenprodukt
@@ -157,7 +173,7 @@ var decision = (function() {
                             valueSet.maths = [];                            
                             valueSet.maths.push(valueSet.ironNeeds());                            
                             valueSet.maths.push(valueSet.rpi());
-                            valueSet.maths.push(valueSet.tfrRIndex());
+                            valueSet.maths.push(valueSet.tfrFIndex());
                             valueSet.maths.push(valueSet.bmi());                            
                         },
 
