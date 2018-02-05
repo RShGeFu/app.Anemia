@@ -128,7 +128,7 @@ var decision = (function() {
                             }
                             return 0;
                         },
-        isRPIHigh:      function(limit = 2) {
+        isRPIHigh:      function(limit = configuration.limitRPI) {
                             if (valueSet.rpi() > limit) {
                                 return true;
                             }
@@ -146,13 +146,12 @@ var decision = (function() {
                             if (valueSet.hasCRP()) {
                                 let index = valueSet.tfrFIndex();
                                 if (valueSet.isCrpOK()) {
-                                    if (index > 3.2) {      // Grenzwert für Roche-Test - Grenzwert für Dade-Behring-Test 1.5 (Dtsch Arztebl 2005; 102(9))
-                                                            // Diskussion: Konfiguration
+                                    if (index > configuration.labTestKit_tfrFIndexCRP_OK) {                                                    
                                         return true;
                                     }
                                     return false;
                                 } else {
-                                    if (index > 2.0) {      // Grenzwert für Roche-Test - Grenzwert für Dade-Behring-Test 0.8 (Dtsch Arztebl 2005; 102(9))
+                                    if (index > configuration.labTestKit_trfFIndexCRP_High) { 
                                         return true;
                                     }
                                     return false;
