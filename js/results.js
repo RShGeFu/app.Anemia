@@ -34,13 +34,14 @@ function createCalcValuesCard(mathRes) {
     s = s + "<tr><th scope=\"row\"><span id=\"calc-4\"></span> (<span id=\"calc-5\"></span> " + mathRes[0].target2() + " g/dl)</th><td>" + mathRes[0]['target2Iron'] + "</td><td><small>mg</small></td></tr>";
     s = s + "<tr><th scope=\"row\"><span id=\"calc-1\"></span></th><td>" + mathRes[1] + "</td><td><small>-/-</small></td></tr>";
     s = s + "<tr><th scope=\"row\"><span id=\"calc-2\"></span></th><td>" + mathRes[2] + "</td><td><small>-/-</small></td></tr>";
-    s = s + "<tr><th scope=\"row\"><span id=\"calc-6\"></span></th><td>" + mathRes[3] + "</td><td><small>kg/cm^2</small></td></tr>";
+    s = s + "<tr><th scope=\"row\"><span id=\"calc-6\"></span></th><td>" + mathRes[3] + "</td><td><small>kg/m^2</small></td></tr>";
     s = s + "</tbody></table></div></div>";
     return s;
 }
 
-function createIronPlotCard() {
-    var s = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"thplot\"></span></h4><table class=\"table table-hover\"><tbody>";
+function createIronPlotCard(res, width) {
+    var s = "<div id=\"ironplot-card-body\" class=\"card-body\"><h4 class=\"card-title\"><span id=\"thplot\"></span></h4><table class=\"table table-hover\"><tbody>";
+    s = s + "<canvas id=\"graphics\" width=\"" + width + " \" height=\"300\" style=\"border:1px solid #000000;\">Keine Unterstützung für canvas</canvas>"
     return s;
 }
 
@@ -61,8 +62,8 @@ function composeResultCards() {
     htmlString = createCalcValuesCard(resData.maths);
     $("#calcvalue-card").html(htmlString);
 
-    /* Thomas-Plot-Karte */
-    htmlString = createIronPlotCard(resData.maths);
+    /* Thomas-Plot-Karte */    
+    htmlString = createIronPlotCard(resData.maths, $("#ironplot-card-body").width());
     $("#ironplot-card").html(htmlString);
 
     /* Beschriftung nach eingestellter Sprache */

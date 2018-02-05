@@ -147,6 +147,7 @@ var decision = (function() {
                                 let index = valueSet.tfrFIndex();
                                 if (valueSet.isCrpOK()) {
                                     if (index > 3.2) {      // Grenzwert für Roche-Test - Grenzwert für Dade-Behring-Test 1.5 (Dtsch Arztebl 2005; 102(9))
+                                                            // Diskussion: Konfiguration
                                         return true;
                                     }
                                     return false;
