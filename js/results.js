@@ -2,6 +2,8 @@
  * Copyright bei G. Füchsl - 2018
  */
 
+"use strict";
+
 /**
  * Funktion für die Erstellung des HTML-Strings der Diagnosenkarte
  * @param {*} diag 
@@ -39,7 +41,7 @@ function createCalcValuesCard(mathRes) {
     return s;
 }
 
-function createIronPlotCard(res, width) {
+function createIronPlotCard(res, width) {    
     var s = "<div id=\"ironplot-card-body\" class=\"card-body\"><h4 class=\"card-title\"><span id=\"thplot\"></span></h4><table class=\"table table-hover\"><tbody>";
     s = s + "<canvas id=\"graphics\" width=\"" + width + " \" height=\"300\" style=\"border:1px solid #000000;\">Keine Unterstützung für canvas</canvas>"
     return s;
@@ -66,6 +68,45 @@ function composeResultCards() {
     htmlString = createIronPlotCard(resData.maths, $("#ironplot-card-body").width());
     $("#ironplot-card").html(htmlString);
 
+    // Test-Plot
+    var ctx = document.getElementById("graphics").getContext('2d');
+    var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+        datasets: [{
+            label: '# of Votes',
+            data: [12, 19, 3, 5, 2, 3],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255,99,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+    });
+
     /* Beschriftung nach eingestellter Sprache */
     actualLanguage = $('#lang-flag').data('actual-lang');
     translateLabels(actualLanguage);           
@@ -75,7 +116,18 @@ function composeResultCards() {
  * Ergebniskarten bei App-Start zusammenstellen und visualisieren
  */
 $(document).ready(function() {
+
+    /* Revisualisierung des Fensterinhalts bei Resizing des Fensters, insbesondere der Grafikdarstellung */
+    $(window).resize(function() {
+        composeResultCards();
+    });
+
+    /* Visualisierung an den Reload-Button hängen */
+    $("#lab7").click(function () {         
+        composeResultCards();
+    });            
  
+    /* Ergebnisse zusammenstellen und bei App-Start visualisieren */
     composeResultCards();
 
 });
