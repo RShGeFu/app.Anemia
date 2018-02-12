@@ -244,7 +244,7 @@ function getPatientLaboratoryObservations() {
                 id:             "crp",
                 name:           "CRP",
                 loinc:          0,
-                value:          13.5,
+                value:          3.5,
                 refMin:         0.0,
                 refMax:         5.0,
                 unit:           "g/dl",
@@ -288,12 +288,12 @@ function getPatientLaboratoryObservations() {
                 id:             "reticulocytehb",
                 name:           "Reticuloyte Hb",
                 loinc:          0,
-                value:          2.1 ,
-                refMin:         2.0,
-                refMax:         5.0,
+                value:          25,
+                refMin:         26,
+                refMax:         30,
                 unit:           "pg",
                 validMin:       0,
-                validMax:       15
+                validMax:       60
             },
             {
                 id:             "hematokrit",
