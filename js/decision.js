@@ -86,6 +86,7 @@ var decision = (function() {
         isFolicAcidLow: function() { return valueSet.isValue('folicAcid', 'low'); },
         hasFolicAcid:   function() { return valueSet.hasValue('folicAcid'); },
         hasReticulocytes:function() { return valueSet.hasValue('reticulocytepc'); },
+        hasReticulocHb: function() { return valueSet.hasValue('reticulocytehb'); },
         hasWeight:      function() { return valueSet.hasValueNAss('weight'); },
         hasHeight:      function() { return valueSet.hasValueNAss('height'); },
 
@@ -168,13 +169,45 @@ var decision = (function() {
                             return 0;
                         },
 
-        // Zusammenfassende Funktion zur Berechnung aller Indizes
-        calculateAll:   function() {                            
-                            valueSet.maths = [];                            
+        // Zusammenfassende Funktion zur Berechnung aller Indizes und Zusammenstellen des Ergebnis-Objekts
+        calculateAll:   function() {                
+                            // Erst zurücksetzen
+                            valueSet.maths = [];
+
+                            /* Die Ergebnisstruktur beinhaltet ...                            
+                            [0]: Eisenbedarf
+                            [1]: Retikulozytenproduktionsindex
+                            [2]: Transferrin-Rezeptor-Ferritin-Index
+                            [3]: Für den Thomas-Plot gültigen Retikulozyten-Hb-Wert
+                            [4]: Für den Thomas-Plot gültigen Referenzwert des Transferrin-Rezeptor-Ferritin-Index
+                            [5]: BMI
+                            */
+
+                            // Beginn Zusammenstellen: Zuerst den Eisenbedarf...
                             valueSet.maths.push(valueSet.ironNeeds());                            
+                            // dann den Retikulozytenreprodultionsindex...
                             valueSet.maths.push(valueSet.rpi());
+                            // dann den Transferrin-Rezeptor-Ferritin-Index
                             valueSet.maths.push(valueSet.tfrFIndex());
+                            // dann den Retikulozyten-Hb, je nach Vorhandensein ...
+                            if (valueSet.hasReticulocHb()) {
+                                valueSet.maths.push(valueSet.reticulocytehb.value);
+                            } else {
+                                valueSet.maths.push(configuration.averageRetiHb);
+                            }
+                            // dann den Referenzwert des Transferrin-Rezeptor-Ferritin-Index für den Thomas-Plot je nach CRP-Status ...
+                            if (valueSet.hasCRP()) {                                
+                                if (valueSet.isCrpOK()) {
+                                    valueSet.maths.push(configuration.labTestKit_tfrFIndexCRP_OK);
+                                } else {
+                                    valueSet.maths.push(configuration.labTestKit_trfFIndexCRP_High);
+                                }
+                            } else {                                
+                                valueSet.maths.push(configuration.labTestKit_trfFIndexCRP_OK);
+                            }
+                            // dann den BMI als AddOn.
                             valueSet.maths.push(valueSet.bmi());                            
+                            
                         },
 
         /*********************************
