@@ -139,7 +139,19 @@ var decision = (function() {
         // Transferrin-Rezeptor-Ferritin-Index mit Bewertungsfunktion 
         tfrFIndex:      function() {
                             if (valueSet.hasSTFR() && valueSet.hasFerritine()) {
-                                return Math.round(valueSet.sTFR.value / Math.log(valueSet.ferritine.value) * 10) / 10;
+                                var rIndex = Math.round(valueSet.sTFR.value / Math.log(valueSet.ferritine.value) * 10) / 10,
+                                    compare = configuration.labTestKit_tfrFIndexCRP_OK;
+                                if (valueSet.hasCRP()) {
+                                    if (valueSet.isCrpOK()) {
+                                        compare = configuration.labTestKit_tfrFIndexCRP_OK;
+                                    } else {
+                                        compare = configuration.labTestKit_trfFIndexCRP_High;
+                                    }
+                                }
+                                if (rIndex > compare * 2) {
+                                    rIndex = compare * 2;
+                                }
+                                return rIndex;
                             }
                             return 0;
                         },
