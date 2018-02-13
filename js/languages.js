@@ -97,7 +97,11 @@ var getTranslationList = (function() {
                         { id: "calc-6",     attr: "",       de: "BMI", en: "BMI" },
 
                         // --- Karte für den Thomas-Plot
-                        { id: "thplot",     attr: "",       de: "Eisen-Plot nach Thomas", en: "Iron-Plot / Thomas" }
+                        { id: "thplot",     attr: "",       de: "Eisen-Plot nach Thomas", en: "Iron-Plot / Thomas" },
+                        { id: "thplotI",    attr: "",       de: "Quadrant I - Speichereisen gefüllt, kein Funktionseisenverlust", en: "Quadrante I - Iron reserve full, no loss of functional iron" },
+                        { id: "thplotII",   attr: "",       de: "Quadrant II - Verminderte Speichereisenreserve, kein Funktionseisenmangel", en: "Quadrante II - Iron reserve low, no loss of functional iron" },
+                        { id: "thplotIII",  attr: "",       de: "Quadrant III - Kein Speichereisen; Funktionseisenverlust ", en: "Quadrante III - No iron reserve; loss of functional iron" },
+                        { id: "thplotIV",   attr: "",       de: "Quadrant IV - Speichereisen gefüllt, aber Funktionseisenverlust", en: "Quadrante IV - Iron reserve full, but loss of functional iron" }
                     ]        
     }
 
