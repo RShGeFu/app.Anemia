@@ -36,14 +36,19 @@ function createCalcValuesCard(mathRes) {
     s = s + "<tr><th scope=\"row\"><span id=\"calc-4\"></span> (<span id=\"calc-5\"></span> " + mathRes[0].target2() + " g/dl)</th><td>" + mathRes[0]['target2Iron'] + "</td><td><small>mg</small></td></tr>";
     s = s + "<tr><th scope=\"row\"><span id=\"calc-1\"></span></th><td>" + mathRes[1] + "</td><td><small>-/-</small></td></tr>";
     s = s + "<tr><th scope=\"row\"><span id=\"calc-2\"></span></th><td>" + mathRes[2] + "</td><td><small>-/-</small></td></tr>";
-    s = s + "<tr><th scope=\"row\"><span id=\"calc-6\"></span></th><td>" + mathRes[3] + "</td><td><small>kg/m^2</small></td></tr>";
+    s = s + "<tr><th scope=\"row\"><span id=\"calc-6\"></span></th><td>" + mathRes[5] + "</td><td><small>kg/m^2</small></td></tr>";
     s = s + "</tbody></table></div></div>";
     return s;
 }
 
 function createIronPlotCard(res, width) {    
     var s = "<div id=\"ironplot-card-body\" class=\"card-body\"><h4 class=\"card-title\"><span id=\"thplot\"></span></h4><table class=\"table table-hover\"><tbody>";
-    s = s + "<canvas id=\"graphics\" width=\"" + width + " \" height=\"300\" style=\"border:1px solid #00FF00;\">Keine Unterstützung für Canvas</canvas>"
+    s = s + "<tr><canvas id=\"graphics\" width=\"" + width + " \" height=\"300\">Keine Unterstützung für Canvas</canvas></tr>"
+    s = s + "<tr><td id=\"thplotI\"></td></tr>"
+    s = s + "<tr><td id=\"thplotII\"></td></tr>"
+    s = s + "<tr><td id=\"thplotIII\"></td></tr>"
+    s = s + "<tr><td id=\"thplotIV\"></td></tr>"
+    s = s + "</tbody></table></div></div>";
     return s;
 }
 
@@ -64,12 +69,13 @@ function composeResultCards() {
     htmlString = createCalcValuesCard(resData.maths);
     $("#calcvalue-card").html(htmlString);
 
-    /* Thomas-Plot-Karte */    
-    htmlString = createIronPlotCard(resData.maths, $("#ironplot-card-body").width());
+    /* Thomas-Plot-Karte */
+    var cardWidth = $("#ironplot-card-body").width();               // Breite des Canvas - später wichtig für die Bezeichnung der Quadranten
+    htmlString = createIronPlotCard(resData.maths, cardWidth);
     $("#ironplot-card").html(htmlString);
+    var cardHeight = $("#ironplot-card-body").height();             // Höhe des Canvas - später wichtig für die Bezeichnung der Quadranten
 
-    // Thomas-Plot durchführen
-    // Noch CRP-Normal oder Nicht einbauen!!  
+    // Thomas-Plot durchführen    
     var ctx = document.getElementById('graphics').getContext('2d');
     var scatterChart = new Chart(ctx, {
         type: 'scatter',
@@ -113,9 +119,7 @@ function composeResultCards() {
                         }],
                 backgroundColor:        '#FF0000',
                 pointRadius:            7,
-                pointHoverRadius:       10,
-                pointHoverBorderColor:  '#0000FF',
-                pointHitRadius:         3
+                pointHoverRadius:       10                                
             }]
         },
         options: {
@@ -128,10 +132,22 @@ function composeResultCards() {
             legend: {
                 display: true,
                 position: 'top'
-            }            
+            },
+            animation: {
+                // Beschrifte die Quadranten
+                onComplete: function() {
+                    ctx.font = "30px Arial";
+                    ctx.moveTo(0,0);
+                    ctx.fillText("I",40,60);
+                    ctx.fillText("IV",40,260);
+                    ctx.fillText("II",cardWidth/2+15,60);
+                    ctx.fillText("III",cardWidth/2+15,260);                    
+                    ctx.stroke();
+                }
+            }
         }
     });
-
+    
     /* Beschriftung nach eingestellter Sprache */
     actualLanguage = $('#lang-flag').data('actual-lang');
     translateLabels(actualLanguage);           
