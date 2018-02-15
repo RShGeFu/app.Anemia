@@ -165,7 +165,7 @@ $(document).ready(function() {
 
     /* Visualisierung an den Reload-Button hängen */
     $("#lab7").click(function () {         
-        composeResultCards();
+        composeResultCards();        
     });            
  
     /* Ergebnisse zusammenstellen und bei App-Start visualisieren */

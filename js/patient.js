@@ -204,7 +204,7 @@ $(document).ready(function() {
 
     /* An den Reload-Button hängen */
     $("#lab7").click(function () {        
-        composeCards();
+        composeCards();        
     });
     
     /* Das UI zusammenstellen */
