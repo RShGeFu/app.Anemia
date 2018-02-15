@@ -108,8 +108,7 @@
             },
         }).done(function(pt){
             var name = pt.name[0].given.join(" ") +" "+ pt.name[0].family.join(" ");
-            document.getElementById('lab1').innerHTML = name;
-            
+            alert("Start with: " + name);
         });
     }).fail(function() { alert("Sorry, App-Start nur mit Testdaten ..."); });
     
