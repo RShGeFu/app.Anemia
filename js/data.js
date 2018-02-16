@@ -46,15 +46,16 @@ function validatePatientDemographics(dataset) {
 function getPatientDemographics() {
 
     /* Hier die FHIR-Server-Abfrage - jetzt Testwerte */
+    var nv = "Harry";
 
-    let dataSet = {
+    var dataSet = {
 
         type: "key-val",
         id:   "person",
         name: "Person",
         lang: "en",
         kval: [ 
-                { id: "perfirstname", val: "Harry" },
+                { id: "perfirstname", val: nv },
                 { id: "perlastname", val: "Test" },
                 { id: "perbirthday", val: "1970-10-10" },
                 { id: "permf", val: "male" },
@@ -109,7 +110,7 @@ function validatePatientClinicalObservations(dataset) {
  */
  function getPatientClinicalObservations() {
     
-    /* Hier die FHIR-Server-Abfrage - jetzt Testwerte */
+    /* Hier die FHIR-Server-Abfrage - jetzt Testwerte */    
 
     let dataSet = {
 
@@ -206,7 +207,7 @@ function validatePatientLaboratoryObservations(dataset) {
 function getPatientLaboratoryObservations() {
     
     /* Hier die FHIR-Server-Abfrage - jetzt Testwerte */    
-    var pContext = getPatientContext();
+    var pContext = "test"; //getPatientContext();
     
     /* Testdatensets */    
     if (typeof pContext === "function") {
