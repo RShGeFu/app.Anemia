@@ -35,9 +35,12 @@ function getKeyValueList(querystring) {
 
 }
 
-// Funktion erleichtert das Parsing von URL-Parametern
-// Quelle: http://docs.smarthealthit.org/tutorials/authorization/
-    function getUrlParameter(sParam)
+/**
+ * Hilfsfunktion erleichtert das Parsing von URL-Parametern
+ * Quelle: http://docs.smarthealthit.org/tutorials/authorization/
+ * @param {*} querystring 
+ */
+function getUrlParameter(sParam)
     {
         var sPageURL = window.location.search.substring(1);
         var sURLVariables = sPageURL.split('&');
@@ -72,13 +75,20 @@ function getPatientName (pt) {
 var getPatientContext = (function() {
 
     var configData = {        
-        serverTestBaseURL:     "http://hapi.fhir.org/baseDstu2",                                    // Funktioniert!
-        serverTestBaseURL3:     "https://fhir-open-api-dstu2.smarthealthit.org",                    // Funktioniert nicht
-        serverTestBaseURL4:      "https://sb-fhir-dstu2.smarthealthit.org/api/smartdstu2/data",     // Funktioniert nicht
-        serverTestBase:         "TEST-Server",
+        // Testserver
+        serverTestBase:         "TEST - Server",
+        serverTestBaseURL:      "http://hapi.fhir.org/baseDstu2",                                   // Funktioniert!
+        serverTestBaseURL3:     "https://fhir-open-api-dstu2.smarthealthit.org",                    // Funktioniert (noch) nicht
+        serverTestBaseURL4:     "https://sb-fhir-dstu2.smarthealthit.org/api/smartdstu2/data",      // Funktioniert jetzt! Nach Anpassung des Scopes
+        
+        // Medico-Server
         serverBase:             "Medico - Server",
         serverBaseURL:          "",
-        location:               null,        
+
+        // FÜr URL-Parameter
+        location:               null,
+        
+        // Erforderliche URL-Parameter für den Kontext-Entscheid
         requiredPersonalData:   [ "patLastName", "patFirstName", "patBirthday" ],
         requiredEncounter:      "patEncID",
         requiredUseTestServer:  "fhirTestServer",
@@ -123,49 +133,71 @@ var getPatientContext = (function() {
                 
                 if (v[configData.requiredUseTestServer] == 'true') {
                     
-                    alert(configData.serverTestBase + " FHIR TRUE");
+                    return function() {
                     
-                    // Client initialisieren
-                    var smart = FHIR.client({
-                        serviceUrl:     configData.serverTestBaseURL,
-                        patientId:      v[configData.requiredEncounter]                 
-                      });
+                        alert(configData.serverTestBase + " (FHIR): " + configData.serverTestBaseURL);
                     
-                    // Daten abrufen - zunächst den Namen eines Patienten
-                    smart.patient.read().then(function(p) {                            
-                            alert(getPatientName(p));
-                        }).fail(function(e) {
-                            alert("Patient nicht in der Datenbank");
-                        });
+                        // Client initialisieren
+                        var smart = FHIR.client({
+                                serviceUrl:     configData.serverTestBaseURL,
+                                patientId:      v[configData.requiredEncounter]                 
+                            });
+                    
+                        // Daten abrufen - zunächst den Namen eines Patienten
+                        smart.patient.read().then(function(p) {                            
+                                alert(getPatientName(p));
+                            }).fail(function(e) {
+                                alert("Patient not found!");
+                            });
 
-                    /*var medis = smart.patient.api.search( { type: 'Observation' } ).done(function(p) {
-                            alert("Fertig: " + p.data.link[0].url);
-                        }).fail(function(e) {
-                             alert("Fehler: " + Object.getOwnPropertyNames(e.data));
-                        });*/
-                                        
+                    }                                     
 
                 } else {
-                    alert("FHIR-Testserver nicht benutzt");
+
+                    alert("FHIR-Testserver not used!");
+                    return null;
+
                 }
 
             // FHIR-Echt-Server mit Fallnummer
-            } else if (vl.indexOf(configData.requiredEncounter) > -1) {  
+            } else if (vl.indexOf(configData.requiredUseServer) > -1 && vl.indexOf(configData.requiredEncounter) > -1) {  
+                
+                if (v[configData.requiredUseServer] == 'true') {
+                    
+                    return function() {
+                        return "With encounterID: " + v[configData.requiredEncounter];
+                    }
 
-                return "With encounterID: " + v[configData.requiredEncounter];
+                } else {
+
+                    alert("Medico - Server not used!");
+                    return null;
+
+                }
             
             // FHIR-Echt-Server mit Name, Vorname, Geburtsdatum
-            } else if (personalDataComplete) {                          // 
+            } else if (vl.indexOf(configData.requiredUseServer) > -1 && personalDataComplete) {
 
-                return "With Name, FirstName, Birthday: " + v[configData.requiredPersonalData[1]];
+                if (v[configData.requiredUseServer] == 'true') {
+
+                    return function() {
+                        return "With Name, FirstName, Birthday: " + v[configData.requiredPersonalData[1]];
+                    }
+
+                } else {
+
+                    alert("Medico - Server not used!");
+                    return null;
+                    
+                }
 
             // Stand alone, wenn keine entsprechenden Daten geliefert werden
             } else {                                                    
-                                                
+                    
+                // Bei Aufruf der App im Kontext Sandbox von SmartHealthIT.org
                 return function() {
-                    return "Stand alone - Testvariable " + patientName;
-                }
-                    /*// get the URL parameters received from the authorization server
+                                        
+                    // get the URL parameters received from the authorization server
                     var state = getUrlParameter("state");  // session key
                     var code = getUrlParameter("code");    // authorization code
     
@@ -203,40 +235,41 @@ var getPatientContext = (function() {
                         // obtain authorization token from the authorization service using the authorization code
                         $.ajax(options).done(function(res){
         
-                        // should get back the access token and the patient ID
-                        var accessToken = res.access_token;
-                        var patientId = res.patient;
+                            // should get back the access token and the patient ID
+                            var accessToken = res.access_token;
+                            var patientId = res.patient;
                 
-                        // and now we can use these to construct standard FHIR
-                        // REST calls to obtain patient resources with the
-                        // SMART on FHIR-specific authorization header...
-                        // Let's, for example, grab the patient resource and
-                        // print the patient name on the screen
-                        var url = serviceUri + "/Patient/" + patientId;
-                        $.ajax({
-                            url: url,
-                            type: "GET",
-                            dataType: "json",
-                            headers: {
-                                "Authorization": "Bearer " + accessToken
-                            },
-                        }).done(function(pt){
-                            patientName = pt.name[0].given.join(" ") +" "+ pt.name[0].family.join(" ");
-                            patientName = "Füchsl"                      ;
+                            // and now we can use these to construct standard FHIR
+                            // REST calls to obtain patient resources with the
+                            // SMART on FHIR-specific authorization header...
+                            // Let's, for example, grab the patient resource and
+                            // print the patient name on the screen
+                            var url = serviceUri + "/Patient/" + patientId;
+                            $.ajax({
+                                url: url,
+                                type: "GET",
+                                dataType: "json",
+                                headers: {
+                                    "Authorization": "Bearer " + accessToken
+                                },
+                            }).done(function(pt){
+                                patientName = pt.name[0].given.join(" ") +" "+ pt.name[0].family.join(" ");
+                                alert(patientName);
+                            });
+                        }).fail(function() { 
+                            alert("Huch!"); 
                         });
-                        }).fail(function() { alert("Huch!"); });
-                    }*/
+
+                    } else {
+
+                        alert("No authorizsation - App starts only with test data...");
+                        return null;
+
+                    }
+
+                }
             } 
                     
     }
 
 })();
-
-/**
- * Einhängen des Aufrufkontexts nach Laden der App
- */
-$(document).ready(function() {
-    
-    var cf = getPatientContext(location.search);
-    
-});
