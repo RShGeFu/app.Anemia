@@ -38,9 +38,6 @@
   <script src="js/config.js"></script>
   <script src="js/languages.js"></script>
   
-  <!-- Die Anbindung an einen FHIR-Server -->
-  <script src="js/fhir.request.js"></script>
-
   <!-- Der Entscheidungs- und Berechnungsalgorithmus -->
   <script src="js/decision.js"></script>
 
@@ -48,6 +45,12 @@
   <script src="js/data.js"></script>  
   <script src="js/patient.js"></script>
   <script src="js/results.js"></script>
+
+  <!-- Die Anbindung an einen FHIR-Server -->
+  <script src="js/fhir.request.js"></script>
+
+  <!-- Beim Start der App ausführen ... -->
+  <script src="js/appstart.js"></script>
 
 </head>
 
@@ -110,23 +113,10 @@
             var name = pt.name[0].given.join(" ") +" "+ pt.name[0].family.join(" ");
             alert("Start with: " + name);
         });
-    }).fail(function() { alert("Sorry, App-Start nur mit Testdaten ..."); });
+    }).fail(function() { 
+      alert("Sorry, App starts only with test data ..."); 
+    });
     
-    // Convenience function for parsing of URL parameters
-    // based on http://www.jquerybyexample.net/2012/06/get-url-parameters-using-jquery.html
-    /*function getUrlParameter(sParam)
-    {
-        var sPageURL = window.location.search.substring(1);
-        var sURLVariables = sPageURL.split('&');
-        for (var i = 0; i < sURLVariables.length; i++) 
-        {
-            var sParameterName = sURLVariables[i].split('=');
-            if (sParameterName[0] == sParam) {
-                var res = sParameterName[1].replace(/\+/g, '%20');
-                return decodeURIComponent(res);
-            }
-        }
-    }*/
 </script>
 
 <!-- Navigationsleiste -->
