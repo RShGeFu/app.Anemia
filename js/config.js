@@ -4,6 +4,8 @@
 
 "use strict";
 
+/* Globale Konfigurationsvariable für die konstanten Werte im App-Kontext */
+
 var configuration = {
 
     labTestKit:                         "Roche",     // 'Dade-Behring'-Test möglich
