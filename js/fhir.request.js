@@ -144,7 +144,9 @@ var getPatientContext = (function() {
                             });
                     
                         // Daten abrufen - zunächst den Namen eines Patienten
-                        smart.patient.read().then(function(p) {                            
+                        smart.patient.read().then(function(p) {                                                            
+                                composeCards();       
+                                composeResultCards();                        
                                 alert(getPatientName(p));
                             }).fail(function(e) {
                                 alert("Patient not found!");
@@ -165,6 +167,8 @@ var getPatientContext = (function() {
                 if (v[configData.requiredUseServer] == 'true') {
                     
                     return function() {
+                        composeCards();        
+                        composeResultCards();                        
                         return "With encounterID: " + v[configData.requiredEncounter];
                     }
 
@@ -181,6 +185,8 @@ var getPatientContext = (function() {
                 if (v[configData.requiredUseServer] == 'true') {
 
                     return function() {
+                        composeCards();        
+                        composeResultCards();                        
                         return "With Name, FirstName, Birthday: " + v[configData.requiredPersonalData[1]];
                     }
 
@@ -253,6 +259,8 @@ var getPatientContext = (function() {
                                     "Authorization": "Bearer " + accessToken
                                 },
                             }).done(function(pt){
+                                composeCards();        
+                                composeResultCards();                        
                                 patientName = pt.name[0].given.join(" ") +" "+ pt.name[0].family.join(" ");
                                 alert(patientName);
                             });
