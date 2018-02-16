@@ -9,7 +9,7 @@
 function createPatientDemographics(dataset) {
 
     var i, j, str;
-    
+
     /* Validierung der demographischen Patientendaten */
 
     if (dataset.type == "key-val") {
@@ -179,7 +179,7 @@ function createLabCard(dataset) {
 function composeCards() {
     
     /* Patientenkarte */
-    let dataset = getPatientClinicalObservations();    
+    var dataset = getPatientClinicalObservations();    
     var htmlString = createPatientCard(dataset);       
     $("#patient-card").html(htmlString);
 
@@ -196,18 +196,3 @@ function composeCards() {
     actualLanguage = $('#lang-flag').data('actual-lang');
     translateLabels(actualLanguage);       
 }
-
-/**
- * Patienten- und Laborkarte bei App-Start zusammenstellen und visualisieren
- */
-$(document).ready(function() {
-
-    /* An den Reload-Button hängen */
-    $("#lab7").click(function () {        
-        composeCards();        
-    });
-    
-    /* Das UI zusammenstellen */
-    composeCards();
-
-});

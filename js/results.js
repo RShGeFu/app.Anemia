@@ -152,23 +152,3 @@ function composeResultCards() {
     actualLanguage = $('#lang-flag').data('actual-lang');
     translateLabels(actualLanguage);           
 }
-
-/**
- * Ergebniskarten bei App-Start zusammenstellen und visualisieren
- */
-$(document).ready(function() {
-
-    /* Revisualisierung des Fensterinhalts bei Resizing des Fensters, insbesondere der Grafikdarstellung */
-    $(window).resize(function() {
-        composeResultCards();
-    });
-
-    /* Visualisierung an den Reload-Button hängen */
-    $("#lab7").click(function () {         
-        composeResultCards();        
-    });            
- 
-    /* Ergebnisse zusammenstellen und bei App-Start visualisieren */
-    composeResultCards();
-
-});
