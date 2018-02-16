@@ -19,8 +19,7 @@ $(document).ready(function() {
     if (typeof pC == 'function') {
         
         /* Patientenkontext ausführen */
-        pC();
-
+        alert(pC());        
         /* Patienten- und Ergebniskarten an den Reload-Button hängen */    
         $("#lab7").click(function () {        
                 pC();
@@ -32,9 +31,9 @@ $(document).ready(function() {
             });
                     
     } else {
-        /* Das UI zusammenstellen mit Testdaten zusammenstellen
+        /* Das UI zusammenstellen mit Testdaten zusammenstellen */
         composeCards();
-        composeResultCards();    */
+        composeResultCards(); 
     }
     
 });
