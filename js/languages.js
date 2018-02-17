@@ -27,13 +27,16 @@ var getTranslationList = (function() {
                         { id: "lab6",       attr: "href",   de: "images/german.png", en: "images/english.png"},
                         { id: "lab7",       attr: "",       de: "Patientendaten neu laden", en: "Reload patient data" },                        
                         { id: "lab7a",      attr: "",       de: "Keine Diagnosen verfügbar", en: "No diagnosis available" },
+                        
                         // --- Modaldialog
                         { id: "modaltitle", attr: "",       de: "Bitte beachten", en: "Please note" },
                         { id: "modalmessage",attr: "",      de: "Die Patientendaten werden neu geladen", en: "The patient data are reloaded" },
+                        
                         // --- Patientenkarte
                         { id: "patient",    attr: "",       de: "Klinische Daten", en: "Clinical Data" },
                         { id: "weight",     attr: "",       de: "Gewicht", en: "Weight" },
                         { id: "height",     attr: "",       de: "Grösse", en: "Height" },
+                        
                         // --- Laborkarte
                         { id: "labor",      attr: "",       de: "Labordaten", en: "Laboratory Data" },
                         { id: "hemoglobin", attr: "",       de: "Hämoglobin", en: "Hemoglobin" },
@@ -44,6 +47,9 @@ var getTranslationList = (function() {
                         { id: "reticulocytepc", attr: "",   de: "Retikulozyten", en: "Reticulocytes" },
                         { id: "reticulocytehb", attr: "",   de: "Retikulozyten Hb", en: "Reticulocyte Hb" },
                         { id: "hematokrit", attr: "",       de: "Hämatokrit", en: "Hematokrit" },
+                        { id: "vitb12",     attr: "",       de: "Vitamin B12", en: "Vitamine B12" },
+                        { id: "folicAcid",  attr: "",       de: "Folsäure", en: "Folic Acid" },
+                        
                         // --- Diagnosenkarte
                         { id: "diagnosis-1",attr: "",       de: "Diagnose", en: "Diagnosis" },
                         { id: "diag-0",     attr: "",       de: "Keine Diagnosestellung möglich", en: "No Diagnosis possible" },
