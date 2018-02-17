@@ -178,21 +178,50 @@ function createLabCard(dataset) {
  */
 function composeCards() {
     
-    /* Patientenkarte */
-    var dataset = getPatientClinicalObservations();    
-    var htmlString = createPatientCard(dataset);       
-    $("#patient-card").html(htmlString);
+    if (arguments.length == 2) {
 
-    /* Laborkarte */    
-    dataset = getPatientLaboratoryObservations();    
-    htmlString = createLabCard(dataset);
-    $("#laboratory-card").html(htmlString);
+        var patient = arguments[0],
+            observations = arguments[1];
+        
+        /* Administrative Patientendaten als NavBar*/
+        var dataset = getPatientDemographics(patient);
+        createPatientDemographics(dataset);
 
-    /* Administrative Patientendaten */
-    dataset = getPatientDemographics();
-    createPatientDemographics(dataset);
+        /* Patientendatenkarte */
+        dataset = getPatientClinicalObservations(observations);    
+        var htmlString = createPatientCard(dataset);       
+        $("#patient-card").html(htmlString);
 
-    /* Beschriftung nach eingestellter Sprache */
-    actualLanguage = $('#lang-flag').data('actual-lang');
-    translateLabels(actualLanguage);       
+        /* Laborkarte */    
+        dataset = getPatientLaboratoryObservations(observations);    
+        htmlString = createLabCard(dataset);
+        $("#laboratory-card").html(htmlString);
+
+        /* Beschriftung nach eingestellter Sprache */
+        actualLanguage = $('#lang-flag').data('actual-lang');
+        translateLabels(actualLanguage);       
+
+    } else {
+        alert(Object.getOwnPropertyNames(arguments[1]));
+        /* Administrative Patientendaten als NavBar*/
+        var dataset = getPatientDemographics();
+        createPatientDemographics(dataset);
+
+        /* Patientendatenkarte */
+        dataset = getPatientClinicalObservations();    
+        var htmlString = createPatientCard(dataset);       
+        $("#patient-card").html(htmlString);
+
+        /* Laborkarte */    
+        dataset = getPatientLaboratoryObservations();    
+        htmlString = createLabCard(dataset);
+        $("#laboratory-card").html(htmlString);
+
+        /* Beschriftung nach eingestellter Sprache */
+        actualLanguage = $('#lang-flag').data('actual-lang');
+        translateLabels(actualLanguage);       
+
+    }
+
+
 }
