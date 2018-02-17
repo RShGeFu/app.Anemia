@@ -12,7 +12,7 @@
  */
 $(document).ready(function() {
     
-    /* Patientenkontext herstellen, je nach URL-Parameter */
+     /* Patientenkontext herstellen, je nach URL-Parameter */
     var pC = getPatientContext(location.search);
     
     /* Wenn ein Patientenkontext hergestellt werden konnte */
