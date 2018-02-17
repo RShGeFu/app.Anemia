@@ -3,7 +3,6 @@
  */
 
 "use strict";
-var patientName = "Gerhard"; // globale Testvariable
 
 /**
  * Hilfsfunktion - Mit dieser Funktion wird ein assoziatives Array aus den Such-Parametern der URL gemacht
@@ -78,8 +77,6 @@ var getPatientContext = (function() {
         // Testserver
         serverTestBase:         "TEST - Server",
         serverTestBaseURL:      "http://hapi.fhir.org/baseDstu2",                                   // Funktioniert!
-        serverTestBaseURL3:     "https://fhir-open-api-dstu2.smarthealthit.org",                    // Funktioniert (noch) nicht
-        serverTestBaseURL4:     "https://sb-fhir-dstu2.smarthealthit.org/api/smartdstu2/data",      // Funktioniert jetzt! Nach Anpassung des Scopes
         
         // Medico-Server
         serverBase:             "Medico - Server",
@@ -144,10 +141,18 @@ var getPatientContext = (function() {
                             });
                     
                         // Daten abrufen - zunächst den Namen eines Patienten
-                        smart.patient.read().then(function(p) {                                                            
-                                composeCards();       
-                                composeResultCards();                        
-                                alert(getPatientName(p));
+                        smart.patient.read().then(function(pt) {                    
+                            
+                                smart.patient.api.fetchAll( { type: "Observation"} ).then(function(results) {
+
+                                    // Patientendaten und Ergebnisse zusammenstellen und visualisieren
+                                    composeCards(pt, results);                                    
+                                    composeResultCards();
+
+                                }).fail(function(e) {
+                                    alert("No observation found!");                                    
+                                });
+
                             }).fail(function(e) {
                                 alert("Patient not found!");
                             });
@@ -157,9 +162,8 @@ var getPatientContext = (function() {
                     }                                     
 
                 } else {
-
-                    alert("FHIR-Testserver not used!");
-                    return null;
+                    
+                    return "FHIR-Testserver not used!";
 
                 }
 
@@ -171,13 +175,12 @@ var getPatientContext = (function() {
                     return function() {
                         composeCards();        
                         composeResultCards();                        
-                        return "With encounterID: " + v[configData.requiredEncounter];
+                        return "MEDICO - With encounterID: " + v[configData.requiredEncounter];
                     }
 
                 } else {
-
-                    alert("Medico - Server not used!");
-                    return null;
+                    
+                    return "Medico - Server not used!";
 
                 }
             
@@ -189,13 +192,12 @@ var getPatientContext = (function() {
                     return function() {
                         composeCards();        
                         composeResultCards();                        
-                        return "With Name, FirstName, Birthday: " + v[configData.requiredPersonalData[1]];
+                        return "MEDICO - With Name, FirstName, Birthday: " + v[configData.requiredPersonalData[1]];
                     }
 
                 } else {
-
-                    alert("Medico - Server not used!");
-                    return null;
+                    
+                    return "Medico - Server not used!";
                     
                 }
 
@@ -271,14 +273,29 @@ var getPatientContext = (function() {
                                         "Authorization": "Bearer " + accessToken
                                     },
                                 }).done(function(pt){
-                                    composeCards();        
-                                    composeResultCards();                        
-                                    patientName = pt.name[0].given.join(" ") +" "+ pt.name[0].family.join(" ");
-                                    alert(patientName);
-                                }). fail(function(e) {
-                                    alert("No patient found!");
+                                    
+                                    var url = serviceUri + "/Observation?subject:Patient=" + pt.id;
+                                    var obs = $.ajax({
+                                            url: url,
+                                            type: "GET",
+                                            dataType: "json",
+                                            headers: {
+                                                "Authorization": "Bearer " + accessToken
+                                            },
+                                    }).done(function(results) {
+
+                                        // Patientendaten und Ergebnisse zusammenstellen und visualisieren
+                                        composeCards(pt, results);                                           
+                                        composeResultCards();                        
+                                        
+                                    }).fail(function(e) {
+                                        alert("No observation found!");
+                                    });                                    
+                                    
+                                }).fail(function(e) {
+                                    alert("Patient not found!");
                                 });
-                            }).fail(function() { 
+                            }).fail(function(e) { 
                                 alert("No server access ..."); 
                             });
                             
@@ -293,9 +310,8 @@ var getPatientContext = (function() {
                     }
 
                 } else {
-
-                    alert("No authorizsation - App starts only with test data...");
-                    return null;
+                    
+                    return "No authorizsation - App starts only with test data...";
 
                 }
 
