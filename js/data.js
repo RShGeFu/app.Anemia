@@ -129,7 +129,7 @@ function validatePatientClinicalObservations(dataset) {
 
         /* Ergänze die fehlenden IDs mit einem Dummy-Wert */
         for(var i = 0; i < content.length; i++) {            
-            dataset.kval.push( { id: content[i], value: '0', unit: "-/-" } );
+            dataset.kval.push( { id: content[i], name: content[i], value: '0', unit: "-/-" } );
         }        
 
         return dataset;
@@ -224,7 +224,7 @@ function validatePatientLaboratoryObservations(dataset) {
 
         /* Ergänze die fehlenden IDs mit einem Dummy-Wert */
         for(var i = 0; i < content.length; i++) {            
-            dataset.kval.push( { id: content[i], value: '0', refMin: "-/-", refMax: "-/-", unit: "-/-", validMin: '0', validMax: '0' } );
+            dataset.kval.push( { id: content[i], name: content[i], value: '0', refMin: "-/-", refMax: "-/-", unit: "-/-", validMin: '0', validMax: '0' } );
         }        
 
         return dataset;
