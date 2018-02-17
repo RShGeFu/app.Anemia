@@ -21,7 +21,7 @@ var getTranslationList = (function() {
                         { id: "lab2",       attr: "",       de: "Vorname", en: "Firstname" },
                         { id: "lab3",       attr: "",       de: "Geburtsdatum", en: "Birthday" },
                         { id: "lab3a",      attr: "",       de: "Geschlecht", en: "Sex" },
-                        { id: "lab4",       attr: "",       de: "Fallnummer", en: "Encounter-ID" },
+                        { id: "lab4",       attr: "",       de: "ID", en: "ID" },
                         { id: "lab5",       attr: "",       de: "Diagnosen", en: "Diagnoses" },
                         { id: "lab6",       attr: "",       de: "Einstellungen", en: "Settings" },
                         { id: "lab6",       attr: "href",   de: "images/german.png", en: "images/english.png"},
@@ -120,52 +120,6 @@ var getTranslationList = (function() {
 
 /**
  * Funktion für die Internationalisierung der App
- * Übersetzungsliste
- */
-function getTranslationList_deprecated() {
-    
-    /* Definiere die Übersetzungsliste */
-    
-    let labels = {
-        name:       "Translation - Labels",
-        version:    "0.0.1",
-        languages:  [ "de", "en" ],
-        labels:     [
-                        { id: "lang-flag",  attr: "src",    de: "images/german.png", en: "images/english.png"},
-                        { id: "lab1",       attr: "",       de: "Name", en: "Lastname" },
-                        { id: "lab2",       attr: "",       de: "Vorname", en: "Firstname" },
-                        { id: "lab3",       attr: "",       de: "Geburtsdatum", en: "Birthday" },
-                        { id: "lab3a",      attr: "",       de: "Geschlecht", en: "Sex" },
-                        { id: "lab4",       attr: "",       de: "Fallnummer", en: "Encounter-ID" },
-                        { id: "lab5",       attr: "",       de: "Diagnosen", en: "Diagnoses" },
-                        { id: "lab6",       attr: "",       de: "Einstellungen", en: "Settings" },
-                        { id: "lab7",       attr: "",       de: "Patientendaten neu laden", en: "Reload patient data" },
-                        { id: "patient",    attr: "",       de: "Patient", en: "Patient" },
-                        { id: "weight",     attr: "",       de: "Gewicht", en: "Weight" },
-                        { id: "height",     attr: "",       de: "Grösse", en: "Height" },
-                        { id: "labor",      attr: "",       de: "Labor", en: "Laboratory" },
-                        { id: "hemoglobin", attr: "",       de: "Hämoglobin", en: "Hemoglobin" },
-                        { id: "mcv",        attr: "",       de: "MCV", en: "MCV" },
-                        { id: "crp",        attr: "",       de: "CRP", en: "CRP" },
-                        { id: "ferritine",  attr: "",       de: "Ferritin", en: "Ferritine" },
-                        { id: "sTFR",       attr: "",       de: "Lösl. Tf R", en: "sol Tf R" },
-                        { id: "reticulocytepc", attr: "",   de: "Retikuloz.", en: "Reticuloc." },
-                        { id: "reticulocytehb", attr: "",   de: "Reti Hb", en: "Reti Hb" }
-                    ]        
-    }
-
-    /* Validiere die ÜBersetzungsliste - s. Validierungsfunktion
-        1. id/attr: keine doppelte Vergabe
-        2. languages: in jedem Array-Item muß die angegebene Sprache vorhanden sein
-        3. 'Sprache': für jede id muß in allen angegebenen Sprachen ein Text/Übersetzung stehen
-        -> Wichtig für längere Übersetzungstabellen, damit keine Fehler bei der Neuvergabe von Labels entstehen
-    */
-
-    return labels;
-}
-
-/**
- * Funktion für die Internationalisierung der App
  * Validierung für die Übersetzungsliste
  */
 function validateTranslationList(list) {
@@ -229,7 +183,7 @@ function validateTranslationList(list) {
  */
 function translateLabels(lang = 'de') {
     /* Übersetzungstabelle initialisieren */
-    let labelList = getTranslationList();    
+    var labelList = getTranslationList();    
 
     /* Übersetzungstabelle validieren */
     if (validateTranslationList(labelList)) {
