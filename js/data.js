@@ -45,26 +45,59 @@ function validatePatientDemographics(dataset) {
  */
 function getPatientDemographics() {
 
-    /* Hier die FHIR-Server-Abfrage - jetzt Testwerte */
-    var nv = "Harry";
-
-    var dataSet = {
-
-        type: "key-val",
-        id:   "person",
-        name: "Person",
-        lang: "en",
-        kval: [ 
-                { id: "perfirstname", val: nv },
-                { id: "perlastname", val: "Test" },
-                { id: "perbirthday", val: "1970-10-10" },
-                { id: "permf", val: "male" },
-                { id: "perencid", val: "417417417" },
-                { id: "perdiagnose", val: [ "Pneumonie", "Lungenembolie"] }
-              ]
+    // Wenn Parameter übergeben werden, dann ...
+    if (arguments.length == 1) {
         
+        // ... wenn der erste Parameter eine Ressource 'Patient', dann...
+        if (arguments[0].resourceType.toString() === "Patient") {
+            
+            // ... daraus den demographischen Datensatz zusammenstellen
+            var patient = arguments[0];
+            
+            var dataSet = {
+
+                type: "key-val",
+                id:   "person",
+                name: "Person",
+                lang: "en",
+                test: false,
+
+                kval: [ 
+                        { id: "perfirstname",   val: patient.name ?         patient.name[0].given.join(" ") : "-/-" },
+                        { id: "perlastname",    val: patient.name ?         patient.name[0].family.join(" "): "-/-" },
+                        { id: "perbirthday",    val: patient.birthDate ?    patient.birthDate.toString()    : "-/-" },
+                        { id: "permf",          val: patient.gender ?       patient.gender.toString()       : "-/-" },
+                        { id: "perencid",       val: patient.id ?           patient.id.toString()           : "-/-" },
+                        { id: "perdiagnose",    val: null }
+                    ]
+            }
+            
+        }
+
+    // ... ansonsten Testdatensatz zusammenstellen
+    } else {
+        
+        var dataSet = {
+
+            type: "key-val",
+            id:   "person",
+            name: "Person",
+            lang: "en",
+            test: true,
+
+            kval: [ 
+                    { id: "perfirstname", val: "Test app" },
+                    { id: "perlastname", val: "Test Anemia" },
+                    { id: "perbirthday", val: "1900-01-01" },
+                    { id: "permf", val: "female" },
+                    { id: "perencid", val: "000000000" },
+                    { id: "perdiagnose", val: [ "Pneumonia", "Lungembolism"] }
+                  ]
+            
+        }
+            
     }
-        
+            
     return validatePatientDemographics(dataSet);
 
 }
