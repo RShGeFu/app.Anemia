@@ -27,7 +27,7 @@ var decision = (function() {
         setItem:        function(item, val, assessment) {
                             // Lege die Property neu an, wenn sie nicht existiert ...
                             if (valueSet[item] == null) {
-                                Object.defineProperty(valueSet, item, { value: { value: val, assess: assessment } } );                                
+                                Object.defineProperty(valueSet, item, { value: { value: val, assess: assessment  } } );                                
                             // ... sonst weise ihr den aktuellen Wert zu!
                             } else {
                                 valueSet[item]['value'] = val;
@@ -370,13 +370,19 @@ var decision = (function() {
                             var r; 
                             
                             if (res != null) {
-                                r = labels.labels.findIndex(i => i.id === res);                                                            
-                                valueSet.diagnoses.push(labels.labels[r]);
+                                r = labels.labels.findIndex(i => i.id === res);
+                                // Wenn Diagnose noch nicht auf dem Stack ...
+                                if (valueSet.diagnoses.indexOf(labels.labels[r]) == -1) {
+                                    valueSet.diagnoses.push(labels.labels[r]);
+                                }
                             }
 
                             if (rec != null) {
                                 r = labels.labels.findIndex(i => i.id === rec);
-                                valueSet.recommends.push(labels.labels[r]);
+                                // Wenn Empfehlung noch nicht auf dem Stack ...
+                                if (valueSet.recommends.indexOf(labels.labels[r]) == -1) {
+                                    valueSet.recommends.push(labels.labels[r]);
+                                }
                             }                                                        
                         },
     
