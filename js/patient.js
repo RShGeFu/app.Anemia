@@ -65,7 +65,7 @@ function createPatientCard(dataset) {
             /* Built der Kartenzeile */
             idOfInput = "ds_" + dataset.kval[i]['id'];
             classOfInput = "ds_values";
-            str = str + "<tr><th scope=\"row\"><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span></th><td><small><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></small></td><td><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></td><td><small>" + dataset.kval[i]['unit'] + "</small></td></tr>";                        
+            str = str + "<tr><th scope=\"row\"><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span></th><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td><td><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></td><td><small>" + dataset.kval[i]['unit'] + "</small></td></tr>";                        
         }
 
         /* Abschluss für die Card */
@@ -83,6 +83,13 @@ function createPatientCard(dataset) {
  * @param {*} refMax
  */
 function testNormalAndValidRange(value, refMin, refMax, validMin, validMax) {
+
+    /* Auch wirklich vom Typ Number */
+    refMin = Number(refMin);
+    refMax = Number(refMax);
+    validMin = Number(validMin);
+    validMax = Number(validMax);
+
     /* Zunächst ist alles ok! */
     var retVal = { status: 'ok', color: 'success' };
     
@@ -151,16 +158,16 @@ function createLabCard(dataset) {
             */
             decision.setItem(dataset.kval[i]['id'], dataset.kval[i]['value'], inNormRange.status);
             
-            idOfInput = "ds_" + dataset.kval[i]['id'];
+            idOfInput = dataset.kval[i]['id'];
             classOfInput = "ds_values";
-            str = str + "<td>" + hstr + "</td><td><small><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></small></td></th><td><b><i><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></i></b></td>";
+            str = str + "<td>" + hstr + "</td><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td></th><td><b><i><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></i></b></td>";            
             /* Anhängen der Lage relativ zum Referenzbereich noch notwendig */
             
             /* Einheit und Referenzbereich angeben */            
             str = str + "<td><small>" + dataset.kval[i]['unit'] + "</small></td>";
-            str = str + "<td><small>" + dataset.kval[i]['refMin'] + "</small></td>";
+            str = str + "<td><small><span id=\"" + idOfInput + "_refMin\">" + dataset.kval[i]['refMin'] + "</span></small></td>";
             str = str + "<td><small>-</small></td>";
-            str = str + "<td><small>" + dataset.kval[i]['refMax'] + "</small></td></tr>";                                
+            str = str + "<td><small><span id=\"" + idOfInput + "_refMax\">" + dataset.kval[i]['refMax'] + "</span></small></td></tr>";                                
 
         }
         
@@ -186,7 +193,7 @@ function composeCards() {
         /* Administrative Patientendaten als NavBar*/
         var dataset = getPatientDemographics(patient);
         createPatientDemographics(dataset);
-
+        
         /* Patientendatenkarte */
         dataset = getPatientClinicalObservations(observations);    
         var htmlString = createPatientCard(dataset);       
@@ -195,7 +202,7 @@ function composeCards() {
         /* Laborkarte */    
         dataset = getPatientLaboratoryObservations(observations);    
         htmlString = createLabCard(dataset);
-        $("#laboratory-card").html(htmlString);
+        $("#laboratory-card").html(htmlString);        
 
         /* Beschriftung nach eingestellter Sprache */
         actualLanguage = $('#lang-flag').data('actual-lang');
