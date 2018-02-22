@@ -167,64 +167,84 @@ function validatePatientClinicalObservations(dataset) {
  */
 function validatePatientLaboratoryObservations(dataset) {
 
-    /* Folgende IDs müssen belegt sein */
-    var content = [ "hemoglobin", "mcv", "crp", "ferritine", "sTFR", "reticulocytepc", "reticulocytehb", "hematokrit" ];
+    /* Folgende IDs im Dataset müssen belegt sein */    
+    var content = [
+        configuration.defaultReference[0].id,     // Hämoglobin
+        configuration.defaultReference[1].id,     // MCV
+        configuration.defaultReference[2].id,     // CRP
+        configuration.defaultReference[3].id,     // Ferritin
+        configuration.defaultReference[4].id,     // Löslicher Transferrin-Rezeptor
+        configuration.defaultReference[5].id,     // Retikulozyten in Promille
+        configuration.defaultReference[6].id,     // Retikulozyten-Hb
+        configuration.defaultReference[7].id      // Hämatokrit
+    ];
     
     /* Nur falls das Dataset vom Typ und von der ID her passt, dann ... */
     if (dataset.type == 'key-val-ref' && dataset.id == 'labor') {
         
         /* Durchlaufe die Daten und ... */
         for(var i in dataset.kval) {
-            var pos = content.indexOf(dataset.kval[i]['id']);
+            var pos = content.indexOf(dataset.kval[i]['id']),
+                posRef = configuration.defaultReference.findIndex(j => j.id === content[pos]);            
             
             /* ... streiche die vorhandenen IDs aus dem Prüf-Array*/
             content.splice(pos, pos+1);
-
+            
             /* ... falls in einem Datenpaar kein Wert steht, ergänze einen Dummy und passe das dazugehörige Dataset an */
             if (dataset.kval[i]['value'] === "" || dataset.kval[i]['value'] == null) {
                 dataset.kval[i]['value'] = "0";
-                dataset.kval[i]['refMin'] = "-/-";
-                dataset.kval[i]['refMax'] = "-/-";
-                dataset.kval[i]['unit'] = "-/-";
-                dataset.kval[i]['validMin'] = "0";
-                dataset.kval[i]['validMax'] = "0";
+                dataset.kval[i]['refMin'] = typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMin.male : configuration.defaultReference[posRef].refMin;
+                dataset.kval[i]['refMax'] = typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMax.male : configuration.defaultReference[posRef].refMax;
+                dataset.kval[i]['unit'] = configuration.defaultReference[posRef].unit;
+                dataset.kval[i]['validMin'] = configuration.defaultReference[posRef].validMin;
+                dataset.kval[i]['validMax'] = configuration.defaultReference[posRef].validMax;
             }
 
             /* Falls der Referenzbereich fehlt ... */
             if (dataset.kval[i]['refMin'] === "" || dataset.kval[i]['refMin'] == null) {
                 dataset.kval[i]['value'] = "0";
-                dataset.kval[i]['refMin'] = "-/-";
-                dataset.kval[i]['refMax'] = "-/-";
-                dataset.kval[i]['unit'] = "-/-";
-                dataset.kval[i]['validMin'] = "0";
-                dataset.kval[i]['validMax'] = "0";
+                dataset.kval[i]['refMin'] = typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMin.male : configuration.defaultReference[posRef].refMin;
+                dataset.kval[i]['refMax'] = typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMax.male : configuration.defaultReference[posRef].refMax;
+                dataset.kval[i]['unit'] = configuration.defaultReference[posRef].unit;
+                dataset.kval[i]['validMin'] = configuration.defaultReference[posRef].validMin;
+                dataset.kval[i]['validMax'] = configuration.defaultReference[posRef].validMax;
             }
             
             if (dataset.kval[i]['refMax'] === "" || dataset.kval[i]['refMax'] == null) {
                 dataset.kval[i]['value'] = "0";
-                dataset.kval[i]['refMin'] = "-/-";
-                dataset.kval[i]['refMax'] = "-/-";
-                dataset.kval[i]['unit'] = "-/-";
-                dataset.kval[i]['validMin'] = "0";
-                dataset.kval[i]['validMax'] = "0";
+                dataset.kval[i]['refMin'] = typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMin.male : configuration.defaultReference[posRef].refMin;
+                dataset.kval[i]['refMax'] = typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMax.male : configuration.defaultReference[posRef].refMax;
+                dataset.kval[i]['unit'] = configuration.defaultReference[posRef].unit;
+                dataset.kval[i]['validMin'] = configuration.defaultReference[posRef].validMin;
+                dataset.kval[i]['validMax'] = configuration.defaultReference[posRef].validMax;
             }
 
             /* Falls der Validitätsbereich fehlt ... */
             /* ... setze den maximalen Validitätsbereich auf 2 x den maximalen Referenzbereich */
-            if (dataset.kval[i]['validMin'] === "" || dataset.kval[i]['validMin'] == null) {
+            if (dataset.kval[i]['validMax'] === "" || dataset.kval[i]['validMax'] == null) {
                 dataset.kval[i]['validMax'] = 2 * dataset.kval[i]['refMax'];
             }
 
             /* ... setze den minimalen Validitätsbereich auf 0 */
-            if (dataset.kval[i]['validMax'] === "" || dataset.kval[i]['validMax'] == null) {
+            if (dataset.kval[i]['validMin'] === "" || dataset.kval[i]['validMin'] == null) {
                 dataset.kval[i]['validMin'] = 0;
             }
 
         }
-
+        
         /* Ergänze die fehlenden IDs mit einem Dummy-Wert */
-        for(var i = 0; i < content.length; i++) {            
-            dataset.kval.push( { id: content[i], name: content[i], value: '0', refMin: "-/-", refMax: "-/-", unit: "-/-", validMin: '0', validMax: '0' } );
+        for(var i = 0; i < content.length; i++) {
+            var posRef = configuration.defaultReference.findIndex(j => j.id === content[pos]);                      
+            dataset.kval.push( {    
+                                id:         configuration.defaultReference[posRef].id,
+                                name:       configuration.defaultReference[posRef].name,
+                                value:      '0', 
+                                refMin:     typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMin.male : configuration.defaultReference[posRef].refMin,
+                                refMax:     typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMax.male : configuration.defaultReference[posRef].refMax,
+                                unit:       configuration.defaultReference[posRef].unit,
+                                validMin:   configuration.defaultReference[posRef].validMin,
+                                validMax:   configuration.defaultReference[posRef].validMax
+                            } );
         }        
 
         return dataset;
@@ -358,7 +378,7 @@ function getPatientLaboratoryObservations() {
                     id:             "hemoglobin",
                     name:           "Hemoglobin",
                     loinc:          0,
-                    value:          13,
+                    value:          8,
                     refMin:         12.0,
                     refMax:         14.0,
                     unit:           "g/dl",
@@ -369,7 +389,7 @@ function getPatientLaboratoryObservations() {
                     id:             "mcv",
                     name:           "MCV",
                     loinc:          0,
-                    value:          91.0,
+                    value:          99.0,
                     refMin:         86.0,
                     refMax:         96.0,
                     unit:           "fl",
@@ -430,7 +450,18 @@ function getPatientLaboratoryObservations() {
                     unit:           "pg",
                     validMin:       0,
                     validMax:       15
-                }   
+                }/*,
+                {
+                    id:             "hematokrit",
+                    name:           "Hematokrit",
+                    loinc:          0,
+                    value:          35,
+                    refMin:         35,
+                    refMax:         45,
+                    unit:           "%",
+                    validMin:       0,
+                    validMax:       65
+                }  */    
     
             ]
     
