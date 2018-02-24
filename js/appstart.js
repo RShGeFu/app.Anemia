@@ -29,9 +29,10 @@ $(document).ready(function() {
                                                 $("#" + this.id + "_refMin").html(), 
                                                 $("#" + this.id + "_refMax").html(), 
                                                 0, 
-                                                $("#" + this.id + "_refMax").html() * 10 );            
-            /* Entscheidungskriterium setzen */
-            decision.setItem(this.id, this.value, tnr.status);            
+                                                $("#" + this.id + "_refMax").html() * 10 );
+
+            /* Entscheidungskriterium setzen */            
+            decision.setItem(this.id, this.value, tnr.status == 'nv nan' || tnr.status == 'nv nvr' ? null : tnr.status);            
             
             /* Kartenfarbe auf 'verändert' setzen */
             $(".results").css({
@@ -44,12 +45,12 @@ $(document).ready(function() {
         });
         
         /* Patienten- und Ergebniskarten an den Reload-Button hängen */    
-        $("#lab7").click(function () {                
+        $("#lab7").click(function () {                                        
             $(".results").css( {
                 "background-color": "rgb(200, 240, 210)",
                 "transition": "0.5s all ease-in-out"
-            });                
-            window.location.reload();
+            });             
+            window.location.reload(true);
         });
 
         /* Revisualisierung des Fensterinhalts bei Resizing des Fensters, insbesondere der Grafikdarstellung */        
