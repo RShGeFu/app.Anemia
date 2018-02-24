@@ -95,8 +95,8 @@ var decision = (function() {
         ironNeeds:      function() {                            
                             if (valueSet.hasWeight() && valueSet.hasHB()) {     // Wenn Gewicht und Hb verfügbar
                                 
-                                var targetHb1 = valueSet.hemoglobin.value + 1,  // Ziel-Hb-Wert in g/dl
-                                    targetHb2 = valueSet.hemoglobin.value + 2,  // Ziel-Hb-Wert in g/dl
+                                var targetHb1 = Number(valueSet.hemoglobin.value) + 1,  // Ziel-Hb-Wert in g/dl - Typ-Sicherheit wichtig bei USer-Eingaben!
+                                    targetHb2 = Number(valueSet.hemoglobin.value) + 2,  // Ziel-Hb-Wert in g/dl - Typ-Sicherheit wichtig bei USer-Eingaben
                                     ironReserve = 500;                          // Reserveeisen in mg ab einem Gewicht > 35kg
                                 if (valueSet.weight.value < 35) {
                                     ironReserve = 15 * valueSet.weight.value;   // Reserveeisen in mg bis zu einem Gewicht < 35kg
@@ -219,7 +219,6 @@ var decision = (function() {
                             }
                             // dann den BMI als AddOn.
                             valueSet.maths.push(valueSet.bmi());                            
-                            
                         },
 
         /*********************************
