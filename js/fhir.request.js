@@ -130,36 +130,43 @@ var getPatientContext = (function() {
                 
                 if (v[configData.requiredUseTestServer] == 'true') {
                     
-                    return function() {
+                    if (navigator.userAgent.search("Firefox") > 0) {                                        
+                        // Funktioniert mit FireFox - nicht mit Chrome und IE
+                        return function() {
+                        
+                            alert(configData.serverTestBase + " (FHIR): " + configData.serverTestBaseURL);
                     
-                        alert(configData.serverTestBase + " (FHIR): " + configData.serverTestBaseURL);
-                    
-                        // Client initialisieren
-                        var smart = FHIR.client({
-                                serviceUrl:     configData.serverTestBaseURL,
-                                patientId:      v[configData.requiredEncounter]                 
-                            });
-                    
-                        // Daten abrufen - zunächst den Namen eines Patienten
-                        smart.patient.read().then(function(pt) {                    
+                            // Client initialisieren
+                            var smart = FHIR.client({
+                                    serviceUrl:     configData.serverTestBaseURL,
+                                    patientId:      v[configData.requiredEncounter]                 
+                                });
+                        
+                            // Daten abrufen - zunächst den Namen eines Patienten
+                            smart.patient.read().then(function(pt) {                    
                             
-                                smart.patient.api.fetchAll( { type: "Observation"} ).then(function(results) {
+                                    smart.patient.api.fetchAll( { type: "Observation"} ).then(function(results) {
 
-                                    // Patientendaten und Ergebnisse zusammenstellen und visualisieren
-                                    composeCards(pt, results);                                    
-                                    composeResultCards();
+                                        // Patientendaten und Ergebnisse zusammenstellen und visualisieren
+                                        composeCards(pt, results);                                    
+                                        composeResultCards();
+
+                                    }).fail(function(e) {
+                                        alert("No observation found!");                                    
+                                    });
 
                                 }).fail(function(e) {
-                                    alert("No observation found!");                                    
+                                    alert("Patient not found!");
                                 });
 
-                            }).fail(function(e) {
-                                alert("Patient not found!");
-                            });
+                            return "FHIR-Testserver used ...";
+                        }
 
-                        return "FHIR-Testserver used ...";
+                    } else if (navigator.userAgent.search("Chrome")) {
 
-                    }                                     
+                        alert("Please use Mozilla Firefox!");
+
+                    }                                  
 
                 } else {
                     
