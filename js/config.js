@@ -16,7 +16,7 @@ var configuration = {
     
     limitRPI:                           2,           // Grenzwert für den Retikulozytenproduktionsindex
 
-    defaultReference: [ 
+    defaultReference: [                              // Ab hier werden Referenzparameter für USer-Eingaben angegeben
         {                 
             id:             "hemoglobin",
             name:           "Hemoglobin",
