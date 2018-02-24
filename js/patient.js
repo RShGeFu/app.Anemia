@@ -63,7 +63,7 @@ function createPatientCard(dataset) {
             decision.setItem(dataset.kval[i]['id'], dataset.kval[i]['value'], null);            
             
             /* Built der Kartenzeile */
-            idOfInput = "ds_" + dataset.kval[i]['id'];
+            idOfInput = dataset.kval[i]['id'];
             classOfInput = "ds_values";
             str = str + "<tr><th scope=\"row\"><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span></th><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td><td><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></td><td><small>" + dataset.kval[i]['unit'] + "</small></td></tr>";                        
         }
