@@ -5,6 +5,26 @@
 "use strict";
 
 /**
+ * Closure für die gesammelten Observations eines Patient - inhaltlich und zeitlich geordnet für eine weitere Verwendung
+ */
+var observationSet = (function() {
+
+    var obs = [];
+
+    return {        
+        clear:  function() { obs = []; },
+        add:    function(o) { obs.push(o); },
+        get:    function(n) { 
+                    if (n >= 0 && n < obs.length) {
+                        return obs[n]; 
+                    }
+                    return null;
+                }
+    }
+
+})();
+
+/**
  * Funktion für die Validierung von demographischen Patientendaten
  */
 function validatePatientDemographics(dataset) {
@@ -143,18 +163,60 @@ function validatePatientClinicalObservations(dataset) {
  */
  function getPatientClinicalObservations() {
     
-    /* Hier die FHIR-Server-Abfrage - jetzt Testwerte */    
+    /* Wenn Argumente übergeben werden ... */
+    if (arguments.length == 1) {
+        
+        // dann sind es vermutlich Observations...
+        var observations = arguments[0];
+        var weightObs = [],
+            heightObs = [];
 
-    let dataSet = {
+        // ... gehe sie durch ...
+        for(var i = 0; i < observations.length; i++) {            
+            // ... wenn ja...
+            if (observations[i].resourceType === "Observation") {    
+                // ... dann schaue nach, ob es sich um LOINCs und den LOINC-Code 'Körpergewicht' handelt ...
+                // (Ein anderes Code-System wird nicht akzeptiert)
+                if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === '3141-9') {
+                    // ... dann merke Dir die Observation in einem eigenen Array.
+                    weightObs.push(observations[i]);                    
+                }
+                // Verfahre genauso mit der Körpergröße!
+                if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === '8302-2') {
+                    heightObs.push(observations[i]);                    
+                }
+            }
+        }
 
-        type: "key-val",
-        id:   "patient",
-        name: "Patient",
-        lang: "en",
-        kval: [ 
-                { id: "weight", name: "Weight", value: 79.0, unit: "kg" },
-                { id: "height", name: "Height", value: 175,  unit: "cm" },                           
-              ]
+        // Sortiere die Arrays        
+        alert(JSON.stringify(weightObs));
+        alert(JSON.stringify(heightObs));
+        // Setze das Dataset zusammen            
+            var dataSet = {
+
+                type: "key-val",
+                id:   "patient",
+                name: "Patient",
+                lang: "en",
+                kval: [ 
+                        { id: "weight", name: "Weight", value: 70.0, unit: "kg" },
+                        { id: "height", name: "Height", value: 190,  unit: "cm" },                           
+                    ]
+            } 
+
+    } else {    
+
+        var dataSet = {
+
+            type: "key-val",
+            id:   "patient",
+            name: "Patient",
+            lang: "en",
+            kval: [ 
+                    { id: "weight", name: "Weight", value: 79.0, unit: "kg" },
+                    { id: "height", name: "Height", value: 175,  unit: "cm" },                           
+                ]
+        } 
         
     }
 
@@ -168,16 +230,12 @@ function validatePatientClinicalObservations(dataset) {
 function validatePatientLaboratoryObservations(dataset) {
 
     /* Folgende IDs im Dataset müssen belegt sein */    
-    var content = [
-        configuration.defaultReference[0].id,     // Hämoglobin
-        configuration.defaultReference[1].id,     // MCV
-        configuration.defaultReference[2].id,     // CRP
-        configuration.defaultReference[3].id,     // Ferritin
-        configuration.defaultReference[4].id,     // Löslicher Transferrin-Rezeptor
-        configuration.defaultReference[5].id,     // Retikulozyten in Promille
-        configuration.defaultReference[6].id,     // Retikulozyten-Hb
-        configuration.defaultReference[7].id      // Hämatokrit
-    ];
+    var content = [];    
+    for(var i = 0; i < configuration.defaultReference.length; i++) {        
+        if (configuration.defaultReference[i].required) {            
+            content.push(configuration.defaultReference[i]['id']);     // Suchen und Übernehmen der Pflichtparameter aus der Konfiguration            
+        }
+    }
     
     /* Nur falls das Dataset vom Typ und von der ID her passt, dann ... */
     if (dataset.type == 'key-val-ref' && dataset.id == 'labor') {
