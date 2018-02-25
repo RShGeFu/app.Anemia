@@ -145,8 +145,8 @@ var getPatientContext = (function() {
                             // Daten abrufen - zunächst den Namen eines Patienten
                             smart.patient.read().then(function(pt) {                    
                             
-                                    smart.patient.api.fetchAll( { type: "Observation"} ).then(function(results) {
-
+                                    smart.patient.api.fetchAll( { type: "Observation" } ).then(function(results) {
+                                        
                                         // Patientendaten und Ergebnisse zusammenstellen und visualisieren
                                         composeCards(pt, results);                                    
                                         composeResultCards();
