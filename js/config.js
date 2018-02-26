@@ -20,7 +20,7 @@ var configuration = {
         {                 
             id:             "hemoglobin",
             name:           "Hemoglobin",
-            loinc:          0,
+            loinc:          "718-7",
             required:       true,
             value:          null,
             refMin:         {
@@ -40,7 +40,7 @@ var configuration = {
         {            
             id:             "mcv",
             name:           "MCV",
-            loinc:          0,
+            loinc:          "787-2",
             required:       true,
             value:          null,
             refMin:         78.0,
@@ -52,7 +52,7 @@ var configuration = {
         {            
             id:             "crp",
             name:           "CRP",
-            loinc:          0,
+            loinc:          "1988-5",
             required:       true,
             value:          null,
             refMin:         0.0,
@@ -64,7 +64,7 @@ var configuration = {
         {            
             id:             "ferritine",
             name:           "Ferritine",
-            loinc:          0,
+            loinc:          "2276-4",
             required:       true,
             value:          null,
             refMin:         {
@@ -84,7 +84,7 @@ var configuration = {
         {            
             id:             "sTFR",
             name:           "sol Transf Recep",
-            loinc:          0,
+            loinc:          "30248-9",
             required:       true,
             value:          null,
             refMin:         0.83,
@@ -96,19 +96,19 @@ var configuration = {
         {            
             id:             "reticulocytepc",
             name:           "Reticulocyte",
-            loinc:          0,
+            loinc:          "4679-7",
             required:       true,
             value:          null,
             refMin:         7.0,
             refMax:         15.0,
-            unit:           "%o",
+            unit:           "%",
             validMin:       1,
             validMax:       80
         },
         {            
             id:             "reticulocytehb",
             name:           "Reticuloyte Hb",
-            loinc:          0,
+            loinc:          "42810-2",
             required:       true,
             value:          null,
             refMin:         28,
@@ -120,7 +120,7 @@ var configuration = {
         {
             id:             "hematokrit",
             name:           "Hematokrit",
-            loinc:          0,
+            loinc:          "20570-8",
             required:       true,
             value:          null,
             refMin:         {
@@ -138,7 +138,7 @@ var configuration = {
         {
             id:             "vitb12",
             name:           "Vitamine B12",
-            loinc:          0,
+            loinc:          "2132-9",
             required:       false,
             value:          null,
             refMin:         310,
@@ -152,7 +152,7 @@ var configuration = {
         {
             id:             "folicAcid",
             name:           "Folic Acid",
-            loinc:          0,
+            loinc:          "2284-8",
             required:       false,
             value:          null,
             refMin:         2.0,
