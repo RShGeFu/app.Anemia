@@ -188,21 +188,43 @@ function validatePatientClinicalObservations(dataset) {
             }
         }
 
-        // Sortiere die Arrays        
-        alert(JSON.stringify(weightObs));
-        alert(JSON.stringify(heightObs));
-        // Setze das Dataset zusammen            
-            var dataSet = {
+        // Sortiere die Arrays
+        weightObs.sort(function(a, b) {
+            var d1 = new Date(a.effectiveDateTime),
+                d2 = new Date(b.effectiveDateTime);
+            return d2.valueOf() - d1.valueOf();
+        });
+        
+        heightObs.sort(function(a, b) {
+            var d1 = new Date(a.effectiveDateTime),
+                d2 = new Date(b.effectiveDateTime);
+            return d2.valueOf() - d1.valueOf();
+        });
+        
+        // Füge die Arrays den Patientenbeboachtungsdaten hinzu
+        observationSet.add(weightObs);
+        observationSet.add(heightObs);
+        
+        // Setze das Dataset zusammen - und zwar nehme für Größe und Gewicht den jeweils neuesten Wert der Observations           
+        var dataSet = {
 
-                type: "key-val",
-                id:   "patient",
-                name: "Patient",
-                lang: "en",
-                kval: [ 
-                        { id: "weight", name: "Weight", value: 70.0, unit: "kg" },
-                        { id: "height", name: "Height", value: 190,  unit: "cm" },                           
-                    ]
-            } 
+            type: "key-val",
+            id:   "patient",
+            name: "Patient",
+            lang: "en",
+            kval: [ 
+                    {   id:     "weight",
+                        name:   "Weight",
+                        value:  weightObs[0] != null ? weightObs[0].valueQuantity.value : 0, 
+                        unit:   weightObs[0] != null ? weightObs[0].valueQuantity.unit : ""
+                    },
+                    {   id:     "height", 
+                        name:   "Height", 
+                        value:  heightObs[0] != null ? heightObs[0].valueQuantity.value : 0,
+                        unit:   heightObs[0] != null ? heightObs[0].valueQuantity.unit : ""
+                    }
+                ]
+            }        
 
     } else {    
 
@@ -213,8 +235,8 @@ function validatePatientClinicalObservations(dataset) {
             name: "Patient",
             lang: "en",
             kval: [ 
-                    { id: "weight", name: "Weight", value: 79.0, unit: "kg" },
-                    { id: "height", name: "Height", value: 175,  unit: "cm" },                           
+                    { id: "weight", name: "Weight", value: 0, unit: "" },
+                    { id: "height", name: "Height", value: 0, unit: "" },                           
                 ]
         } 
         
