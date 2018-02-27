@@ -63,7 +63,7 @@ function createPatientCard(dataset) {
             decision.setItem(dataset.kval[i]['id'], dataset.kval[i]['value'], null);            
             
             /* Built der Kartenzeile */
-            idOfInput = dataset.kval[i]['id'];
+            idOfInput = "d_" + dataset.kval[i]['id'];
             classOfInput = "ds_values";
             str = str + "<tr><th scope=\"row\"><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span></th><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td><td><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></td><td><small>" + dataset.kval[i]['unit'] + "</small></td></tr>";                        
         }
@@ -158,7 +158,7 @@ function createLabCard(dataset) {
             */
             decision.setItem(dataset.kval[i]['id'], dataset.kval[i]['value'], inNormRange.status);
             
-            idOfInput = dataset.kval[i]['id'];
+            idOfInput = "d_" + dataset.kval[i]['id'];
             classOfInput = "ds_values";
             str = str + "<td>" + hstr + "</td><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td></th><td><b><i><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></i></b></td>";            
             /* Anhängen der Lage relativ zum Referenzbereich noch notwendig */
@@ -186,7 +186,7 @@ function createLabCard(dataset) {
 function composeCards() {
     
     if (arguments.length == 2) {
-
+        
         var patient = arguments[0],
             observations = arguments[1];
         
@@ -195,9 +195,9 @@ function composeCards() {
         createPatientDemographics(dataset);
         
         /* Patientendatenkarte */
-        dataset = getPatientClinicalObservations(observations);    
+        dataset = getPatientClinicalObservations(observations);        
         var htmlString = createPatientCard(dataset);       
-        $("#patient-card").html(htmlString);
+        $("#patient-card").html(htmlString);        
 
         /* Laborkarte */    
         dataset = getPatientLaboratoryObservations(observations);    
@@ -209,7 +209,7 @@ function composeCards() {
         translateLabels(actualLanguage);       
 
     } else {
-        alert(Object.getOwnPropertyNames(arguments[1]));
+
         /* Administrative Patientendaten als NavBar*/
         var dataset = getPatientDemographics();
         createPatientDemographics(dataset);

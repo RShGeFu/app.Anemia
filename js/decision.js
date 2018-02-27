@@ -93,14 +93,17 @@ var decision = (function() {
         /* Berechnungsfunktionen für Werte, die sich aus den gegeben Labordaten ergeben */
         // Eisenbedarf...
         ironNeeds:      function() {                            
+
                             if (valueSet.hasWeight() && valueSet.hasHB()) {     // Wenn Gewicht und Hb verfügbar
                                 
                                 var targetHb1 = Number(valueSet.hemoglobin.value) + 1,  // Ziel-Hb-Wert in g/dl - Typ-Sicherheit wichtig bei USer-Eingaben!
                                     targetHb2 = Number(valueSet.hemoglobin.value) + 2,  // Ziel-Hb-Wert in g/dl - Typ-Sicherheit wichtig bei USer-Eingaben
                                     ironReserve = 500;                          // Reserveeisen in mg ab einem Gewicht > 35kg
+                                    
                                 if (valueSet.weight.value < 35) {
                                     ironReserve = 15 * valueSet.weight.value;   // Reserveeisen in mg bis zu einem Gewicht < 35kg
-                                }                                
+                                }
+                                
                                 return {
                                     target1: function() { return targetHb1; },
                                     target2: function() { return targetHb2; },
@@ -109,6 +112,7 @@ var decision = (function() {
                                 }
                             
                             }   
+
                             return 0;
                         },
 
@@ -194,14 +198,14 @@ var decision = (function() {
                             [4]: Für den Thomas-Plot gültigen Referenzwert des Transferrin-Rezeptor-Ferritin-Index
                             [5]: BMI
                             */
-
+                            
                             // Beginn Zusammenstellen: Zuerst den Eisenbedarf...
                             valueSet.maths.push(valueSet.ironNeeds());                            
                             // dann den Retikulozytenreprodultionsindex...
                             valueSet.maths.push(valueSet.rpi());
                             // dann den Transferrin-Rezeptor-Ferritin-Index
                             valueSet.maths.push(valueSet.tfrFIndex());
-                            // dann den Retikulozyten-Hb, je nach Vorhandensein ...
+                            // dann den Retikulozyten-Hb, je nach Vorhandensein ...                            
                             if (valueSet.hasReticulocHb()) {
                                 valueSet.maths.push(valueSet.reticulocytehb.value);
                             } else {
@@ -386,8 +390,9 @@ var decision = (function() {
                         },
     
         /* Führt den Entscheidungs- und Berechnungsprozess durch und gibt die Ergebnisstruktur zurück */        
-        result:         function() {                                                        
-                            valueSet.calculateAll();                            
+        result:         function() {                            
+
+                            valueSet.calculateAll();                          
                             valueSet.executeDecision();
                             
                             return {
@@ -395,6 +400,7 @@ var decision = (function() {
                                 recommends: valueSet.recommends,
                                 maths:      valueSet.maths
                             }
+
                         }
     };
 
