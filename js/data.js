@@ -158,6 +158,7 @@ function validatePatientClinicalObservations(dataset) {
     return null;
 
 }
+
 /**
  * Funktion für die Lieferung von klinischen Patientendaten
  */
@@ -166,23 +167,32 @@ function validatePatientClinicalObservations(dataset) {
     /* Wenn Argumente übergeben werden ... */
     if (arguments.length == 1) {
         
-        // dann sind es vermutlich Observations...
+        // dann sind es vermutlich Observations... (je nach Abfrage: FHIR.client oder $ajax.GET!!)
         var observations = arguments[0];
         var weightObs = [],
             heightObs = [];
 
+        // ... wenn es aber ein Bundle ist, dann ziehe die Observations heraus...
+        if (observations.resourceType === "Bundle") {
+            let extract = [];
+            for(var i = 0; i < observations.entry.length; i++) {
+                extract.push(observations.entry[i].resource);
+            }            
+            observations = extract;
+        }
+        
         // ... gehe sie durch ...
         for(var i = 0; i < observations.length; i++) {            
-            // ... wenn ja...
-            if (observations[i].resourceType === "Observation") {    
+            // ... wenn ja...            
+            if (observations[i].resourceType === "Observation") {                    
                 // ... dann schaue nach, ob es sich um LOINCs und den LOINC-Code 'Körpergewicht' handelt ...
                 // (Ein anderes Code-System wird nicht akzeptiert)
                 if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === '3141-9') {
-                    // ... dann merke Dir die Observation in einem eigenen Array.
+                    // ... dann merke Dir die Observation in einem eigenen Array.                    
                     weightObs.push(observations[i]);                    
                 }
                 // Verfahre genauso mit der Körpergröße!
-                if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === '8302-2') {
+                if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === '8302-2') {                                        
                     heightObs.push(observations[i]);                    
                 }
             }
