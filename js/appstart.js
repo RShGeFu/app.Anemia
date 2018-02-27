@@ -10,6 +10,7 @@
  * 2. Den Reload-Button funktional machen
  * 3. Die Visualisierung des UI durchführen
  */
+
 $(document).ready(function() {
     
     /* Patientenkontext herstellen, je nach URL-Parameter */    
@@ -20,8 +21,8 @@ $(document).ready(function() {
         
         /* Patientenkontext ausführen */
         alert(pC());        
-
-        /* Reaktion auf Werte-Änderungen durch den User an die Input-Elemente einhängen */
+        
+        /* Reaktion auf Werte-Änderungen durch den User an die Input-Elemente einhängen */        
         $(".ds_values").change(function() {
             
             /* Referenzbereich abgreifen */        
@@ -39,7 +40,12 @@ $(document).ready(function() {
                                 "background-color": "#ffbfbf",
                                 "transition": "0.5s all ease-in-out"
             });
-            
+            /* Farbe des veränderten Input-Feldes auf Rot setzen */
+            $(this).css({
+                "background-color": "#ffbfbf",
+                "transition": "0.5s all ease-in-out"
+            });
+                
             /* Neu entscheiden */
             composeResultCards();            
         });
