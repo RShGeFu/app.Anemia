@@ -54,17 +54,34 @@ function getUrlParameter(sParam)
     }
 
 /**
- * Hilfsfunktion, um den Patientennamen aus der Patienten-Resource zu extrahieren
+ * Callback-Funktion für die Reaktion auf User-Eingaben, nachdem die Patientendaten geladen sind und vom
+ * User zu weiteren diagnostischen Zwecken modifiziert werden können
  */
-function getPatientName (pt) {
-    if (pt.name) {
-      var names = pt.name.map(function(name) {
-        return name.given.join(" ") + " " + name.family.join(" ");
-      });
-      return names.join(" / ")
-    } else {
-      return "anonymous";
-    }
+function reactToUserInput() {
+            
+    /* Referenzbereich abgreifen */                    
+    var tnr = testNormalAndValidRange(  this.value, 
+                                        $("#" + this.id + "_refMin").html(), 
+                                        $("#" + this.id + "_refMax").html(), 
+                                        0, 
+                                        $("#" + this.id + "_refMax").html() * 10 );
+
+    /* Entscheidungskriterium setzen */            
+    decision.setItem(this.id, this.value, tnr.status == 'nv nan' || tnr.status == 'nv nvr' ? null : tnr.status);            
+    
+    /* Kartenfarbe auf 'verändert' setzen */
+    $(".results").css({
+                        "background-color": "#ffbfbf",
+                        "transition": "0.5s all ease-in-out"
+    });
+    /* Farbe des veränderten Input-Feldes auf Rot setzen */
+    $(this).css({
+        "background-color": "#ffbfbf",
+        "transition": "0.5s all ease-in-out"
+    });
+    
+    /* Neu entscheiden */
+    composeResultCards();            
 }
 
 /**
@@ -151,6 +168,9 @@ var getPatientContext = (function() {
                                         composeCards(pt, results);                                    
                                         composeResultCards();
 
+                                        /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
+                                        $(".ds_values_gf").change(reactToUserInput);                                                                                       
+                                        
                                     }).fail(function(e) {
                                         alert("No observation found!");                                    
                                     });
@@ -293,7 +313,10 @@ var getPatientContext = (function() {
 
                                         // Patientendaten und Ergebnisse zusammenstellen und visualisieren
                                         composeCards(pt, results);                                           
-                                        composeResultCards();                        
+                                        composeResultCards();     
+                                        
+                                        /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
+                                        $(".ds_values_gf").change(reactToUserInput);                                                                                       
                                         
                                     }).fail(function(e) {
                                         alert("No observation found!");
