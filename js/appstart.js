@@ -21,35 +21,7 @@ $(document).ready(function() {
         
         /* Patientenkontext ausführen */
         alert(pC());        
-        
-        /* Reaktion auf Werte-Änderungen durch den User an die Input-Elemente einhängen */        
-        $(".ds_values").change(function() {
-            
-            /* Referenzbereich abgreifen */        
-            var tnr = testNormalAndValidRange(  this.value, 
-                                                $("#" + this.id + "_refMin").html(), 
-                                                $("#" + this.id + "_refMax").html(), 
-                                                0, 
-                                                $("#" + this.id + "_refMax").html() * 10 );
-
-            /* Entscheidungskriterium setzen */            
-            decision.setItem(this.id, this.value, tnr.status == 'nv nan' || tnr.status == 'nv nvr' ? null : tnr.status);            
-            
-            /* Kartenfarbe auf 'verändert' setzen */
-            $(".results").css({
-                                "background-color": "#ffbfbf",
-                                "transition": "0.5s all ease-in-out"
-            });
-            /* Farbe des veränderten Input-Feldes auf Rot setzen */
-            $(this).css({
-                "background-color": "#ffbfbf",
-                "transition": "0.5s all ease-in-out"
-            });
-                
-            /* Neu entscheiden */
-            composeResultCards();            
-        });
-        
+     
         /* Patienten- und Ergebniskarten an den Reload-Button hängen */    
         $("#lab7").click(function () {                                        
             $(".results").css( {
