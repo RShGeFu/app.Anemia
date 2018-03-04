@@ -20,7 +20,7 @@ var configuration = {
         {                 
             id:             "hemoglobin",
             name:           "Hemoglobin",
-            loinc:          "718-7",
+            loinc:          "789-8",
             required:       true,
             value:          null,
             refMin:         {
@@ -165,3 +165,6 @@ var configuration = {
     ]
 
 }
+
+// Konfiguration für Zugriffe sperren und unveränderlich machen
+//Object.freeze(configuration);
