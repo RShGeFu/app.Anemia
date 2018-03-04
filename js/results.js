@@ -52,6 +52,9 @@ function createIronPlotCard(res, width) {
     return s;
 }
 
+/**
+ * Funktion zur Berechnung der Ergebniskarten
+ */
 function composeResultCards() {
 
     /* Clinical Decision ausführen und Ergebnisstruktur speichern */    
