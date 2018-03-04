@@ -185,12 +185,13 @@ function createLabCard(dataset) {
  */
 function composeCards() {
     
+    // Nur wenn Patientendaten und Observations übergeben werden, dann ...
     if (arguments.length == 2) {
         
-        var patient = arguments[0],
+        var patient = arguments[0],         // Zur besseren Lesbarkeit des Codes ...
             observations = arguments[1];
-        
-        /* Administrative Patientendaten als NavBar*/
+            
+        /* Administrative Patientendaten als NavBar */
         var dataset = getPatientDemographics(patient);
         createPatientDemographics(dataset);
         
@@ -199,7 +200,7 @@ function composeCards() {
         var htmlString = createPatientCard(dataset);       
         $("#patient-card").html(htmlString);        
 
-        /* Laborkarte */    
+        /* Laborkarte */  
         dataset = getPatientLaboratoryObservations(observations);    
         htmlString = createLabCard(dataset);
         $("#laboratory-card").html(htmlString);        
@@ -209,7 +210,10 @@ function composeCards() {
         translateLabels(actualLanguage);       
 
     } else {
-
+        
+        // ... ansonsten werden die Funktionen ohne Parameter aufgerufen und liefern Testdatensätze zurück, mit denen
+        // der User 'spielen' kann.
+        
         /* Administrative Patientendaten als NavBar*/
         var dataset = getPatientDemographics();
         createPatientDemographics(dataset);
