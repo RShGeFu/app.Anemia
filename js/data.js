@@ -64,9 +64,11 @@ function validatePatientDemographics(dataset) {
  * Funktion für die Lieferung von demographischen Patientendaten
  */
 function getPatientDemographics() {
-
+    
+    var dataSet = { };    
+    
     // Wenn Parameter übergeben werden, dann ...
-    if (arguments.length == 1) {
+    if (arguments.length == 1) { 
         
         // ... wenn der erste Parameter eine Ressource 'Patient', dann...
         if (arguments[0].resourceType.toString() === "Patient") {
@@ -74,7 +76,7 @@ function getPatientDemographics() {
             // ... daraus den demographischen Datensatz zusammenstellen
             var patient = arguments[0];
             
-            var dataSet = {
+            dataSet = {
 
                 type: "key-val",
                 id:   "person",
@@ -93,11 +95,11 @@ function getPatientDemographics() {
             }
             
         }
-
-    // ... ansonsten Testdatensatz zusammenstellen
+    
     } else {
         
-        var dataSet = {
+        // ansonsten liefere: Allgemeiner Testdatensatz - wird übergeben falls keine Parameter an die Funktion übergeben werden
+        dataSet = {
 
             type: "key-val",
             id:   "person",
@@ -109,7 +111,7 @@ function getPatientDemographics() {
                     { id: "perfirstname", val: "Test app" },
                     { id: "perlastname", val: "Test Anemia" },
                     { id: "perbirthday", val: "1900-01-01" },
-                    { id: "permf", val: "female" },
+                    { id: "permf", val: "male" },
                     { id: "perencid", val: "000000000" },
                     { id: "perdiagnose", val: [ "Pneumonia", "Lungembolism"] }
                   ]
@@ -164,6 +166,8 @@ function validatePatientClinicalObservations(dataset) {
  */
  function getPatientClinicalObservations() {
     
+    var dataSet = { };
+
     /* Wenn Argumente übergeben werden ... */
     if (arguments.length == 1) {
         
@@ -216,7 +220,7 @@ function validatePatientClinicalObservations(dataset) {
         observationSet.add(heightObs);
         
         // Setze das Dataset zusammen - und zwar nehme für Größe und Gewicht den jeweils neuesten Wert der Observations           
-        var dataSet = {
+        dataSet = {
 
             type: "key-val",
             id:   "patient",
@@ -237,16 +241,17 @@ function validatePatientClinicalObservations(dataset) {
             }        
 
     } else {    
-
-        var dataSet = {
+        
+        // ansonsten liefere: Allgemeiner Testdatensatz - wird übergeben falls keine Parameter an die Funktion übergeben werden
+        dataSet = {
 
             type: "key-val",
             id:   "patient",
             name: "Patient",
             lang: "en",
             kval: [ 
-                    { id: "weight", name: "Weight", value: 0, unit: "" },
-                    { id: "height", name: "Height", value: 0, unit: "" },                           
+                    { id: "weight", name: "Weight", value: 75, unit: "kg (test)" },
+                    { id: "height", name: "Height", value: 175, unit: "cm (test)" },                           
                 ]
         } 
         
@@ -349,115 +354,56 @@ function validatePatientLaboratoryObservations(dataset) {
  */
 function getPatientLaboratoryObservations() {
     
-    /* Hier die FHIR-Server-Abfrage - jetzt Testwerte */    
-    var pContext = "test"; //getPatientContext();
-    
-    /* Testdatensets */    
-    if (typeof pContext === "function") {
-    
-    var dataSet = {
+    var dataSet = { };
 
-        type: "key-val-ref",
-        id:   "labor",
-        name: "Labor",
-        lang: "en",
-        kval: [
-            {            
-                id:             "hemoglobin",
-                name:           "Hemoglobin",
-                loinc:          0,
-                value:          7.5,
-                refMin:         12.0,
-                refMax:         14.0,
-                unit:           "g/dl",
-                validMin:       2.5,
-                validMax:       20
-            },
-            {            
-                id:             "mcv",
-                name:           "MCV",
-                loinc:          0,
-                value:          78.0,
-                refMin:         86.0,
-                refMax:         96.0,
-                unit:           "fl",
-                validMin:       40.0,
-                validMax:       150
-            },
-            {            
-                id:             "crp",
-                name:           "CRP",
-                loinc:          0,
-                value:          3.5,
-                refMin:         0.0,
-                refMax:         5.0,
-                unit:           "g/dl",
-                validMin:       0,
-                validMax:       600
-            },
-            {            
-                id:             "ferritine",
-                name:           "Ferritine",
-                loinc:          0,
-                value:          20,
-                refMin:         3.0,
-                refMax:         300.0,
-                unit:           "µg/dl",
-                validMin:       0,
-                validMax:       2000
-            },
-            {            
-                id:             "sTFR",
-                name:           "sol Transf Recep",
-                loinc:          0,
-                value:          3.0,
-                refMin:         2.0,
-                refMax:         5.0,
-                unit:           "µg/dl",
-                validMin:       0,
-                validMax:       50
-            },
-            {            
-                id:             "reticulocytepc",
-                name:           "Reticulocyte",
-                loinc:          0,
-                value:          3.0,
-                refMin:         2.0,
-                refMax:         5.0,
-                unit:           "%",
-                validMin:       0,
-                validMax:       50
-            },
-            {            
-                id:             "reticulocytehb",
-                name:           "Reticuloyte Hb",
-                loinc:          0,
-                value:          28,
-                refMin:         26,
-                refMax:         30,
-                unit:           "pg",
-                validMin:       0,
-                validMax:       60
-            },
-            {
-                id:             "hematokrit",
-                name:           "Hematokrit",
-                loinc:          0,
-                value:          40,
-                refMin:         35,
-                refMax:         45,
-                unit:           "%",
-                validMin:       0,
-                validMax:       65
-            }
-
-        ]
-
-    } 
-    
-    } else {
+    /* Wenn Argumente übergeben werden ... */
+    if (arguments.length == 1) {
+         
+        // dann sind es vermutlich Observations... (je nach Abfrage: FHIR.client oder $ajax.GET!!)
+        var observations = arguments[0],
+            labValues = [];
+        // ... lege für die einzelnen, in der 'configuration' angelegten Observations (je nach LOINC) je ein Merkfeld an ...
+        for(var i = 0; i < configuration.defaultReference.length; i++) {
+            labValues[configuration.defaultReference[i].loinc] = [];
+        }        
         
-        var dataSet = {
+        // ... wenn es sich um ein übergebenes Bundle handelt, dann ziehe die Observations heraus...
+        if (observations.resourceType === "Bundle") {
+            let extract = [];
+            for(var i = 0; i < observations.entry.length; i++) {
+                extract.push(observations.entry[i].resource);
+            }            
+            observations = extract;
+        } 
+        
+        // ... gehe dann die Observations durch ...
+        for(var i = 0; i < observations.length; i++) {            
+            // ... wenn es tatsächlich eine Observation ist (nochmals eine Datenvalidierung!)...            
+            if (observations[i].resourceType === "Observation") {      
+                // ... dann schaue nach, ob es sich um LOINCs und den LOINC-Code des in der Konfiguration festgelegt Laborwertes handelt ...
+                // (Ein anderes Code-System wird nicht akzeptiert)                
+                for(var j = 0; j < configuration.defaultReference.length; j++) {                    
+                    if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === configuration.defaultReference[j].loinc) {                        
+                        // ... dann merke Dir die Observation in dem eigens angelegten Array
+                        labValues[configuration.defaultReference[j].loinc].push(observations[i]);                        
+                    }
+                }
+            }
+        }
+        
+        for(var i = 0; i < configuration.defaultReference.length; i++) {
+            // ... sortiere sie ...        
+            labValues[configuration.defaultReference[i].loinc].sort(function(a, b) {
+                var d1 = new Date(a.meta.lastUpdated),
+                    d2 = new Date(b.meta.lastUpdated);
+                return d2.valueOf() - d1.valueOf();
+            });
+            // ... und füge das Array den Patientenbeboachtungsdaten hinzu
+            observationSet.add(labValues[configuration.defaultReference[i].loinc]);
+        }            
+        
+        /* Noch Testdatensets - muß noch an die Observations angepasst werden!! */    
+        dataSet = {
 
             type: "key-val-ref",
             id:   "labor",
@@ -466,9 +412,8 @@ function getPatientLaboratoryObservations() {
             kval: [
                 {            
                     id:             "hemoglobin",
-                    name:           "Hemoglobin",
-                    loinc:          0,
-                    value:          8,
+                    name:           "Hemoglobin",                    
+                    value:          7.5,
                     refMin:         12.0,
                     refMax:         14.0,
                     unit:           "g/dl",
@@ -477,9 +422,8 @@ function getPatientLaboratoryObservations() {
                 },
                 {            
                     id:             "mcv",
-                    name:           "MCV",
-                    loinc:          0,
-                    value:          99.0,
+                    name:           "MCV",                    
+                    value:          78.0,
                     refMin:         86.0,
                     refMax:         96.0,
                     unit:           "fl",
@@ -488,8 +432,7 @@ function getPatientLaboratoryObservations() {
                 },
                 {            
                     id:             "crp",
-                    name:           "CRP",
-                    loinc:          0,
+                    name:           "CRP",                    
                     value:          3.5,
                     refMin:         0.0,
                     refMax:         5.0,
@@ -499,9 +442,8 @@ function getPatientLaboratoryObservations() {
                 },
                 {            
                     id:             "ferritine",
-                    name:           "Ferritine",
-                    loinc:          0,
-                    value:          2,
+                    name:           "Ferritine",                    
+                    value:          20,
                     refMin:         3.0,
                     refMax:         300.0,
                     unit:           "µg/dl",
@@ -510,9 +452,8 @@ function getPatientLaboratoryObservations() {
                 },
                 {            
                     id:             "sTFR",
-                    name:           "sol Transf Recep",
-                    loinc:          0,
-                    value:          8.0,
+                    name:           "sol Transf Recep",                
+                    value:          3.0,
                     refMin:         2.0,
                     refMax:         5.0,
                     unit:           "µg/dl",
@@ -521,9 +462,8 @@ function getPatientLaboratoryObservations() {
                 },
                 {            
                     id:             "reticulocytepc",
-                    name:           "Reticulocyte",
-                    loinc:          0,
-                    value:          1.0,
+                    name:           "Reticulocyte",                    
+                    value:          3.0,
                     refMin:         2.0,
                     refMax:         5.0,
                     unit:           "%",
@@ -533,25 +473,118 @@ function getPatientLaboratoryObservations() {
                 {            
                     id:             "reticulocytehb",
                     name:           "Reticuloyte Hb",
-                    loinc:          0,
-                    value:          6.0,
-                    refMin:         2.0,
-                    refMax:         5.0,
+                    value:          28,
+                    refMin:         26,
+                    refMax:         30,
                     unit:           "pg",
                     validMin:       0,
-                    validMax:       15
-                }/*,
+                    validMax:       60
+                },
                 {
                     id:             "hematokrit",
                     name:           "Hematokrit",
-                    loinc:          0,
-                    value:          35,
+                    value:          40,
                     refMin:         35,
                     refMax:         45,
                     unit:           "%",
                     validMin:       0,
                     validMax:       65
-                }  */    
+                }
+
+            ]
+
+        } 
+    
+    } else {
+        
+        // ansonsten liefere: Allgemeine Testdatensatz - wird übergeben falls keine Parameter an die Funktion übergeben werden  
+        dataSet = {
+
+            type: "key-val-ref",
+            id:   "labor",
+            name: "Labor",
+            lang: "en",
+            kval: [
+                {            
+                    id:             "hemoglobin",
+                    name:           "Hemoglobin",                    
+                    value:          13.0,
+                    refMin:         12.0,
+                    refMax:         14.0,
+                    unit:           "g/dl",
+                    validMin:       2.5,
+                    validMax:       20
+                },
+                {            
+                    id:             "mcv",
+                    name:           "MCV",
+                    value:          90.0,
+                    refMin:         86.0,
+                    refMax:         96.0,
+                    unit:           "fl",
+                    validMin:       40.0,
+                    validMax:       150.0
+                },
+                {            
+                    id:             "crp",
+                    name:           "CRP",
+                    value:          3.5,
+                    refMin:         0.001,
+                    refMax:         5.0,
+                    unit:           "g/dl",
+                    validMin:       0.001,
+                    validMax:       600
+                },
+                {            
+                    id:             "ferritine",
+                    name:           "Ferritine",
+                    value:          20.0,
+                    refMin:         3.0,
+                    refMax:         300.0,
+                    unit:           "µg/dl",
+                    validMin:       0.001,
+                    validMax:       7000.0
+                },
+                {            
+                    id:             "sTFR",
+                    name:           "sol Transf Recep",
+                    value:          3.0,
+                    refMin:         2.0,
+                    refMax:         5.0,
+                    unit:           "µg/dl",
+                    validMin:       0.001,
+                    validMax:       25.0
+                },
+                {            
+                    id:             "reticulocytepc",
+                    name:           "Reticulocyte",
+                    value:          3.0,
+                    refMin:         2.0,
+                    refMax:         5.0,
+                    unit:           "%",
+                    validMin:       0.001,
+                    validMax:       20.0
+                },
+                {            
+                    id:             "reticulocytehb",
+                    name:           "Reticuloyte Hb",
+                    value:          28.0,
+                    refMin:         26.0,
+                    refMax:         30.0,
+                    unit:           "pg",
+                    validMin:       1,
+                    validMax:       60.0
+                },
+                {
+                    id:             "hematokrit",
+                    name:           "Hematokrit",
+                    value:          36,
+                    refMin:         35,
+                    refMax:         45,
+                    unit:           "%",
+                    validMin:       0.001,
+                    validMax:       65
+                }
     
             ]
     
