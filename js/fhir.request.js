@@ -161,11 +161,11 @@ var getPatientContext = (function() {
                         
                             // Daten abrufen - zunächst den Namen eines Patienten
                             smart.patient.read().then(function(pt) {                    
-                            
+                                    
                                     smart.patient.api.fetchAll( { type: "Observation" } ).then(function(results) {
-                                        
+                                    
                                         // Patientendaten und Ergebnisse zusammenstellen und visualisieren
-                                        composeCards(pt, results);                                    
+                                        composeCards(pt, results);                                   
                                         composeResultCards();
 
                                         /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
@@ -176,7 +176,12 @@ var getPatientContext = (function() {
                                     });
 
                                 }).fail(function(e) {
-                                    alert("Patient not found!");
+                                    alert(e + " - Patient not found! Starting with test data ...");
+                                    composeCards();                                                                       
+                                    composeResultCards();
+
+                                    /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
+                                    $(".ds_values_gf").change(reactToUserInput);                                                                                
                                 });
 
                             return "FHIR-Testserver used ...";
