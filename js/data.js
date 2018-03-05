@@ -189,9 +189,13 @@ function validatePatientClinicalObservations(dataset) {
         for(var i = 0; i < observations.length; i++) {            
             // ... wenn ja...            
             if (observations[i].resourceType === "Observation") {                    
-                // ... dann schaue nach, ob es sich um LOINCs und den LOINC-Code 'Körpergewicht' handelt ...
+                // ... dann schaue nach, ob es sich um LOINCs und den LOINC-Code 'Körpergewicht' (zwei Codes!) handelt ...
                 // (Ein anderes Code-System wird nicht akzeptiert)
                 if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === '3141-9') {
+                    // ... dann merke Dir die Observation in einem eigenen Array.                    
+                    weightObs.push(observations[i]);                    
+                }
+                if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === '29463-7') {
                     // ... dann merke Dir die Observation in einem eigenen Array.                    
                     weightObs.push(observations[i]);                    
                 }
@@ -202,16 +206,16 @@ function validatePatientClinicalObservations(dataset) {
             }
         }
 
-        // Sortiere die Arrays
+        // Sortiere die Arrays - zeitlich am besten mit 'effectiveDateTime', in zweiter Linie mit 'meta.lastUpdate' ...
         weightObs.sort(function(a, b) {
-            var d1 = new Date(a.effectiveDateTime),
-                d2 = new Date(b.effectiveDateTime);
+            var d1 = new Date(a.effectiveDateTime === 'undefined' ? a.meta.lastUpdated : a.effectiveDateTime),
+                d2 = new Date(b.effectiveDateTime === 'undefined' ? b.meta.lastUpdated : b.effectiveDateTime);
             return d2.valueOf() - d1.valueOf();
         });
         
         heightObs.sort(function(a, b) {
-            var d1 = new Date(a.effectiveDateTime),
-                d2 = new Date(b.effectiveDateTime);
+            var d1 = new Date(a.effectiveDateTime === 'undefined' ? a.meta.lastUpdated : a.effectiveDateTime),
+                d2 = new Date(b.effectiveDateTime === 'undefined' ? b.meta.lastUpdated : b.effectiveDateTime);
             return d2.valueOf() - d1.valueOf();
         });
         
@@ -277,7 +281,7 @@ function validatePatientLaboratoryObservations(dataset) {
     /* Nur falls das Dataset vom Typ und von der ID her passt, dann ... */
     if (dataset.type == 'key-val-ref' && dataset.id == 'labor') {
         
-        /* Durchlaufe die Daten und ... */
+        /* Durchlaufe die Daten und ... */        
         for(var i in dataset.kval) {
             var pos = content.indexOf(dataset.kval[i]['id']),
                 posRef = configuration.defaultReference.findIndex(j => j.id === content[pos]);            
@@ -329,13 +333,14 @@ function validatePatientLaboratoryObservations(dataset) {
         
         /* Ergänze die fehlenden IDs mit einem Dummy-Wert */
         for(var i = 0; i < content.length; i++) {
-            var posRef = configuration.defaultReference.findIndex(j => j.id === content[pos]);                      
+            var posRef = configuration.defaultReference.findIndex(j => j.id === content[i]);                                  
             dataset.kval.push( {    
                                 id:         configuration.defaultReference[posRef].id,
                                 name:       configuration.defaultReference[posRef].name,
-                                value:      '0', 
-                                refMin:     typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMin.male : configuration.defaultReference[posRef].refMin,
-                                refMax:     typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMax.male : configuration.defaultReference[posRef].refMax,
+                                loinc:      configuration.defaultReference[posRef].loinc,
+                                value:      '0',
+                                refMin:     typeof configuration.defaultReference[posRef].refMin === 'object' ? configuration.defaultReference[posRef].refMin.male : configuration.defaultReference[posRef].refMin,
+                                refMax:     typeof configuration.defaultReference[posRef].refMax === 'object' ? configuration.defaultReference[posRef].refMax.male : configuration.defaultReference[posRef].refMax,
                                 unit:       configuration.defaultReference[posRef].unit,
                                 validMin:   configuration.defaultReference[posRef].validMin,
                                 validMax:   configuration.defaultReference[posRef].validMax
@@ -343,6 +348,7 @@ function validatePatientLaboratoryObservations(dataset) {
         }        
 
         return dataset;
+
     }
 
     return null;
@@ -354,13 +360,21 @@ function validatePatientLaboratoryObservations(dataset) {
  */
 function getPatientLaboratoryObservations() {
     
-    var dataSet = { };
+    // Grundstruktur des Datasets für die Funktionsrückgabe festlegen
+    var dataSet = {         
+        type: "key-val-ref",
+        id:   "labor",
+        name: "Labor",
+        lang: "en",
+        kval: []
+    };
 
-    /* Wenn Argumente übergeben werden ... */
-    if (arguments.length == 1) {
+    /* Wenn Argumente an die Funktion übergeben werden ... */
+    if (arguments.length == 2) {
          
-        // dann sind es vermutlich Observations... (je nach Abfrage: FHIR.client oder $ajax.GET!!)
+        // ... dann sind es vermutlich Observations und Patientendaten... (je nach Abfrage: FHIR.client oder $ajax.GET!!)
         var observations = arguments[0],
+            patient = arguments[1],
             labValues = [];
         // ... lege für die einzelnen, in der 'configuration' angelegten Observations (je nach LOINC) je ein Merkfeld an ...
         for(var i = 0; i < configuration.defaultReference.length; i++) {
@@ -390,19 +404,64 @@ function getPatientLaboratoryObservations() {
                 }
             }
         }
-        
+
+        // ... dann ...
         for(var i = 0; i < configuration.defaultReference.length; i++) {
+            
             // ... sortiere sie ...        
             labValues[configuration.defaultReference[i].loinc].sort(function(a, b) {
-                var d1 = new Date(a.meta.lastUpdated),
-                    d2 = new Date(b.meta.lastUpdated);
+                // Wähle als Sortierung am besten 'effectiveDateTime', in zweiter Linie 'meta.lastUpdated'...
+                var d1 = new Date(a.effectiveDateTime === 'undefined' ? a.meta.lastUpdated : a.effectiveDateTime),
+                    d2 = new Date(b.effectiveDateTime === 'undefined' ? b.meta.lastUpdated : b.effectiveDateTime);
                 return d2.valueOf() - d1.valueOf();
             });
-            // ... und füge das Array den Patientenbeboachtungsdaten hinzu
+            
+            // ... füge das Array den Patientenbeboachtungsdaten hinzu
             observationSet.add(labValues[configuration.defaultReference[i].loinc]);
-        }            
+            
+            // ... und füge an das Dataset den neuesten Wert ein, wenn tatsächlich Werte abgefragt werden konnten
+            if (labValues[configuration.defaultReference[i].loinc].length > 0) {                
+                
+                // Aufpassen: als erstes nach den Referenzwerten vom Patienten schauen: 
+                // sind sie vorhanden, dann nimm sie, ansonsten nimm geschlechtsbezogen diejenigen aus der configuration                    
+                var r1 = 0, r2 = 0;                
+                if (typeof labValues[configuration.defaultReference[i].loinc][0].referenceRange === 'undefined') {
+                    r1 = patient.gender === 'male' ? configuration.defaultReference[i].refMin.male : configuration.defaultReference[i].refMin.female;
+                } else {
+                    r1 = labValues[configuration.defaultReference[i].loinc][0].referenceRange[0].low.value;
+                }
+                
+                if (typeof labValues[configuration.defaultReference[i].loinc][0].referenceRange === 'undefined') {
+                    r2 = patient.gender === 'male' ? configuration.defaultReference[i].refMax.male : configuration.defaultReference[i].refMax.female;
+                } else {
+                    r2 = labValues[configuration.defaultReference[i].loinc][0].referenceRange[0].high.value;
+                }
+
+                // Eigentliche Daten zusammenstellen und anhängen             
+                var labParam = {
+                    // aus der Konfiguration Daten übernehmen
+                    id:         configuration.defaultReference[i].id,     
+                    loinc:      configuration.defaultReference[i].loinc,
+                    name:       configuration.defaultReference[i].name,
+
+                    // Patientendaten
+                    value:      labValues[configuration.defaultReference[i].loinc][0].valueQuantity.value,
+                    refMin:     r1,
+                    refMax:     r2,
+                    unit:       labValues[configuration.defaultReference[i].loinc][0].valueQuantity.unit,
+                    
+                    // aus der Konfiguration Daten übernehmen
+                    validMin:   configuration.defaultReference[i].validMin,
+                    validMax:   configuration.defaultReference[i].validMax
+                }
+                dataSet.kval.push(labParam);
+            }
+
+        }                 
         
-        /* Noch Testdatensets - muß noch an die Observations angepasst werden!! */    
+        /* Noch Testdatensets - muß noch an die Observations angepasst werden!! */
+        
+        /*
         dataSet = {
 
             type: "key-val-ref",
@@ -493,18 +552,12 @@ function getPatientLaboratoryObservations() {
 
             ]
 
-        } 
+        } */
     
     } else {
         
         // ansonsten liefere: Allgemeine Testdatensatz - wird übergeben falls keine Parameter an die Funktion übergeben werden  
-        dataSet = {
-
-            type: "key-val-ref",
-            id:   "labor",
-            name: "Labor",
-            lang: "en",
-            kval: [
+        dataSet.kval = [
                 {            
                     id:             "hemoglobin",
                     name:           "Hemoglobin",                    
@@ -587,8 +640,6 @@ function getPatientLaboratoryObservations() {
                 }
     
             ]
-    
-        } 
 
     }
     
