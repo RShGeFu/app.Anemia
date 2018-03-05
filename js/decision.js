@@ -113,7 +113,12 @@ var decision = (function() {
                             
                             }   
 
-                            return 0;
+                            return {
+                                target1: function() { return 0; },
+                                target2: function() { return 0; },
+                                target1Iron: 0,
+                                target2Iron: 0
+                            };
                         },
 
         // Retikulozyten-Produktions-Index mit Bewertungsfunktion
@@ -216,10 +221,10 @@ var decision = (function() {
                                 if (valueSet.isCrpOK()) {
                                     valueSet.maths.push(configuration.labTestKit_tfrFIndexCRP_OK);
                                 } else {
-                                    valueSet.maths.push(configuration.labTestKit_trfFIndexCRP_High);
+                                    valueSet.maths.push(configuration.labTestKit_tfrFIndexCRP_High);
                                 }
                             } else {                                
-                                valueSet.maths.push(configuration.labTestKit_trfFIndexCRP_OK);
+                                valueSet.maths.push(configuration.labTestKit_tfrFIndexCRP_OK);
                             }
                             // dann den BMI als AddOn.
                             valueSet.maths.push(valueSet.bmi());                            
