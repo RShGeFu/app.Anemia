@@ -8,12 +8,12 @@
  * Funktion für die Erstellung des HTML-Strings der Diagnosenkarte
  * @param {*} diag 
  */
- function createDiagnosisCard(diag) {
+ function createDiagnosisCard(diag) {    
     var s = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"diagnosis-1\"></span></h4>";
     for(var i = 0; i < diag.length; i++) {
-        s = s + "<h5 class=\"card-text alert alert-danger\" role=\"alert\"><span id=" + diag[i]['id'] + "><span></h5>";
+        s = s + "<h5 class=\"card-text alert alert-danger\" role=\"alert\"><span id=\"" + diag[i]['id'] + "\"><span></h5>";
     }
-    s = s + "</div></div>";
+    s = s + "</div></div>";    
     return s;
 }
 
@@ -24,9 +24,9 @@
 function createRecommendsCard(rec) {
     var s = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"recommend-1\"></span></h4>";
     for(var i = 0; i < rec.length; i++) {
-        s = s + "<h5 class=\"card-text alert alert-warning\" role=\"alert\"><span id=" + rec[i]['id'] + "><span></h5>";
+        s = s + "<h5 class=\"card-text alert alert-warning\" role=\"alert\"><span id=\"" + rec[i]['id'] + "\"><span></h5>";
     }
-    s = s + "</div></div>";
+    s = s + "</div></div>";    
     return s;
 }
 
@@ -42,7 +42,7 @@ function createCalcValuesCard(mathRes) {
 }
 
 function createIronPlotCard(res, width) {    
-    var s = "<div id=\"ironplot-card-body\" class=\"card-body\"><h4 class=\"card-title\"><span id=\"thplot\"></span></h4><table class=\"table table-hover\"><tbody>";
+    var s = "<div id=\"ironplot-card-body\" class=\"card-body\"><h4 class=\"card-title\"><span id=\"thplot\"></span></h4><table class=\"table table-hover table-sm\"><tbody>";
     s = s + "<tr><canvas id=\"graphics\" width=\"" + width + " \" height=\"300\">Keine Unterstützung für Canvas</canvas></tr>"
     s = s + "<tr><td id=\"thplotI\"></td></tr>"
     s = s + "<tr><td id=\"thplotII\"></td></tr>"
@@ -58,10 +58,10 @@ function createIronPlotCard(res, width) {
 function composeResultCards() {
 
     /* Clinical Decision ausführen und Ergebnisstruktur speichern */    
-    var resData = decision.result(),
+    var resData = decision.result();    
     
     /* Diagnosenkarte */
-        htmlString = createDiagnosisCard(resData.diagnoses);
+    var htmlString = createDiagnosisCard(resData.diagnoses);
     $("#diagnosis-card").html(htmlString);    
     
     /* Empfehlungskarte */
