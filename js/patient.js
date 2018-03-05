@@ -52,7 +52,7 @@ function createPatientCard(dataset) {
     if (dataset.type == "key-val") {
         
         /* Überschrift erstellen ... */        
-        str = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"" + dataset.id + "\">" + dataset.name + "<span></h4><table class=\"table table-hover\"><tbody>";
+        str = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"" + dataset.id + "\">" + dataset.name + "<span></h4><table class=\"table table-hover table-sm\"><tbody>";
         
         for(i = 0; i < dataset.kval.length; i++) {
             
@@ -65,7 +65,7 @@ function createPatientCard(dataset) {
             /* Built der Kartenzeile */
             idOfInput = dataset.kval[i]['id'];
             classOfInput = "ds_values_gf";
-            str = str + "<tr><th scope=\"row\"><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span></th><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td><td><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></td><td><small>" + dataset.kval[i]['unit'] + "</small></td></tr>";                        
+            str = str + "<tr><th scope=\"row\"><button type=\"button\" class=\"btn btn-light btn-sm btn-block\"><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span></button></th><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td><td><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></td><td><small>" + dataset.kval[i]['unit'] + "</small></td></tr>";                        
         }
 
         /* Abschluss für die Card */
@@ -141,11 +141,11 @@ function createLabCard(dataset) {
     if (dataset.type == "key-val-ref") {
 
         /* Überschrift erstellen */        
-        str = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"" + dataset.id + "\">" + dataset.name + "<span></h4><table class=\"table table-hover\"><tbody>";
+        str = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"" + dataset.id + "\">" + dataset.name + "<span></h4><table class=\"table table-hover table-sm\"><tbody>";
         
         /* Zeile für Zeile aus den übergebenen Daten zuammenführen */
         for(i = 0; i < dataset.kval.length; i++) {            
-            str = str + "<tr><th scope=\"row\"><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span>";
+            str = str + "<tr><th scope=\"row\"><button type=\"button\" class=\"btn btn-light btn-sm btn-block\"><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span></button>";
 
             /* Referenzbreich beachten und angeben */
             inNormRange = testNormalAndValidRange(dataset.kval[i]['value'], dataset.kval[i]['refMin'], dataset.kval[i]['refMax'], dataset.kval[i]['validMin'], dataset.kval[i]['validMax']);            
@@ -201,7 +201,7 @@ function composeCards() {
         $("#patient-card").html(htmlString);        
 
         /* Laborkarte */  
-        dataset = getPatientLaboratoryObservations(observations);    
+        dataset = getPatientLaboratoryObservations(observations, patient);    
         htmlString = createLabCard(dataset);
         $("#laboratory-card").html(htmlString);        
 
