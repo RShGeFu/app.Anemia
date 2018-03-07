@@ -65,7 +65,11 @@ function createPatientCard(dataset) {
             /* Built der Kartenzeile */
             idOfInput = dataset.kval[i]['id'];
             classOfInput = "ds_values_gf";
-            str = str + "<tr><th scope=\"row\"><button type=\"button\" class=\"btn btn-light btn-sm btn-block\"><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span></button></th><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td><td><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></td><td><small>" + dataset.kval[i]['unit'] + "</small></td></tr>";                        
+            str = str + "<tr><th scope=\"row\"></th><td><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td><td><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></td><td><small>" + dataset.kval[i]['unit'] + "</small></td>";
+            str = str + "<td><div class=\"btn-group btn-group-sm\" role=\"group\" aria-label=\"Basic example\">";
+            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-secondary ds_chart_gf\"><i class=\"fa fa-line-chart\"></i></button>";
+            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-secondary ds_request_gf\"><i class=\"fa fa-cart-arrow-down\"></i></button></div></td></tr>";
+                        
         }
 
         /* Abschluss für die Card */
@@ -140,12 +144,13 @@ function createLabCard(dataset) {
     /* Wenn der Datenset vom Typ 'Key-Value-Ref' ist, dann ...*/
     if (dataset.type == "key-val-ref") {
 
-        /* Überschrift erstellen */        
+          /* Überschrift erstellen */        
         str = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"" + dataset.id + "\">" + dataset.name + "<span></h4><table class=\"table table-hover table-sm\"><tbody>";
         
         /* Zeile für Zeile aus den übergebenen Daten zuammenführen */
         for(i = 0; i < dataset.kval.length; i++) {            
-            str = str + "<tr><th scope=\"row\"><button type=\"button\" class=\"btn btn-light btn-sm btn-block\"><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span></button>";
+            str = str + "<tr><th scope=\"row\"></th>";
+            str = str + "<td><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span></td>";
 
             /* Referenzbreich beachten und angeben */
             inNormRange = testNormalAndValidRange(dataset.kval[i]['value'], dataset.kval[i]['refMin'], dataset.kval[i]['refMax'], dataset.kval[i]['validMin'], dataset.kval[i]['validMax']);            
@@ -160,14 +165,19 @@ function createLabCard(dataset) {
             
             idOfInput = dataset.kval[i]['id'];
             classOfInput = "ds_values_gf";
-            str = str + "<td>" + hstr + "</td><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td></th><td><b><i><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></i></b></td>";            
+            str = str + "<td>" + hstr + "</td><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td><td><b><i><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></i></b></td>";            
             /* Anhängen der Lage relativ zum Referenzbereich noch notwendig */
             
             /* Einheit und Referenzbereich angeben */            
             str = str + "<td><small>" + dataset.kval[i]['unit'] + "</small></td>";
             str = str + "<td><small><span id=\"" + idOfInput + "_refMin\">" + dataset.kval[i]['refMin'] + "</span></small></td>";
             str = str + "<td><small>-</small></td>";
-            str = str + "<td><small><span id=\"" + idOfInput + "_refMax\">" + dataset.kval[i]['refMax'] + "</span></small></td></tr>";                                
+            str = str + "<td><small><span id=\"" + idOfInput + "_refMax\">" + dataset.kval[i]['refMax'] + "</span></small></td>";                                
+
+            /* Buttongroup für Graphische Darstellung und FHIR-Anforderung dieses Laborparameters */            
+            str = str + "<td><div class=\"btn-group btn-group-sm\" role=\"group\" aria-label=\"Basic example\">";
+            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-secondary ds_chart_gf\"><i class=\"fa fa-line-chart\"></i></button>";
+            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-secondary ds_request_gf\"><i class=\"fa fa-cart-arrow-down\"></i></button></div></td></tr>";
 
         }
         
