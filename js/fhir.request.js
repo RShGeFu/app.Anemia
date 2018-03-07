@@ -5,6 +5,32 @@
 "use strict";
 
 /**
+ * Object accessToken als Closure: Minimale Verwaltung des Access-Tokens für den Serverzugriff. Der Access-Token wird nicht nur beim ersten Zugriff,
+ * sondern ggf. auch für weitere Abfragen während des App-Starts gebraucht (v.a. bei Bundles)
+ */
+var accessToken = (function () {
+    
+    // beinhaltet gekapselt den Token
+    var accToken = "";
+    
+    // Getter und Setter definieren und zur Verfügung stellen
+    return {    
+        
+        get: function() {
+            console.log("Lesend: Zugriff auf AccessToken");
+            return this.accToken;
+        },
+
+        set: function(aT) {
+            console.log("Schreibend: Zugriff auf AccessToken");
+            this.accToken = aT;
+        }
+
+    }
+
+})();
+
+/**
  * Hilfsfunktion - Mit dieser Funktion wird ein assoziatives Array aus den Such-Parametern der URL gemacht
  * @param {*} querystring 
  */
@@ -164,12 +190,19 @@ var getPatientContext = (function() {
                                     
                                     smart.patient.api.fetchAll( { type: "Observation" } ).then(function(results) {
                                     
-                                        // Patientendaten und Ergebnisse zusammenstellen und visualisieren
+                                        // Patientendaten und Ergebnisse zusammenstellen und visualisieren                                        
                                         composeCards(pt, results);                                   
                                         composeResultCards();
 
                                         /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
                                         $(".ds_values_gf").change(reactToUserInput);                                                                                       
+                                        $(".ds_chart_gf").click(function() {
+                                            alert("Graphik wird erstellt! " + this.id);                                            
+                                        });                                                                                    
+                                        $(".ds_request_gf").click(function() {
+                                            alert("Request wird erstellt! " + this.id);
+                                            $(this).attr('disabled', true);
+                                        });                                                                                    
                                         
                                     }).fail(function(e) {
                                         alert("No observation found!");                                    
@@ -288,7 +321,7 @@ var getPatientContext = (function() {
                             $.ajax(options).done(function(res){
         
                                 // should get back the access token and the patient ID
-                                var accessToken = res.access_token;
+                                accessToken.set(res.access_token);                                
                                 var patientId = res.patient;
                 
                                 // and now we can use these to construct standard FHIR
@@ -302,7 +335,7 @@ var getPatientContext = (function() {
                                     type: "GET",
                                     dataType: "json",
                                     headers: {
-                                        "Authorization": "Bearer " + accessToken
+                                        "Authorization": "Bearer " + accessToken.get()
                                     },
                                 }).done(function(pt){
                                     
@@ -312,16 +345,23 @@ var getPatientContext = (function() {
                                             type: "GET",
                                             dataType: "json",
                                             headers: {
-                                                "Authorization": "Bearer " + accessToken
+                                                "Authorization": "Bearer " + accessToken.get()
                                             },
                                     }).done(function(results) {
-
-                                        // Patientendaten und Ergebnisse zusammenstellen und visualisieren
+                                        
+                                        // Patientendaten und Ergebnisse zusammenstellen und visualisieren                                        
                                         composeCards(pt, results);                                           
                                         composeResultCards();     
                                         
                                         /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
-                                        $(".ds_values_gf").change(reactToUserInput);                                                                                       
+                                        $(".ds_values_gf").change(reactToUserInput);
+                                        $(".ds_chart_gf").click(function() {
+                                            alert("Graphik wird erstellt! " + this.id);                                            
+                                        });                                                                                    
+                                        $(".ds_request_gf").click(function() {
+                                            alert("Request wird erstellt! " + this.id);
+                                            $(this).attr('disabled', true);
+                                        });                                                                                    
                                         
                                     }).fail(function(e) {
                                         alert("No observation found!");
