@@ -185,7 +185,16 @@ var decision = (function() {
         // BMI als Nebenprodukt
         bmi:            function() {
                             if (valueSet.hasWeight() && valueSet.hasHeight()) {
-                                return Math.round(valueSet.weight.value / (valueSet.height.value/100 * valueSet.height.value/100) * 10) / 10;
+                                // Grenzwerte berücksichtigen!!
+                                var w = 0, h = 0;
+                                alert(w + " - " + h);
+                                alert(Number(valueSet.height.value).valueOf())           ;
+                                w = Number(valueSet.weight.value).valueOf() < 40  ? 40  : Number(valueSet.weight.value).valueOf();
+                                w = Number(valueSet.weight.value).valueOf() > 200 ? 200 : w;
+                                h = Number(valueSet.height.value).valueOf() < 120 ? 120 : Number(valueSet.height.value).valueOf();            
+                                h = Number(valueSet.height.value).valueOf() > 220 ? 220 : h;                          
+                                alert(w + " - " + h);            
+                                return Math.round(w / (h/100 * h/100) * 10) / 10;
                             }
                             return 0;
                         },
