@@ -111,7 +111,7 @@ function getPatientDemographics() {
                     { id: "perfirstname", val: "Test app" },
                     { id: "perlastname", val: "Test Anemia" },
                     { id: "perbirthday", val: "1900-01-01" },
-                    { id: "permf", val: "male" },
+                    { id: "permf", val: "female" },
                     { id: "perencid", val: "000000000" },
                     { id: "perdiagnose", val: [ "Pneumonia", "Lungembolism"] }
                   ]
@@ -269,7 +269,7 @@ function validatePatientClinicalObservations(dataset) {
  * Funktion für die Validierung von Labordaten eines Patienten
  */
 function validatePatientLaboratoryObservations(dataset) {
-
+    
     /* Folgende IDs im Dataset müssen belegt sein */    
     var content = [];    
     for(var i = 0; i < configuration.defaultReference.length; i++) {        
@@ -292,30 +292,25 @@ function validatePatientLaboratoryObservations(dataset) {
             /* ... falls in einem Datenpaar kein Wert steht, ergänze einen Dummy und passe das dazugehörige Dataset an */
             if (dataset.kval[i]['value'] === "" || dataset.kval[i]['value'] == null) {
                 dataset.kval[i]['value'] = "0";
-                dataset.kval[i]['refMin'] = typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMin.male : configuration.defaultReference[posRef].refMin;
-                dataset.kval[i]['refMax'] = typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMax.male : configuration.defaultReference[posRef].refMax;
-                dataset.kval[i]['unit'] = configuration.defaultReference[posRef].unit;
-                dataset.kval[i]['validMin'] = configuration.defaultReference[posRef].validMin;
-                dataset.kval[i]['validMax'] = configuration.defaultReference[posRef].validMax;
             }
 
             /* Falls der Referenzbereich fehlt ... */
             if (dataset.kval[i]['refMin'] === "" || dataset.kval[i]['refMin'] == null) {
-                dataset.kval[i]['value'] = "0";
-                dataset.kval[i]['refMin'] = typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMin.male : configuration.defaultReference[posRef].refMin;
-                dataset.kval[i]['refMax'] = typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMax.male : configuration.defaultReference[posRef].refMax;
-                dataset.kval[i]['unit'] = configuration.defaultReference[posRef].unit;
-                dataset.kval[i]['validMin'] = configuration.defaultReference[posRef].validMin;
-                dataset.kval[i]['validMax'] = configuration.defaultReference[posRef].validMax;
+                dataset.kval[i]['refMin'] = typeof configuration.defaultReference[posRef].refMin === 'object' ? configuration.defaultReference[posRef].refMin[dataset['gender']] : configuration.defaultReference[posRef].refMin;
             }
             
             if (dataset.kval[i]['refMax'] === "" || dataset.kval[i]['refMax'] == null) {
-                dataset.kval[i]['value'] = "0";
-                dataset.kval[i]['refMin'] = typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMin.male : configuration.defaultReference[posRef].refMin;
-                dataset.kval[i]['refMax'] = typeof configuration.defaultReference[posRef] === 'object' ? configuration.defaultReference[posRef].refMax.male : configuration.defaultReference[posRef].refMax;
+                dataset.kval[i]['refMax'] = typeof configuration.defaultReference[posRef].refMax === 'object' ? configuration.defaultReference[posRef].refMax[dataset['gender']] : configuration.defaultReference[posRef].refMax;
+            }
+
+            /* Falls die Einheit fehlt ... */
+            if (dataset.kval[i]['unit'] === "" || dataset.kval[i]['unit'] == null) {
                 dataset.kval[i]['unit'] = configuration.defaultReference[posRef].unit;
-                dataset.kval[i]['validMin'] = configuration.defaultReference[posRef].validMin;
-                dataset.kval[i]['validMax'] = configuration.defaultReference[posRef].validMax;
+            }
+
+            /* Falls der Name fehlt ... */
+            if (dataset.kval[i]['name'] === "" || dataset.kval[i]['name'] == null) {
+                dataset.kval[i]['name'] = configuration.defaultReference[posRef].name;
             }
 
             /* Falls der Validitätsbereich fehlt ... */
@@ -339,8 +334,8 @@ function validatePatientLaboratoryObservations(dataset) {
                                 name:       configuration.defaultReference[posRef].name,
                                 loinc:      configuration.defaultReference[posRef].loinc,
                                 value:      '0',
-                                refMin:     typeof configuration.defaultReference[posRef].refMin === 'object' ? configuration.defaultReference[posRef].refMin.male : configuration.defaultReference[posRef].refMin,
-                                refMax:     typeof configuration.defaultReference[posRef].refMax === 'object' ? configuration.defaultReference[posRef].refMax.male : configuration.defaultReference[posRef].refMax,
+                                refMin:     typeof configuration.defaultReference[posRef].refMin === 'object' ? configuration.defaultReference[posRef].refMin[dataset['gender']] : configuration.defaultReference[posRef].refMin,
+                                refMax:     typeof configuration.defaultReference[posRef].refMax === 'object' ? configuration.defaultReference[posRef].refMax[dataset['gender']] : configuration.defaultReference[posRef].refMax,
                                 unit:       configuration.defaultReference[posRef].unit,
                                 validMin:   configuration.defaultReference[posRef].validMin,
                                 validMax:   configuration.defaultReference[posRef].validMax
@@ -366,7 +361,8 @@ function getPatientLaboratoryObservations() {
         id:   "labor",
         name: "Labor",
         lang: "en",
-        kval: []
+        kval: [],
+        gender: "female"
     };
 
     /* Wenn Argumente an die Funktion übergeben werden ... */
@@ -376,6 +372,10 @@ function getPatientLaboratoryObservations() {
         var observations = arguments[0],
             patient = arguments[1],
             labValues = [];
+        
+        // ... gleich das Patientengeschlecht merken ...        
+        dataSet.gender = patient.gender != "" ? patient.gender : "male";
+
         // ... lege für die einzelnen, in der 'configuration' angelegten Observations (je nach LOINC) je ein Merkfeld an ...
         for(var i = 0; i < configuration.defaultReference.length; i++) {
             labValues[configuration.defaultReference[i].loinc] = [];
@@ -383,10 +383,54 @@ function getPatientLaboratoryObservations() {
         
         // ... wenn es sich um ein übergebenes Bundle handelt, dann ziehe die Observations heraus...
         if (observations.resourceType === "Bundle") {
-            let extract = [];
-            for(var i = 0; i < observations.entry.length; i++) {
+            let extract = [], nextPages;                
+
+            for(let i = 0; i < observations.entry.length; i++) {
                 extract.push(observations.entry[i].resource);
             }            
+            
+            if ('link' in observations) {
+                nextPages = observations.link;
+                // Aus dem Link-Array die nächste Seite suchen (nicht zwingend in link[1] ...)
+                let i, pos = nextPages.findIndex(i => i.relation === 'next');         
+
+                alert(nextPages[pos].relation + " - " + nextPages[pos].url);
+                $.ajax({
+                    url: nextPages[pos].url,
+                    type: "GET",
+                    dataType: "json",
+                    headers: {
+                        "Authorization": "Bearer " + accessToken.get()
+                    }
+                
+                //******************************************************************** */
+                //      Hier ist eine rekursive Abfrage erforderlich - WIE geht's?
+                //******************************************************************** */
+                
+                }).done(function(result){                                        
+                    if ('link' in result) {
+                        nextPages = result.link;
+                        alert("Juhu! Hier die nächste Seite: " + JSON.stringify(result));
+                        pos = nextPages.findIndex(i => i.relation === 'next');
+                        $.ajax({
+                            url: nextPages[pos].url,
+                            type: "GET",
+                            dataType: "json",  
+                            headers: {
+                                "Authorization": "Bearer " + accessToken.get()
+                            }                        
+                        }).done(function(result) {                            
+                            alert("Und nochmal! " + Object.getOwnPropertyNames(this));
+                        });
+                    } else {                    
+                        alert("Oh je! Keine Verknüpfung!");
+                    }
+                }).fail(function(e) {
+                    alert("Oh je! " + e);
+                });
+
+            }
+
             observations = extract;
         } 
         
@@ -396,9 +440,9 @@ function getPatientLaboratoryObservations() {
             if (observations[i].resourceType === "Observation") {      
                 // ... dann schaue nach, ob es sich um LOINCs und den LOINC-Code des in der Konfiguration festgelegt Laborwertes handelt ...
                 // (Ein anderes Code-System wird nicht akzeptiert)                
-                for(var j = 0; j < configuration.defaultReference.length; j++) {                    
+                for(var j = 0; j < configuration.defaultReference.length; j++) {                                        
                     if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === configuration.defaultReference[j].loinc) {                        
-                        // ... dann merke Dir die Observation in dem eigens angelegten Array
+                        // ... dann merke Dir die Observation in dem eigens angelegten Array                        
                         labValues[configuration.defaultReference[j].loinc].push(observations[i]);                        
                     }
                 }
@@ -452,16 +496,15 @@ function getPatientLaboratoryObservations() {
                     
                     // aus der Konfiguration Daten übernehmen
                     validMin:   configuration.defaultReference[i].validMin,
-                    validMax:   configuration.defaultReference[i].validMax
+                    validMax:   configuration.defaultReference[i].validMax,                    
                 }
                 dataSet.kval.push(labParam);
             }
 
         }                 
         
-        /* Noch Testdatensets - muß noch an die Observations angepasst werden!! */
-        
-        /*
+        /* Testdatenset - bleibt für Testzwecke zur sofortigen Aktivierung im Code als Kommentierung enthalten
+
         dataSet = {
 
             type: "key-val-ref",
@@ -556,87 +599,48 @@ function getPatientLaboratoryObservations() {
     
     } else {
         
-        // ansonsten liefere: Allgemeine Testdatensatz - wird übergeben falls keine Parameter an die Funktion übergeben werden  
+        /* ansonsten liefere: Allgemeine Testdatensatz - wird übergeben falls keine Parameter an die Funktion übergeben werden
+            
+            Medizinische Kommunikations-Realität der Abkürzungen mit impliziten Wissensergänzungen - ein kleines Szenario:
+            Der Arzt 1 fragt den Arzt 2: 'Wie schätzt Du die Anämie bei Patient X ein? Der Hb-Wert ist bei 13...
+            
+            So ist der Testdatensatz aufgebaut...
+            Die Validierung muß dann alle benötigten Werte und Wertebereiche, die die Kollegen implizit wissen, ergänzen.
+            Zwar kommen bei der FHIR-Serverabfrage viele Daten incl. Referenzbereich und Einheit an, eine Daten-Validierung muß
+            jedoch dennoch stattfinden, um die Funktionalität der App weitgehendst sicherzustellen!
+        */
         dataSet.kval = [
                 {            
-                    id:             "hemoglobin",
-                    name:           "Hemoglobin",                    
-                    value:          13.0,
-                    refMin:         12.0,
-                    refMax:         14.0,
-                    unit:           "g/dl",
-                    validMin:       2.5,
-                    validMax:       20
+                    id:             "hemoglobin",                    
+                    value:          13.0,                    
                 },
                 {            
-                    id:             "mcv",
-                    name:           "MCV",
+                    id:             "mcv",                    
                     value:          90.0,
-                    refMin:         86.0,
-                    refMax:         96.0,
-                    unit:           "fl",
-                    validMin:       40.0,
-                    validMax:       150.0
                 },
                 {            
-                    id:             "crp",
-                    name:           "CRP",
+                    id:             "crp",                    
                     value:          3.5,
-                    refMin:         0.001,
-                    refMax:         5.0,
-                    unit:           "g/dl",
-                    validMin:       0.001,
-                    validMax:       600
                 },
                 {            
-                    id:             "ferritine",
-                    name:           "Ferritine",
+                    id:             "ferritine",                    
                     value:          20.0,
-                    refMin:         3.0,
-                    refMax:         300.0,
-                    unit:           "µg/dl",
-                    validMin:       0.001,
-                    validMax:       7000.0
                 },
                 {            
-                    id:             "sTFR",
-                    name:           "sol Transf Recep",
-                    value:          3.0,
-                    refMin:         2.0,
-                    refMax:         5.0,
-                    unit:           "µg/dl",
-                    validMin:       0.001,
-                    validMax:       25.0
+                    id:             "sTFR",                    
+                    value:          1.0,
                 },
                 {            
                     id:             "reticulocytepc",
-                    name:           "Reticulocyte",
-                    value:          3.0,
-                    refMin:         2.0,
-                    refMax:         5.0,
-                    unit:           "%",
-                    validMin:       0.001,
-                    validMax:       20.0
+                    value:          8,
                 },
                 {            
                     id:             "reticulocytehb",
-                    name:           "Reticuloyte Hb",
                     value:          28.0,
-                    refMin:         26.0,
-                    refMax:         30.0,
-                    unit:           "pg",
-                    validMin:       1,
-                    validMax:       60.0
                 },
                 {
                     id:             "hematokrit",
-                    name:           "Hematokrit",
-                    value:          36,
-                    refMin:         35,
-                    refMax:         45,
-                    unit:           "%",
-                    validMin:       0.001,
-                    validMax:       65
+                    value:          40,
                 }
     
             ]
