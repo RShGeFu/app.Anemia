@@ -30,6 +30,10 @@ function createRecommendsCard(rec) {
     return s;
 }
 
+/**
+ * Funktion für die Erstellung des HTML-Strings der Rechenergebniskarte
+ * @param {*} rec
+ */
 function createCalcValuesCard(mathRes) {
     var s = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"calculation\"></span></h4><table class=\"table table-hover\"><tbody>";
     s = s + "<tr><th scope=\"row\"><span id=\"calc-0\"></span> (<span id=\"calc-3\"></span> " + mathRes[0].target1() + " g/dl)</th><td>" + mathRes[0]['target1Iron'] + "</td><td><small>mg</small></td></tr>";
@@ -41,19 +45,34 @@ function createCalcValuesCard(mathRes) {
     return s;
 }
 
+/**
+ * Funktion für die Erstellung des HTML-Strings der Karte für den Thomasplot
+ * @param {*} rec
+ */
 function createIronPlotCard(res, width) {    
     var s = "<div id=\"ironplot-card-body\" class=\"card-body\"><h4 class=\"card-title\"><span id=\"thplot\"></span></h4><table class=\"table table-hover table-sm\"><tbody>";
     s = s + "<tr><canvas id=\"graphics\" width=\"" + width + " \" height=\"300\">Keine Unterstützung für Canvas</canvas></tr>"
-    s = s + "<tr><td id=\"thplotI\"></td></tr>"
-    s = s + "<tr><td id=\"thplotII\"></td></tr>"
-    s = s + "<tr><td id=\"thplotIII\"></td></tr>"
-    s = s + "<tr><td id=\"thplotIV\"></td></tr>"
+    s = s + "<tr><td id=\"thplotI\"></td></tr>";
+    s = s + "<tr><td id=\"thplotII\"></td></tr>";
+    s = s + "<tr><td id=\"thplotIII\"></td></tr>";
+    s = s + "<tr><td id=\"thplotIV\"></td></tr>";
     s = s + "</tbody></table></div></div>";
     return s;
 }
 
 /**
- * Funktion zur Berechnung der Ergebniskarten
+ * Funktion für die Erstellung des HTML-Strings der Laborverlaufskarte
+ * @param {*} rec
+ */
+function createLabValGraphs(width) {
+    var s = "<div id=\"graph-card-body\" class=\"card-body\"><h4 class=\"card-title\"><span id=\"graphs-01\"></span></h4><table class=\"table table-hover table-sm\"><tbody>";
+    s = s + "<tr><canvas id=\"graphics2\" width=\"" + width + " \" height=\"100\">Keine Unterstützung für Canvas</canvas></tr>";
+    s = s + "</tbody></table></div></div>";
+    return s;    
+}
+
+/**
+ * Funktion zur Berechnung aller Ergebniskarten
  */
 function composeResultCards() {
 
@@ -150,6 +169,12 @@ function composeResultCards() {
             }
         }
     });
+
+    /* Laborverlauf-Karte */
+    var cardWidth = $("#graph-card-body").width();               // Breite des Canvas - später wichtig für die Bezeichnung der Quadranten
+    htmlString = createLabValGraphs(cardWidth);
+    $("#graph-card").html(htmlString);
+    var cardHeight = $("#graph-card-body").height();             // Höhe des Canvas - später wichtig für die Bezeichnung der Quadranten
     
     /* Beschriftung nach eingestellter Sprache */
     actualLanguage = $('#lang-flag').data('actual-lang');
