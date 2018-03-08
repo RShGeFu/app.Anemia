@@ -16,6 +16,11 @@ $(document).ready(function() {
     /* Patientenkontext herstellen, je nach URL-Parameter */    
     var pC = getPatientContext(location.search);    
     
+    /* Revisualisierung des Fensterinhalts bei Resizing des Fensters, insbesondere der Grafikdarstellung */        
+    $(window).resize(function() {
+        composeResultCards();
+    });
+                
     /* Wenn ein Patientenkontext hergestellt werden konnte */
     if (typeof pC == 'function') {
         
@@ -31,15 +36,21 @@ $(document).ready(function() {
             window.location.reload(true);
         });
 
-        /* Revisualisierung des Fensterinhalts bei Resizing des Fensters, insbesondere der Grafikdarstellung */        
-        $(window).resize(function() {
-                composeResultCards();
-            });
-                    
     } else {
-        /* Das UI zusammenstellen mit Testdaten zusammenstellen */
+        /* Das UI zusammenstellen mit Testdaten zusammenstellen */        
+        alert(pC);
+
         composeCards();
         composeResultCards(); 
+
+        /* Reload-Button disablen */    
+        $("#lab7").attr("disabled", "true");
+
+        /* Feldänderungen, d.h. User-Eingaben wahrnehmen und dann die Anzeige von Graph und Request disablen*/
+        $(".ds_values_gf").change(reactToUserInput);
+        $(".ds_chart_gf").attr("disabled", "true");                                                            
+        $(".ds_request_gf").attr("disabled", "true");                                                             
+        
     }
     
 });
