@@ -190,7 +190,7 @@ var getPatientContext = (function() {
                                     
                                     smart.patient.api.fetchAll( { type: "Observation" } ).then(function(results) {
                                     
-                                        // Patientendaten und Ergebnisse zusammenstellen und visualisieren                                        
+                                        // Patientendaten und Ergebnisse zusammenstellen und visualisieren                                       
                                         composeCards(pt, results);                                   
                                         composeResultCards();
 
