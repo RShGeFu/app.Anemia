@@ -132,6 +132,7 @@
 <div id="push-sm"></div>
 <div class="container-fluid">   
   <div class="row"> 
+    
     <div class="col-sm-4">
     
       <div id="patient-card" class="card observations">
@@ -228,68 +229,74 @@
       </div>            
     </div>
 
-    <div class="col-sm-8">
-      <div class="row">
-        <div class="col-sm-6">
+    <div class="col-sm-4">      
+        
           <div id="diagnosis-card" class="card results">
             <div class="card-body">
               <h4 class="card-title">Diagnose</h4>            
               <h6 class="card-text">Keine Diagnose</h6>
             </div>          
-          </div>                       
-        </div>
-        <div class="col-sm-6">
-          <div id="recommends-card" class="card results">
+          </div>                               
+          <hr>
+          
+          <div id="calcvalue-card" class="card results">
+              <div class="card-body">
+                <h4 class="card-title">Berechnte Werte</h4>
+                <table class="table table-hover">
+                  <tbody>
+                    <tr>
+                      <th scope="row">Eisenbedarf</th>
+                      <td>-</td>
+                      <td><small>-</small></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">RPI</th>
+                      <td>-</td>
+                      <td><small>-</small></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">TfR-R-Index</th>
+                      <td>-</td>
+                      <td><small>-</small></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">BMI</th>
+                      <td>-</td>
+                      <td><small>-</small></td>
+                    </tr>
+                  </tbody>
+                </table>        
+              </div>          
+          </div>                    
+        
+          <div id="graph-card" class="card results">
+            <div id="graph-card-body" class="card-body">
+              <h4 class="card-title">Laborverlauf</h4>            
+            </div>          
+          </div>                                         
+      
+    </div>
+
+    <div class="col-sm-4">
+        
+        <div id="recommends-card" class="card results">
             <div class="card-body">
               <h4 class="card-title">Empfohlene Untersuchungen</h4>            
               <h6 class="card-text">...</h6>
             </div>          
-          </div>                       
         </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-6">
-          <div id="calcvalue-card" class="card results">
-            <div class="card-body">
-              <h4 class="card-title">Berechnte Werte</h4>
-              <table class="table table-hover">
-                <tbody>
-                  <tr>
-                    <th scope="row">Eisenbedarf</th>
-                    <td>-</td>
-                    <td><small>-</small></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">RPI</th>
-                    <td>-</td>
-                    <td><small>-</small></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">TfR-R-Index</th>
-                    <td>-</td>
-                    <td><small>-</small></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">BMI</th>
-                    <td>-</td>
-                    <td><small>-</small></td>
-                  </tr>
-                </tbody>
-              </table>        
-            </div>          
-          </div>
-        </div>                       
-        <div class="col-sm-6">
-          <div id="ironplot-card" class="card results">
+        <hr>                     
+
+        <div id="ironplot-card" class="card results">
             <div id="ironplot-card-body" class="card-body">
               <h4 class="card-title">Thomas-Plot</h4>            
             </div>          
           </div>                       
-        </div>
-      </div>
+
     </div>
 
   </div>
+
 </div>
 
 </div>
