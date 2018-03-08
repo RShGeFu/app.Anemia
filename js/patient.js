@@ -44,7 +44,8 @@ function createPatientDemographics(dataset) {
 function createPatientCard(dataset) { 
     let str = "",
         idOfInput = "",
-        classOfInput = "";
+        classOfInput = "",
+        disab = "";
     
     /* Validierung der Patientendaten */
     
@@ -65,10 +66,11 @@ function createPatientCard(dataset) {
             /* Built der Kartenzeile */
             idOfInput = dataset.kval[i]['id'];
             classOfInput = "ds_values_gf";
+            disab = dataset.kval[i]['value'] != 0 ? "disabled" : "";
             str = str + "<tr><th scope=\"row\"></th><td><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td><td><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></td><td><small>" + dataset.kval[i]['unit'] + "</small></td>";
             str = str + "<td><div class=\"btn-group btn-group-sm\" role=\"group\" aria-label=\"Basic example\">";
-            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-secondary ds_chart_gf\"><i class=\"fa fa-line-chart\"></i></button>";
-            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-secondary ds_request_gf\"><i class=\"fa fa-cart-arrow-down\"></i></button></div></td></tr>";
+            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-outline-secondary ds_chart_gf\"><i class=\"fa fa-line-chart\"></i></button>";
+            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-outline-secondary ds_request_gf\" " + disab + "><i class=\"fa fa-cart-arrow-down\"></i></button></div></td></tr>";
                         
         }
 
@@ -137,7 +139,8 @@ function createLabCard(dataset) {
         hstr = "",
         inNormRange = { },
         idOfInput = "",
-        classOfInput = "";
+        classOfInput = "",
+        disab = "";
 
     /* Validierung der Labordaten */
     
@@ -174,10 +177,11 @@ function createLabCard(dataset) {
             str = str + "<td><small>-</small></td>";
             str = str + "<td><small><span id=\"" + idOfInput + "_refMax\">" + dataset.kval[i]['refMax'] + "</span></small></td>";                                
 
-            /* Buttongroup für Graphische Darstellung und FHIR-Anforderung dieses Laborparameters */            
+            /* Buttongroup für Graphische Darstellung und FHIR-Anforderung dieses Laborparameters */
+            disab = inNormRange.status.substring(0, 2) === "nv" ? "" : "disabled";            
             str = str + "<td><div class=\"btn-group btn-group-sm\" role=\"group\" aria-label=\"Basic example\">";
-            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-secondary ds_chart_gf\"><i class=\"fa fa-line-chart\"></i></button>";
-            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-secondary ds_request_gf\"><i class=\"fa fa-cart-arrow-down\"></i></button></div></td></tr>";
+            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-outline-secondary ds_chart_gf\"><i class=\"fa fa-line-chart\"></i></button>";
+            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-outline-secondary ds_request_gf\" " + disab + "><i class=\"fa fa-cart-arrow-down\"></i></button></div></td></tr>";
 
         }
         
