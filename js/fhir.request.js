@@ -17,12 +17,14 @@ var accessToken = (function () {
     return {    
         
         get: function() {
-            console.log("Lesend: Zugriff auf AccessToken");
+            var d = new Date();
+            console.log("Lesend: Zugriff auf Access-Token - " + d.toLocaleDateString() + " um " + d.toLocaleTimeString());
             return this.accToken;
         },
 
         set: function(aT) {
-            console.log("Schreibend: Zugriff auf AccessToken");
+            var d = new Date();
+            console.log("Schreibend: Zugriff auf Access-Token - " + d.toLocaleDateString() + " um " + d.toLocaleTimeString());
             this.accToken = aT;
         }
 
