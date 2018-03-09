@@ -4,13 +4,6 @@
 
 "use strict";
 
-/**
- * Nach Laden der App:
- * 1. Patientenkontext erstellen
- * 2. Den Reload-Button funktional machen
- * 3. Die Visualisierung des UI durchführen
- */
-
 $(document).ready(function() {
     
     /* Patientenkontext herstellen, je nach URL-Parameter */    
@@ -22,8 +15,7 @@ $(document).ready(function() {
     });
                 
     /* Wenn ein Patientenkontext hergestellt werden konnte */
-    if (typeof pC == 'function') {
-        
+    if (typeof pC == 'function') {        
         /* Patientenkontext ausführen */
         alert(pC());        
      
