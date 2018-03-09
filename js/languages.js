@@ -110,7 +110,8 @@ var getTranslationList = (function() {
                         { id: "thplotIV",   attr: "",       de: "Quadrant IV - Speichereisen gefüllt, aber Funktionseisenverlust", en: "Quadrante IV - Iron reserve full, but loss of functional iron" },
 
                         // --- Karte für den Laborverlauf
-                        { id: "graphs-01",   attr: "",      de: "Laborverlauf", en: "Laboratory history" }
+                        { id: "graphs-00",   attr: "",      de: "Kein Parameter für Verlauf gewählt", en: "No Parameter for history selected" },
+                        { id: "graphs-01",   attr: "",      de: "Werteverlauf", en: "Parameter history" }
                     ]        
     }
 
@@ -207,6 +208,12 @@ function translateLabels(lang = 'de') {
                 $("#"+list[i].id).html(list[i][lang]);
             }
         }
+        // Sondersituation: für den Wertverlauf auf der Laborverlaufskarte den gemerkten Parameter richtig anzeigen...
+        if ($('#lang-flag').data('labhist')) {            
+            let pos1 = labelList.labels.findIndex(i => i.id == 'graphs-01');        
+            let showParameter = labelList.labels[pos1][lang] + ": " + labelList.labels[$("#lang-flag").data('labhist')][lang];
+            $("#graphs-00").html(showParameter);    
+        }    
 
     /* Fehlermeldung, wenn die Validierung der Übersetzungstabelle fehlschlägt */
     } else {
