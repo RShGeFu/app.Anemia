@@ -5,20 +5,37 @@
 "use strict";
 
 /**
- * Closure für die gesammelten Observations eines Patient - inhaltlich und zeitlich geordnet für eine weitere Verwendung
+ * Closure für die gesammelten Observations eines Patient - inhaltlich und zeitlich geordnet für eine weitere Verwendung sowie als Liste 
  */
 var observationSet = (function() {
 
-    var obs = [];
+    var obs = [],
+        list = [];
 
     return {        
         clear:  function() { obs = []; },
-        add:    function(o) { obs.push(o); },
-        get:    function(n) { 
-                    if (n >= 0 && n < obs.length) {
-                        return obs[n]; 
+        add:    function(n, o) {                                         
+                    obs[n] = [];
+                    obs[n].push(o);                    
+                    console.log(JSON.stringify(obs[n]));
+                },
+        get:    function(n) {
+                    if (typeof n === 'number') {
+                        if (n >= 0 && n < obs.length) {
+                            return obs[n]; 
+                        }
+                    } else if (typeof n === 'string') {
+                        return obs[n];
                     }
                     return null;
+                },
+
+        addList:function(l) {
+                    this.list = l;
+                    console.log(JSON.stringify(this.list));
+                },
+        getList:function() {
+                    return this.list;
                 }
     }
 
@@ -174,14 +191,33 @@ function validatePatientClinicalObservations(dataset) {
         // dann sind es vermutlich Observations... (je nach Abfrage: FHIR.client oder $ajax.GET!!)
         var observations = arguments[0];
         var weightObs = [],
-            heightObs = [];
+            heightObs = [],
+            extract = [];
 
         // ... wenn es aber ein Bundle ist, dann ziehe die Observations heraus...
-        if (observations.resourceType === "Bundle") {
-            let extract = [];
-            for(var i = 0; i < observations.entry.length; i++) {
-                extract.push(observations.entry[i].resource);
-            }            
+        if (observations.resourceType === "Bundle") {            
+
+            // Sind schon mal Observations gesammelt worden?
+            if (observationSet.getList() != null) {
+
+                observations = observationSet.getList();
+                
+            } else {
+                
+                if ('link' in observations) {
+                    let nextPages = observations.link;
+                    // Aus dem Link-Array die nächste Seite suchen (nicht zwingend in link[1] ...)
+                    let i, pos = nextPages.findIndex(i => i.relation === 'self');
+                    // Hole alle restlichen Observations vom Server und hänge sie an ...
+                    if (pos > -1) {                    
+                        getAllRemainingObservationsFromTheServer(nextPages[pos].url, extract, 0);
+                        observations = extract;
+                        observationSet.addList(observations);
+                    }
+                }
+
+            }
+
             observations = extract;
         }
         
@@ -220,8 +256,11 @@ function validatePatientClinicalObservations(dataset) {
         });
         
         // Füge die Arrays den Patientenbeboachtungsdaten hinzu
-        observationSet.add(weightObs);
-        observationSet.add(heightObs);
+        observationSet.add('weight', weightObs);
+        observationSet.add('height', heightObs);
+        
+        var weightRounded = weightObs[0] != null ? Math.round(weightObs[0].valueQuantity.value * 10) / 10 : 0;
+        var heightRounded = heightObs[0] != null ? Math.round(heightObs[0].valueQuantity.value * 10) / 10 : 0;
         
         // Setze das Dataset zusammen - und zwar nehme für Größe und Gewicht den jeweils neuesten Wert der Observations           
         dataSet = {
@@ -233,12 +272,12 @@ function validatePatientClinicalObservations(dataset) {
             kval: [ 
                     {   id:     "weight",
                         name:   "Weight",
-                        value:  weightObs[0] != null ? weightObs[0].valueQuantity.value : 0, 
+                        value:  weightRounded,
                         unit:   weightObs[0] != null ? weightObs[0].valueQuantity.unit : ""
                     },
                     {   id:     "height", 
                         name:   "Height", 
-                        value:  heightObs[0] != null ? heightObs[0].valueQuantity.value : 0,
+                        value:  heightRounded,
                         unit:   heightObs[0] != null ? heightObs[0].valueQuantity.unit : ""
                     }
                 ]
@@ -351,6 +390,47 @@ function validatePatientLaboratoryObservations(dataset) {
 }
 
 /**
+ * Funktion für die komplette Datenakquise aller Pages vom Server bei einem Request
+ * @param {*} requestedUrl
+ * @param {*} items 
+ * @param {*} count
+ */
+function getAllRemainingObservationsFromTheServer(requestedUrl, items, count) {            
+        
+        $.ajax({
+                    url:    requestedUrl,   
+                    async:  false,                      // Nicht schön, aber sonst vom Gesamtablauf her nicht gut lösbar      
+                    type:   "GET",
+                    dataType: "json",
+                    headers: {
+                            "Authorization": "Bearer " + accessToken.get()
+                    } 
+                }).done(function(result) {
+                    
+                    var nextPages, pos_n, pos_s;                
+                
+                    // Observations extrahieren
+                    if (result.resourceType === 'Bundle') {
+                        for(let i = 0; i < result.entry.length; i++) {
+                            items.push(result.entry[i].resource);
+                        }
+                    }
+                    
+                    // Wenn eine weitere Datenseite auf dem Server liegt ...
+                    if ('link' in result) {               
+                        nextPages = result.link;                    
+                        pos_n = nextPages.findIndex(i => i.relation === 'next');                                                                                                
+                        if (pos_n > -1) {
+                            // Einen weiteren Request durchführen und die Daten anhängen ...
+                            getAllRemainingObservationsFromTheServer(nextPages[pos_n].url, items, count+1);
+                        } 
+                    }
+
+                });
+
+}
+
+/**
  * Funktion für die Lieferung von Labordaten eines Patienten
  */
 function getPatientLaboratoryObservations() {
@@ -371,7 +451,8 @@ function getPatientLaboratoryObservations() {
         // ... dann sind es vermutlich Observations und Patientendaten... (je nach Abfrage: FHIR.client oder $ajax.GET!!)
         var observations = arguments[0],
             patient = arguments[1],
-            labValues = [];
+            labValues = [],
+            extract = [];
         
         // ... gleich das Patientengeschlecht merken ...        
         dataSet.gender = patient.gender != "" ? patient.gender : "male";
@@ -383,56 +464,28 @@ function getPatientLaboratoryObservations() {
         
         // ... wenn es sich um ein übergebenes Bundle handelt, dann ziehe die Observations heraus...
         if (observations.resourceType === "Bundle") {
-            let extract = [], nextPages;                
 
-            for(let i = 0; i < observations.entry.length; i++) {
-                extract.push(observations.entry[i].resource);
-            }            
-            
-            if ('link' in observations) {
-                nextPages = observations.link;
-                // Aus dem Link-Array die nächste Seite suchen (nicht zwingend in link[1] ...)
-                let i, pos = nextPages.findIndex(i => i.relation === 'next');         
+            // Sind schon mal Observations gesammelt worden?
+            if (observationSet.getList() != null) {
 
-                alert(nextPages[pos].relation + " - " + nextPages[pos].url);
-                $.ajax({
-                    url: nextPages[pos].url,
-                    type: "GET",
-                    dataType: "json",
-                    headers: {
-                        "Authorization": "Bearer " + accessToken.get()
+                observations = observationSet.getList();
+
+            } else {
+
+                if ('link' in observations) {
+                    let nextPages = observations.link;
+                    // Aus dem Link-Array die nächste Seite suchen (nicht zwingend in link[1] ...)
+                    let i, pos = nextPages.findIndex(i => i.relation === 'self');
+                    // Hole alle restlichen Observations vom Server und hänge sie an ...
+                    if (pos > -1) {                    
+                        getAllRemainingObservationsFromTheServer(nextPages[pos].url, extract, 0);
+                        observations = extract;
                     }
-                
-                //******************************************************************** */
-                //      Hier ist eine rekursive Abfrage erforderlich - WIE geht's?
-                //******************************************************************** */
-                
-                }).done(function(result){                                        
-                    if ('link' in result) {
-                        nextPages = result.link;
-                        alert("Juhu! Hier die nächste Seite: " + JSON.stringify(result));
-                        pos = nextPages.findIndex(i => i.relation === 'next');
-                        $.ajax({
-                            url: nextPages[pos].url,
-                            type: "GET",
-                            dataType: "json",  
-                            headers: {
-                                "Authorization": "Bearer " + accessToken.get()
-                            }                        
-                        }).done(function(result) {                            
-                            alert("Und nochmal! " + Object.getOwnPropertyNames(this));
-                        });
-                    } else {                    
-                        alert("Oh je! Keine Verknüpfung!");
-                    }
-                }).fail(function(e) {
-                    alert("Oh je! " + e);
-                });
+                }
 
             }
 
-            observations = extract;
-        } 
+        }
         
         // ... gehe dann die Observations durch ...
         for(var i = 0; i < observations.length; i++) {            
@@ -461,7 +514,7 @@ function getPatientLaboratoryObservations() {
             });
             
             // ... füge das Array den Patientenbeboachtungsdaten hinzu
-            observationSet.add(labValues[configuration.defaultReference[i].loinc]);
+            observationSet.add(configuration.defaultReference[i].id, labValues[configuration.defaultReference[i].loinc]);
             
             // ... und füge an das Dataset den neuesten Wert ein, wenn tatsächlich Werte abgefragt werden konnten
             if (labValues[configuration.defaultReference[i].loinc].length > 0) {                
