@@ -10,7 +10,7 @@ var configuration = {
 
     labTestKit:                         "Roche",     // 'Dade-Behring'-Test möglich
     labTestKit_tfrFIndexCRP_OK:         3.2,         // Grenzwert für Roche-Test - Grenzwert für Dade-Behring-Test 1.5 (Dtsch Arztebl 2005; 102(9))
-    labTestKit_trfFIndexCRP_High:       2.0,         // Grenzwert für Roche-Test - Grenzwert für Dade-Behring-Test 0.8 (Dtsch Arztebl 2005; 102(9))
+    labTestKit_tfrFIndexCRP_High:       2.0,         // Grenzwert für Roche-Test - Grenzwert für Dade-Behring-Test 0.8 (Dtsch Arztebl 2005; 102(9))
 
     averageRetiHb:                      28,          // in pg, benötigt für den Thomas-Plot
     
@@ -83,7 +83,7 @@ var configuration = {
         },
         {            
             id:             "sTFR",
-            name:           "sol Transf Recep",
+            name:           "soluble Transferrin Receptor",
             loinc:          "30248-9",
             required:       true,
             value:          null,
@@ -139,7 +139,7 @@ var configuration = {
             id:             "vitb12",
             name:           "Vitamine B12",
             loinc:          "2132-9",
-            required:       false,
+            required:       true,
             value:          null,
             refMin:         310,
             refMax:         1100,
@@ -153,7 +153,7 @@ var configuration = {
             id:             "folicAcid",
             name:           "Folic Acid",
             loinc:          "2284-8",
-            required:       false,
+            required:       true,
             value:          null,
             refMin:         2.0,
             refMax:         10.0,
