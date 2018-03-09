@@ -65,10 +65,56 @@ function createIronPlotCard(res, width) {
  * @param {*} rec
  */
 function createLabValGraphs(width) {
-    var s = "<div id=\"graph-card-body\" class=\"card-body\"><h4 class=\"card-title\"><span id=\"graphs-01\"></span></h4><table class=\"table table-hover table-sm\"><tbody>";
-    s = s + "<tr><canvas id=\"graphics2\" width=\"" + width + " \" height=\"100\">Keine Unterstützung für Canvas</canvas></tr>";
+    var s = "<div id=\"graph-card-body\" class=\"card-body\"><h4 class=\"card-title\"><span id=\"graphs-00\"></span></h4><table class=\"table table-hover table-sm\"><tbody>";
+    s = s + "<tr><canvas id=\"graphics2\" width=\"" + width + " \" height=\"150\">Keine Unterstützung für Canvas</canvas></tr>";
     s = s + "</tbody></table></div></div>";
     return s;    
+}
+
+/**
+ * Funktion zur Visualisierung eines Wert-Verlaufs
+ * @param {*} arrayCode 
+ */
+function drawLabValGraphs(arrayCode) {
+    
+    // Übersetzungsliste holen und gewünschten Parameter sprachadaptiert anzeigen
+    var labList = getTranslationList(),
+        lang = $("#lang-flag").data('actual-lang'),
+        pos = labList.labels.findIndex(i => i.id == 'graphs-00'),
+        showParameter = labList.labels[0][lang],
+        pos = labList.labels.findIndex(i => i.id == arrayCode);                  
+    if (pos > -1) {
+        let pos1 = labList.labels.findIndex(i => i.id == 'graphs-01');        
+        showParameter = labList.labels[pos1][lang] + ": " + labList.labels[pos][lang];
+        $("#lang-flag").data('labhist', pos);
+    }    
+    $("#graphs-00").html(showParameter);
+    
+    // entsprechende Werte holen und x- wie y-Achse kreieren
+    var l = observationSet.get(arrayCode),
+        xAxis = [],
+        yAxis = [];
+    for(var i = 0; i < l[0].length; i++) {
+        xAxis.push(l[0][i].effectiveDateTime);
+        yAxis.push(l[0][i].valueQuantity.value);
+    }
+    // Arrays sind datumsmäßig absteigend sortiert, daher umdrehen ...
+    xAxis.reverse();
+    yAxis.reverse();
+
+    // Chart zeichnen ...    
+    var ctx = document.getElementById('graphics2').getContext('2d');
+    var lineChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels:     xAxis,
+            datasets:   [{
+                label:                  "Patient",
+                data:                   yAxis,
+                pointBackgroundColor:   '#FF0000'
+            }]
+        }
+    });    
 }
 
 /**
@@ -96,8 +142,8 @@ function composeResultCards() {
     htmlString = createIronPlotCard(resData.maths, cardWidth);
     $("#ironplot-card").html(htmlString);
     var cardHeight = $("#ironplot-card-body").height();             // Höhe des Canvas - später wichtig für die Bezeichnung der Quadranten
-
-    // Thomas-Plot durchführen    
+    
+    // Thomas-Plot durchführen   
     var ctx = document.getElementById('graphics').getContext('2d');
     var scatterChart = new Chart(ctx, {
         type: 'scatter',
@@ -160,10 +206,10 @@ function composeResultCards() {
                 onComplete: function() {
                     ctx.font = "30px Arial";
                     ctx.moveTo(0,0);
-                    ctx.fillText("I",40,60);
-                    ctx.fillText("IV",40,260);
-                    ctx.fillText("II",cardWidth/2+15,60);
-                    ctx.fillText("III",cardWidth/2+15,260);                    
+                    ctx.fillText("I",40, 60);
+                    ctx.fillText("IV",40, 240);
+                    ctx.fillText("II",cardWidth/2+15, 60);
+                    ctx.fillText("III",cardWidth/2+15, 240);                    
                     ctx.stroke();
                 }
             }
