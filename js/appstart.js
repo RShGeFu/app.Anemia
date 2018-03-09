@@ -12,7 +12,7 @@ $(document).ready(function() {
     /* Revisualisierung des Fensterinhalts bei Resizing des Fensters, insbesondere der Grafikdarstellung */        
     $(window).resize(function() {
         composeResultCards();
-    });
+    });    
                 
     /* Wenn ein Patientenkontext hergestellt werden konnte */
     if (typeof pC == 'function') {        

@@ -107,8 +107,8 @@ var decision = (function() {
                                 return {
                                     target1: function() { return targetHb1; },
                                     target2: function() { return targetHb2; },
-                                    target1Iron: (targetHb1 - valueSet.hemoglobin.value) * valueSet.weight.value * 2.4 + ironReserve, // Formel nach Ganzoni
-                                    target2Iron: (targetHb2 - valueSet.hemoglobin.value) * valueSet.weight.value * 2.4 + ironReserve  // Formel nach Ganzoni)
+                                    target1Iron: Math.round((targetHb1 - valueSet.hemoglobin.value) * valueSet.weight.value * 2.4 + ironReserve), // Formel nach Ganzoni
+                                    target2Iron: Math.round((targetHb2 - valueSet.hemoglobin.value) * valueSet.weight.value * 2.4 + ironReserve)  // Formel nach Ganzoni)
                                 }
                             
                             }   
@@ -135,7 +135,7 @@ var decision = (function() {
                                     shift = 2.5;
                                 }                                
                                 return Math.round(valueSet.reticulocytepc.value * valueSet.hematokrit.value / shift / 45 * 10) / 10;                                
-                            }
+                            }                            
                             return 0;
                         },
         isRPIHigh:      function(limit = configuration.limitRPI) {
@@ -185,7 +185,7 @@ var decision = (function() {
         // BMI als Nebenprodukt
         bmi:            function() {
                             if (valueSet.hasWeight() && valueSet.hasHeight()) {
-                                // Grenzwerte berücksichtigen!!
+                                // Grenzwerte berücksichtigen!!                                
                                 var w = 0, h = 0;
                                 w = Number(valueSet.weight.value).valueOf() < 40  ? 40  : Number(valueSet.weight.value).valueOf();
                                 w = Number(valueSet.weight.value).valueOf() > 200 ? 200 : w;
@@ -225,11 +225,11 @@ var decision = (function() {
                             // dann den Referenzwert des Transferrin-Rezeptor-Ferritin-Index für den Thomas-Plot je nach CRP-Status ...
                             if (valueSet.hasCRP()) {                                
                                 if (valueSet.isCrpOK()) {
-                                    valueSet.maths.push(configuration.labTestKit_tfrFIndexCRP_OK);
+                                    valueSet.maths.push(configuration.labTestKit_tfrFIndexCRP_OK);                                    
                                 } else {
-                                    valueSet.maths.push(configuration.labTestKit_tfrFIndexCRP_High);
+                                    valueSet.maths.push(configuration.labTestKit_tfrFIndexCRP_High);                                    
                                 }
-                            } else {                                
+                            } else {                                                                
                                 valueSet.maths.push(configuration.labTestKit_tfrFIndexCRP_OK);
                             }
                             // dann den BMI als AddOn.
