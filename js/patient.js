@@ -152,12 +152,15 @@ function createLabCard(dataset) {
         
         /* Zeile für Zeile aus den übergebenen Daten zuammenführen */
         for(i = 0; i < dataset.kval.length; i++) {            
+            idOfInput = dataset.kval[i]['id'];
+            classOfInput = "ds_values_gf";
+
             str = str + "<tr><th scope=\"row\"></th>";
             str = str + "<td><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span></td>";
 
             /* Referenzbreich beachten und angeben */
             inNormRange = testNormalAndValidRange(dataset.kval[i]['value'], dataset.kval[i]['refMin'], dataset.kval[i]['refMax'], dataset.kval[i]['validMin'], dataset.kval[i]['validMax']);            
-            hstr = "<span class=\"badge badge-" + inNormRange.color + "\">" + inNormRange.status + "</span>";            
+            hstr = "<span id=\"" + idOfInput + "_b\" class=\"badge badge-" + inNormRange.color + "\">" + inNormRange.status + "</span>";            
             
             /* ZENTRAL: Hier werden die Datenstrukturen für die Datenübergabe zum Decision-Finding festgelegt
                Input-Feld verwenden und Laborwert in das Input-Feld schreiben 
@@ -166,10 +169,7 @@ function createLabCard(dataset) {
             */
             decision.setItem(dataset.kval[i]['id'], dataset.kval[i]['value'], inNormRange.status);
             
-            idOfInput = dataset.kval[i]['id'];
-            classOfInput = "ds_values_gf";
             str = str + "<td>" + hstr + "</td><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td><td><b><i><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></i></b></td>";            
-            /* Anhängen der Lage relativ zum Referenzbereich noch notwendig */
             
             /* Einheit und Referenzbereich angeben */            
             str = str + "<td><small>" + dataset.kval[i]['unit'] + "</small></td>";
