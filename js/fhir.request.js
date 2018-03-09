@@ -94,7 +94,7 @@ function reactToUserInput() {
                                         0, 
                                         $("#" + this.id + "_refMax").html() * 10 );
 
-    /* Entscheidungskriterium setzen */            
+    /* Entscheidungskriterium setzen */    
     decision.setItem(this.id, this.value, tnr.status == 'nv nan' || tnr.status == 'nv nvr' ? null : tnr.status);            
     
     /* Kartenfarbe auf 'verändert' setzen */
@@ -102,6 +102,8 @@ function reactToUserInput() {
                         "background-color": "#ffbfbf",
                         "transition": "0.5s all ease-in-out"
     });
+    $("#" + this.id + "_b").html(tnr.status);
+    $("#" + this.id + "_b").attr("class", "badge badge-secondary");    
     /* Farbe des veränderten Input-Feldes auf Rot setzen */
     $(this).css({
         "background-color": "#ffbfbf",
@@ -109,7 +111,7 @@ function reactToUserInput() {
     });
     
     /* Neu entscheiden */
-    composeResultCards();            
+    composeResultCards();
 }
 
 /**
@@ -199,10 +201,11 @@ var getPatientContext = (function() {
                                         /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
                                         $(".ds_values_gf").change(reactToUserInput);                                                                                       
                                         $(".ds_chart_gf").click(function() {
-                                            alert("Graphik wird erstellt! " + this.id);                                            
+                                            drawLabValGraphs(this.id);
                                         });                                                                                    
                                         $(".ds_request_gf").click(function() {
-                                            alert("Request wird erstellt! " + this.id);
+                                            let pos = configuration.defaultReference.findIndex(i => i.id === this.id);
+                                            alert("Anforderung wird erstellt für: " + configuration.defaultReference[pos].name);
                                             $(this).attr('disabled', true);
                                         });                                                                                    
                                         
@@ -341,7 +344,7 @@ var getPatientContext = (function() {
                                     },
                                 }).done(function(pt){
                                     
-                                    var url = serviceUri + "/Observation?subject:Patient=" + pt.id;
+                                    var url = serviceUri + "/Observation?_count=100&subject:Patient=" + pt.id;
                                     var obs = $.ajax({
                                             url: url,
                                             type: "GET",
@@ -357,11 +360,12 @@ var getPatientContext = (function() {
                                         
                                         /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
                                         $(".ds_values_gf").change(reactToUserInput);
-                                        $(".ds_chart_gf").click(function() {
-                                            alert("Graphik wird erstellt! " + this.id);                                            
+                                        $(".ds_chart_gf").click(function() {                                                                                       
+                                            drawLabValGraphs(this.id);
                                         });                                                                                    
                                         $(".ds_request_gf").click(function() {
-                                            alert("Request wird erstellt! " + this.id);
+                                            let pos = configuration.defaultReference.findIndex(i => i.id === this.id);
+                                            alert("Anforderung wird erstellt für: " + configuration.defaultReference[pos].name);
                                             $(this).attr('disabled', true);
                                         });                                                                                    
                                         
