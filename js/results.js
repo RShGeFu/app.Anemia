@@ -86,7 +86,7 @@ function drawLabValGraphs(arrayCode) {
     if (pos > -1) {
         let pos1 = labList.labels.findIndex(i => i.id == 'graphs-01');        
         showParameter = labList.labels[pos1][lang] + ": " + labList.labels[pos][lang];
-        $("#lang-flag").data('labhist', pos);
+        $("#lang-flag").data('labhist', arrayCode);
     }    
     $("#graphs-00").html(showParameter);
     
@@ -217,10 +217,14 @@ function composeResultCards() {
     });
 
     /* Laborverlauf-Karte */
-    var cardWidth = $("#graph-card-body").width();               // Breite des Canvas - später wichtig für die Bezeichnung der Quadranten
+    var cardWidth = $("#graph-card-body").width();               // Breite des Canvas
     htmlString = createLabValGraphs(cardWidth);
     $("#graph-card").html(htmlString);
-    var cardHeight = $("#graph-card-body").height();             // Höhe des Canvas - später wichtig für die Bezeichnung der Quadranten
+    var cardHeight = $("#graph-card-body").height();             // Höhe des Canvas
+    if ($("#lang-flag").data('labhist')) {
+        drawLabValGraphs($("#lang-flag").data('labhist'));
+    }
+
     
     /* Beschriftung nach eingestellter Sprache */
     actualLanguage = $('#lang-flag').data('actual-lang');

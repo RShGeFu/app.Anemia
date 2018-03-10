@@ -209,9 +209,10 @@ function translateLabels(lang = 'de') {
             }
         }
         // Sondersituation: für den Wertverlauf auf der Laborverlaufskarte den gemerkten Parameter richtig anzeigen...
-        if ($('#lang-flag').data('labhist')) {            
-            let pos1 = labelList.labels.findIndex(i => i.id == 'graphs-01');        
-            let showParameter = labelList.labels[pos1][lang] + ": " + labelList.labels[$("#lang-flag").data('labhist')][lang];
+        if ($('#lang-flag').data('labhist')) {                        
+            let pos1 = labelList.labels.findIndex(i => i.id == 'graphs-01');            
+            let pos2 = labelList.labels.findIndex(i => i.id == $("#lang-flag").data('labhist'));       
+            let showParameter = labelList.labels[pos1][lang] + ": " + labelList.labels[pos2][lang];
             $("#graphs-00").html(showParameter);    
         }    
 
