@@ -207,7 +207,7 @@ var getPatientContext = (function() {
                                             let pos = configuration.defaultReference.findIndex(i => i.id === this.id);
                                             alert("Anforderung wird erstellt für: " + configuration.defaultReference[pos].name);
                                             $(this).attr('disabled', true);
-                                        });                                                                                    
+                                        });                                    
                                         
                                     }).fail(function(e) {
                                         alert("No observation found!");                                    
@@ -367,7 +367,7 @@ var getPatientContext = (function() {
                                             let pos = configuration.defaultReference.findIndex(i => i.id === this.id);
                                             alert("Anforderung wird erstellt für: " + configuration.defaultReference[pos].name);
                                             $(this).attr('disabled', true);
-                                        });                                                                                    
+                                        });
                                         
                                     }).fail(function(e) {
                                         alert("No observation found!");

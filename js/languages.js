@@ -27,6 +27,7 @@ var getTranslationList = (function() {
                         { id: "lab6",       attr: "href",   de: "images/german.png", en: "images/english.png"},
                         { id: "lab7",       attr: "",       de: "Patientendaten neu laden", en: "Reload patient data" },                        
                         { id: "lab7a",      attr: "",       de: "Keine Diagnosen verfügbar", en: "No diagnosis available" },
+                        { id: "lab8",       attr: "",       de: "test-d", en: "test-e" },
                         
                         // --- Modaldialog
                         { id: "modaltitle", attr: "",       de: "Bitte beachten", en: "Please note" },

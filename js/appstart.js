@@ -12,8 +12,14 @@ $(document).ready(function() {
     /* Revisualisierung des Fensterinhalts bei Resizing des Fensters, insbesondere der Grafikdarstellung */        
     $(window).resize(function() {
         composeResultCards();
-    });    
-                
+    });
+    
+    $("#lab8").click(function() {
+        console.log("appstart: click - lab8");
+        observationFactory.addValidation(observationSet.getList());
+        observationFactory.getValidation(observationSet.getList());
+    });
+                                                                                                  
     /* Wenn ein Patientenkontext hergestellt werden konnte */
     if (typeof pC == 'function') {        
         /* Patientenkontext ausführen */
