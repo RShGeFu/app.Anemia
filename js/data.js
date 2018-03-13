@@ -12,12 +12,11 @@ var observationSet = (function() {
     var obs = [],
         list = [];
 
-    return {        
+    return {
         clear:  function() { obs = []; },
         add:    function(n, o) {                                         
                     obs[n] = [];
-                    obs[n].push(o);                    
-                    console.log(JSON.stringify(obs[n]));
+                    obs[n].push(o);                                        
                 },
         get:    function(n) {
                     if (typeof n === 'number') {
@@ -32,7 +31,6 @@ var observationSet = (function() {
 
         addList:function(l) {
                     this.list = l;
-                    console.log(JSON.stringify(this.list));
                 },
         getList:function() {
                     return this.list;
@@ -181,7 +179,7 @@ function validatePatientClinicalObservations(dataset) {
 /**
  * Funktion für die Lieferung von klinischen Patientendaten
  */
- function getPatientClinicalObservations() {
+function getPatientClinicalObservations() {
     
     var dataSet = { };
 
@@ -212,13 +210,11 @@ function validatePatientClinicalObservations(dataset) {
                     if (pos > -1) {                    
                         getAllRemainingObservationsFromTheServer(nextPages[pos].url, extract, 0);
                         observations = extract;
-                        observationSet.addList(observations);
                     }
                 }
 
             }
 
-            observations = extract;
         }
         
         // ... gehe sie durch ...
@@ -415,6 +411,7 @@ function getAllRemainingObservationsFromTheServer(requestedUrl, items, count) {
                             items.push(result.entry[i].resource);
                         }
                     }
+                    observationSet.addList(items); // Es kommt die aktuelle Liste in die ObservationSet
                     
                     // Wenn eine weitere Datenseite auf dem Server liegt ...
                     if ('link' in result) {               
@@ -423,7 +420,8 @@ function getAllRemainingObservationsFromTheServer(requestedUrl, items, count) {
                         if (pos_n > -1) {
                             // Einen weiteren Request durchführen und die Daten anhängen ...
                             getAllRemainingObservationsFromTheServer(nextPages[pos_n].url, items, count+1);
-                        } 
+                        } else {
+                        }
                     }
 
                 });
@@ -479,14 +477,14 @@ function getPatientLaboratoryObservations() {
                     // Hole alle restlichen Observations vom Server und hänge sie an ...
                     if (pos > -1) {                    
                         getAllRemainingObservationsFromTheServer(nextPages[pos].url, extract, 0);
-                        observations = extract;
+                        observations = extract;                        
                     }
                 }
 
             }
 
         }
-        
+
         // ... gehe dann die Observations durch ...
         for(var i = 0; i < observations.length; i++) {            
             // ... wenn es tatsächlich eine Observation ist (nochmals eine Datenvalidierung!)...            
