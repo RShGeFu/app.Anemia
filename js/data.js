@@ -483,6 +483,10 @@ function getPatientLaboratoryObservations() {
 
             }
 
+        } else {
+            
+            observationSet.addList(observations);
+            
         }
 
         // ... gehe dann die Observations durch ...
