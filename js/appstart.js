@@ -13,13 +13,26 @@ $(document).ready(function() {
     $(window).resize(function() {
         composeResultCards();
     });
-    
-    $("#lab8").click(function() {
-        console.log("appstart: click - lab8");
-        observationFactory.addValidation(observationSet.getList());
-        observationFactory.getValidation(observationSet.getList());
-    });
-                                                                                                  
+        
+    /**
+     *  Test-Code: Button, mit dem die Kapselung von (Business-)Logik in der FHIR-Struktur implementiert wird
+     */
+    if (true) {
+        $("#lab8").click(function() {
+            console.log("appstart: click - lab8");
+            if (observationSet) {
+                observationFactory.addValidation(observationSet.getList());
+                observationFactory.getValidation(observationSet.getList());
+            }
+            observationFactory.direktGet('718-7')();
+            observationFactory.direktGet('default')(); 
+            console.log("[0]: " + JSON.stringify(observationSet.getList() ? observationSet.getList()[0] : "Keine Liste ...."));
+            observationFactory.createObservs(configuration);
+        });
+    } else {
+        $("#lab8").hide();
+    }
+
     /* Wenn ein Patientenkontext hergestellt werden konnte */
     if (typeof pC == 'function') {        
         /* Patientenkontext ausführen */
