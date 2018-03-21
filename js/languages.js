@@ -215,7 +215,7 @@ function translateLabels(lang = 'de') {
             let pos2 = labelList.labels.findIndex(i => i.id == $("#lang-flag").data('labhist'));       
             let showParameter = labelList.labels[pos1][lang] + ": " + labelList.labels[pos2][lang];
             $("#graphs-00").html(showParameter);    
-        }    
+        }
 
     /* Fehlermeldung, wenn die Validierung der Übersetzungstabelle fehlschlägt */
     } else {

@@ -19,15 +19,16 @@ $(document).ready(function() {
      */
     if (true) {
         $("#lab8").click(function() {
-            console.log("appstart: click - lab8");
+            console.log("app - start: click - lab8");
             if (observationSet) {
                 observationFactory.addValidation(observationSet.getList());
-                observationFactory.getValidation(observationSet.getList());
+                //observationFactory.getValidation(observationSet.getList());
             }
-            observationFactory.direktGet('718-7')();
-            observationFactory.direktGet('default')(); 
-            console.log("[0]: " + JSON.stringify(observationSet.getList() ? observationSet.getList()[0] : "Keine Liste ...."));
+            //console.log("[0]: " + JSON.stringify(observationSet.getList() ? observationSet.getList()[0] : "Keine Liste ...."));
             observationFactory.createObservs(configuration);
+            observationFactory.replaceSubstObservs(observationSet.getList());
+            console.log(observationFactory.getObservs());
+            console.log("app - end: click - lab8");
         });
     } else {
         $("#lab8").hide();
