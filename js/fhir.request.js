@@ -368,6 +368,7 @@ var getPatientContext = (function() {
                                             alert("Anforderung wird erstellt für: " + configuration.defaultReference[pos].name);
                                             $(this).attr('disabled', true);
                                         });
+                                        $("#lab7").hide(); // Verstecken des Reload-Buttons, da nur mit entsprechender Authorisierung ein Reload möglich ist
                                         
                                     }).fail(function(e) {
                                         alert("No observation found!");
