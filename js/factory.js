@@ -6,44 +6,54 @@
 
 var observationFactory = (function() {
         
+    /**
+     * Das Objekt beinhaltet Funktionen um Konfigurations- oder Patienten-Observations in ihrer Funktionalität zu ergänzen
+     */
     var vs = {
+
+        // Einhängen einer Validierungsfunktion
         addValidation: function(observations) {
-            console.log("observationFactory: start addValidation - " + typeof observations);
-            console.log("------------------------------------------------------------");            
+
             if (observations) {                
                 for(var i = 0; i < observations.length; i++) {
 
                     if (validationPerLOINC[observations[i].code.coding[0].code]) {
                         var func = validationPerLOINC[observations[i].code.coding[0].code];
                     } else {
-                        var func = function() {
-                            console.log("observation / other " + this.code.coding[0].code);
-                        }
+                        var func = validationPerLOINC['default'];                        
                     }
-                    Object.defineProperty(observations[i], 'validate', { value: func } );
+
+                    if (!('validate' in observations[i])) {
+                        Object.defineProperty(observations[i], 'validate', { value: func } );
+                    }
 
                 }
             }
-            console.log("--------------------------------------- ENDE");                    
+
         },
 
+        // Einhängen einer Visualisierung der Observation
+        addVisualisation: function(observations) {
+
+        },
+        
         getValidation: function(observations) {
             
-            console.log("observationFactory: start getValidation");            
-            console.log("---------------------------------------");            
             if (observations) {
                 for(var i = 0; i < observations.length; i++) {
                     observations[i].validate();                
                 }
             }
-            console.log("--------------------------------------- ENDE");            
             
         }
+
     }
 
+    /**
+     * In diesem Objekt sind Validierungsfunktionen für die einzelnen Observations enthalten
+     */
     var validationPerLOINC = {
         '29463-7':  function() {
-                        console.log('LOINC 29463-7 direkt hinterlegt');
                         // Schaue nach:
                         // 1. Werte vorhanden?
                         // 2. Referenz-Werte vorhanden?
@@ -51,48 +61,176 @@ var observationFactory = (function() {
                         // 4. Ansonsten - bewerten und Observation vervollständigen
                         // 5. Wenn nicht möglich - entsprechend bewerten
                     },
+        '3141-9':   function() {
+
+                    },
+        '8302-2':   function() {
+
+                    },
         '718-7':    function() {
-                        console.log('LOINC 718-7 direkt hinterlegt');                        
+                        
+                    },
+        '787-2':    function() {
+
+                    },
+        '1988-5':   function() {
+
+                    },
+        '2276-4':   function() {
+
+                    },
+        '30248-9':  function() {
+
+                    },
+        '4679-7':   function() {
+
+                    },
+        '42810-2':  function() {
+
+                    },
+        '20570-8':  function() {
+
+                    },
+        '2132-9':   function() {
+
+                    },
+        '2284-8':   function() {
+
                     },
         'default':  function() {
-                        var obs = returnBaseObservationDefinition();
-                        console.log('Default direkt hinterlegt ' + JSON.stringify(obs));
-                        console.log("--------------------------------------- ENDE");            
+                        
                     }              
     }
 
+    /**
+     * In diesem Objekt sind Visualisierungsfunktionen für die einzelnen Observations enthalten
+     */
+    var visualisationPerLOINC = {
+        '29463-7':  function() {
+                        // Schaue nach:
+                        // 1. Werte vorhanden?
+                        // 2. Referenz-Werte vorhanden?
+                        // 3. Bewertung vorhanden?
+                        // 4. Ansonsten - bewerten und Observation vervollständigen
+                        // 5. Wenn nicht möglich - entsprechend bewerten
+                    },
+        '3141-9':   function() {
+
+                    },
+        '8302-2':   function() {
+
+                    },
+        '718-7':    function() {
+                        
+                    },
+        '787-2':    function() {
+
+                    },
+        '1988-5':   function() {
+
+                    },
+        '2276-4':   function() {
+
+                    },
+        '30248-9':  function() {
+
+                    },
+        '4679-7':   function() {
+
+                    },
+        '42810-2':  function() {
+
+                    },
+        '20570-8':  function() {
+
+                    },
+        '2132-9':   function() {
+
+                    },
+        '2284-8':   function() {
+
+                    },
+        'default':  function() {
+                        
+                    }              
+    }
+
+    /**
+     * Das Objekt stellt die Liste der benötigten Observations für den Entscheidungsprozess zur Verfügung
+     * Aus den vorgegebenen Konfigurationswerten werden Observations kreiert, die in eine Liste eingetragen werden
+     * Schließlich können einzelne Observations durch Patienten-Observations ersetzt werden und verfügbar gemacht werden
+     * So ist immer ein kompletter Satz von Observations für den Entscheidungsprozess vorhanden
+     */
     var substitutedObservations = {
         
         obs: [],
         
+        // Liste mit Observations aus der Konfiguration kreieren
         createByList: function(configList) {
-                        if (configList.defaultReference) {
-                            console.log("createByList ---------------------------");
+
+                        if (configList.defaultReference) {                  // Konfiguration nachschauen                    
                             for(var i of configList.defaultReference) {  
-                                var r = returnBaseObservationDefinition(i);
-                                substitutedObservations.obs.push(r);
+                                var r = returnBaseObservationDefinition(i); // Observation erstellen und abholen
+                                substitutedObservations.obs.push(r);        // ... und ab ins Array der benötigten Observations
                             }
-                            vs.addValidation(substitutedObservations.obs);
-                            console.log("createByList -----------------------ENDE")
+                            vs.addValidation(substitutedObservations.obs);                            
                         }
+
+                    },
+        
+        // Liste der Observations zur Verfügung stellen
+        getList:    function() {
+                        return substitutedObservations.obs;
                     },
 
-        createByObject: function(configObj) {
-                            return returnBaseObservationDefinition(configObj);                            
+        // Konfigurations-Observation gegen Patienten-Observation austauschen und zwar immer die neuester Patientenobservation einfügen
+        replaceSubsitutedObservationByPatientValues: function(observation) {
+                        var pos, d1, d2, ddiff;
+
+                        if (substitutedObservations.obs) {
+                            pos = substitutedObservations.obs.findIndex(j => j.code.coding[0].code === observation.code.coding[0].code); // Wo steht die Observation mit entsprechenden LOINC                           
+                            if(pos > -1) {
+                                
+                                d1 = new Date(substitutedObservations.obs[pos].effectiveDateTime === 'undefined' ? substitutedObservations.obs[pos].meta.lastUpdated : substitutedObservations.obs[pos].effectiveDateTime),
+                                d2 = new Date(observation.effectiveDateTime === 'undefined' ? observation.meta.lastUpdated : observation.effectiveDateTime);
+                                ddiff = d1.valueOf() - d2.valueOf();
+                                
+                                if (substitutedObservations.obs[pos].identifier === "appAnem-test" || ddiff < 0) {  // Ersetze die eingeschriebene Observation, wenn...
+                                    substitutedObservations.obs[pos] = observation;
+                                }
+
+                            }
+                        }
+
+                    },
+
+        // Liste von Patientenobservations verarbeiten
+        replaceSubstitutedObservationByPatientValueList: function(observations) {
+
+                        if (observations.length > 0) {
+                            for(var i = 0; i < observations.length; i++) {
+                                substitutedObservations.replaceSubsitutedObservationByPatientValues(observations[i]);
+                            }
+                        }
+
                     }
+
     }
 
+    // Stelle folgenden Funktionen zur Verfügung
     return {
-        addValidation: vs.addValidation,
-        getValidation: vs.getValidation,
-        direktGet: function(loinc) {
-                        return validationPerLOINC[loinc];
-                    },
-        createObservs: substitutedObservations.createByList
+        addValidation:      vs.addValidation,
+        getValidation:      vs.getValidation,
+        createObservs:      substitutedObservations.createByList,
+        replaceSubstObservs:substitutedObservations.replaceSubstitutedObservationByPatientValueList,
+        getObservs:         substitutedObservations.getList
     }
 
 })();
 
+/**
+ * Stelle eine Observation zusammen ...
+ */
 function returnBaseObservationDefinition() {    
 
   var res = {
@@ -279,6 +417,7 @@ function returnBaseObservationDefinition() {
   }]*/
   }
 
+  // Wenn ein Konfigurationsobjekt übergeben wurde, dann weise die Werte zur
   if (arguments.length > 0) {
 
     var configObj = arguments[0];    
@@ -304,3 +443,7 @@ function returnBaseObservationDefinition() {
 
   return res;
 }
+
+var cardFactory = (function() {
+
+})();
