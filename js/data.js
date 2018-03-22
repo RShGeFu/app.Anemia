@@ -10,31 +10,39 @@
 var observationSet = (function() {
 
     var obs = [],
-        list = [];
+        list = [],
+        pat = null;
 
     return {
-        clear:  function() { obs = []; },
-        add:    function(n, o) {                                         
-                    obs[n] = [];
-                    obs[n].push(o);                                        
-                },
-        get:    function(n) {
-                    if (typeof n === 'number') {
-                        if (n >= 0 && n < obs.length) {
-                            return obs[n]; 
+        clear:      function() { obs = []; },
+        add:        function(n, o) {                                         
+                        obs[n] = [];
+                        obs[n].push(o);                                        
+                    },
+        get:        function(n) {
+                        if (typeof n === 'number') {
+                            if (n >= 0 && n < obs.length) {
+                                return obs[n]; 
+                            }
+                        } else if (typeof n === 'string') {
+                            return obs[n];
                         }
-                    } else if (typeof n === 'string') {
-                        return obs[n];
-                    }
-                    return null;
-                },
+                        return null;
+                    },
 
-        addList:function(l) {
-                    this.list = l;
-                },
-        getList:function() {
-                    return this.list;
-                }
+        addList:    function(l) {
+                        this.list = l;
+                    },
+        getList:    function() {
+                        return this.list;
+                    },
+
+        addPatient: function(p) {
+                        this.pat = p;
+                    },
+        getPatient: function() {
+                        return this.pat;
+                    }
     }
 
 })();
@@ -108,6 +116,8 @@ function getPatientDemographics() {
                         { id: "perdiagnose",    val: null }
                     ]
             }
+
+            observationSet.addPatient(patient);
             
         }
     
