@@ -11,6 +11,15 @@ var observationFactory = (function() {
      */
     var vs = {
 
+        patient:        "",
+
+        setPatient:     function(p) {
+                            vs.patient = p;
+                        },
+        getPatient:     function() {
+                            return vs.patient;
+                        },
+
         // Einhängen einer Validierungsfunktion
         addValidation: function(observations) {
 
@@ -24,7 +33,7 @@ var observationFactory = (function() {
                     }
 
                     if (!('validate' in observations[i])) {
-                        Object.defineProperty(observations[i], 'validate', { value: func } );
+                        Object.defineProperty(observations[i], 'validate', { value: func() } );
                     }
 
                 }
@@ -51,108 +60,160 @@ var observationFactory = (function() {
 
     /**
      * In diesem Objekt sind Validierungsfunktionen für die einzelnen Observations enthalten
+     * Aktuell ist im Prinzip eine Funktion zur Validierung der einzelnen Labor-Observations hinterlegt, es könnten auf
+     * die angelegte Art jedoch für die unterschiedlichen Observations auch unterschiedliche Validierungen 
+     * durchgeführt werden
      */
     var validationPerLOINC = {
-        '29463-7':  function() {
-                        // Schaue nach:
-                        // 1. Werte vorhanden?
-                        // 2. Referenz-Werte vorhanden?
-                        // 3. Bewertung vorhanden?
-                        // 4. Ansonsten - bewerten und Observation vervollständigen
-                        // 5. Wenn nicht möglich - entsprechend bewerten
-                    },
-        '3141-9':   function() {
+        // Gewicht und Größe - Hier ist noch nichts hinterlegt
+        '29463-7':  function() { return function() { }; },
+        '3141-9':   function() { return function() { }; },
+        '8302-2':   function() { return function() { }; },
 
-                    },
-        '8302-2':   function() {
+        // Laborwerte
+        '718-7':    function() { return validateLab; },
+        '787-2':    function() { return validateLab; },
+        '1988-5':   function() { return validateLab; },
+        '2276-4':   function() { return validateLab; },
+        '30248-9':  function() { return validateLab; },
+        '4679-7':   function() { return validateLab; },
+        '42810-2':  function() { return validateLab; },
+        '20570-8':  function() { return validateLab; },
+        '2132-9':   function() { return validateLab; },
+        '2284-8':   function() { return validateLab; },
 
-                    },
-        '718-7':    function() {
+        // Alles andere ...
+        'default':  function() { return function() { }; }              
+    }
+
+    function validateLab() {
+
+        // In der Konfiguration den zur Observation passenden Wert heraussuchen - Hier wäre ein Mapping für semantisch gleiche LOINCs denkbar ...
+        var pos = configuration.defaultReference.findIndex(j => j.loinc === this.code.coding[0].code);
+
+        // Liegt ein Validitätsbereich vor? Wenn nicht, dann einführen und mit Werten aus der Konfiguration befüllen...
+        if (!('validRange' in this)) {
+            Object.defineProperties(this, {
+                "validRange" : { value: [{ // Provides guide for interpretation
+                    "low" : {
+                        // from Element: extension
+                        "value" : 0.0, // Numerical value (with implicit precision)
+                        "comparator" : "<", // < | <= | >= | > - how to understand the value
+                        "unit" : "", // Unit representation
+                        "system" : "http://unitsofmeasure.org/", // C? System that defines coded unit form
+                        "code" : "" // Coded form of the unit
+                      }, // C? Low Range, if relevant
+                    "high" : {
+                        // from Element: extension
+                        "value" : 0.0, // Numerical value (with implicit precision)
+                        "comparator" : ">", // < | <= | >= | > - how to understand the value
+                        "unit" : "", // Unit representation
+                        "system" : "http://unitsofmeasure.org/", // C? System that defines coded unit form
+                        "code" : "" // Coded form of the unit
+                      }, // C? High Range, if relevant
+                    }]
+                }
+            });            
+            this.validRange[0].low.value = configuration.defaultReference[pos].validMin;
+            this.validRange[0].low.unit = configuration.defaultReference[pos].unit;
+            this.validRange[0].high.value = configuration.defaultReference[pos].validMax;
+            this.validRange[0].high.unit = configuration.defaultReference[pos].unit;                    
+        }
+        
+        // Liegt ein Referenzbereich vor? Wenn nicht, dann einführen und mit Werten aus der Konfiguration befüllen...
+        if (!'referenceRange' in this) {
+            Object.defineProperties(this, {
+                "referenceRange" : { value: [{ // Provides guide for interpretation
+                    "low" : {
+                        // from Element: extension
+                        "value" : 0.0, // Numerical value (with implicit precision)
+                        "comparator" : "<", // < | <= | >= | > - how to understand the value
+                        "unit" : "", // Unit representation
+                        "system" : "http://unitsofmeasure.org/", // C? System that defines coded unit form
+                        "code" : "" // Coded form of the unit
+                      }, // C? Low Range, if relevant
+                    "high" : {
+                        // from Element: extension
+                        "value" : 0.0, // Numerical value (with implicit precision)
+                        "comparator" : ">", // < | <= | >= | > - how to understand the value
+                        "unit" : "", // Unit representation
+                        "system" : "http://unitsofmeasure.org/", // C? System that defines coded unit form
+                        "code" : "" // Coded form of the unit
+                      }, // C? High Range, if relevant
+                    }]
+                }
+            });            
+            this.referenceRange[0].low.value = configuration.defaultReference[pos].refMin;
+            this.referenceRange[0].low.unit = configuration.defaultReference[pos].unit;
+            this.referenceRange[0].high.value = configuration.defaultReference[pos].refMax;
+            this.referenceRange[0].high.unit = configuration.defaultReference[pos].unit;                    
+        }
+        
+        // Liegt eine Bedeutung für den Referenzbereich vor?
+        if (!('meaning' in this.referenceRange)) {
+            Object.defineProperties(this.referenceRange, {
+                    "meaning": { value: { 
+                                        coding: [ { code: "normal",
+                                                    display: "Normal Range",
+                                                    system: "http://hl7.org/fhir/referencerange-meaning"
+                                                } ],
+                                        text: "" 
+                                    }
+                                }
+            });
+        }
+
+        // Liegt eine Interpretation vor? Wenn nein, dann führe sie ein und interpretiere die vorliegende Observation ...
+        if (!('interpretation' in this)) {
+            Object.defineProperties(this, {
+                    "interpretation" : { value : {
+                        "coding" : [{ 
+                                        "code":  ""
+                                    }],
+                        "text" : ""                                    
+                        }
+                    }
+                });
+            }
+                                
+        // In welcher Struktur der Observation liegt der Wert der Observation vor?
+        var val = !this.value ? this.valueQuantity.value : this.value[0].valueQuantity.value;
                         
-                    },
-        '787-2':    function() {
+        // Bewerte nun ....
+        if (val) {
+            if (val < this.referenceRange[0].low.value) {
+                this.interpretation.coding[0].code = 'low';
+                this.interpretation.text = 'low / under normal range';
+            } else if (val < this.validRange[0].low.value) {
+                this.interpretation.coding[0].code = 'nvl';
+                this.interpretation.text = 'not valid / under valid range';
+            } else if (val > this.referenceRange[0].high.value) {
+                this.interpretation.coding[0].code = 'high';
+                this.interpretation.text = 'high / above normal range';
+            } else if (val > this.validRange[0].high.value) {
+                this.interpretation.coding[0].code = 'nvh';
+                this.interpretation.text = 'not valid / above valid range';
+            } else {
+                this.interpretation.coding[0].code = 'ok';
+                this.interpretation.text = 'in normal range';
+            }
+        } else {
+            this.interpretation.coding[0].code = 'nvn';
+            this.interpretation.text = 'not valid / no value';                            
+        }
 
-                    },
-        '1988-5':   function() {
+        console.log(this);
 
-                    },
-        '2276-4':   function() {
-
-                    },
-        '30248-9':  function() {
-
-                    },
-        '4679-7':   function() {
-
-                    },
-        '42810-2':  function() {
-
-                    },
-        '20570-8':  function() {
-
-                    },
-        '2132-9':   function() {
-
-                    },
-        '2284-8':   function() {
-
-                    },
-        'default':  function() {
-                        
-                    }              
     }
 
     /**
-     * In diesem Objekt sind Visualisierungsfunktionen für die einzelnen Observations enthalten
+     * In diesem Objekt sind Visualisierungsfunktionen für die einzelnen Observations enthalten, je nachdem, ob sie vom 
+     * Patienten stammen oder aus der Konfigurationsvorgabe
      */
     var visualisationPerLOINC = {
-        '29463-7':  function() {
-                        // Schaue nach:
-                        // 1. Werte vorhanden?
-                        // 2. Referenz-Werte vorhanden?
-                        // 3. Bewertung vorhanden?
-                        // 4. Ansonsten - bewerten und Observation vervollständigen
-                        // 5. Wenn nicht möglich - entsprechend bewerten
-                    },
-        '3141-9':   function() {
-
-                    },
-        '8302-2':   function() {
-
-                    },
-        '718-7':    function() {
-                        
-                    },
-        '787-2':    function() {
-
-                    },
-        '1988-5':   function() {
-
-                    },
-        '2276-4':   function() {
-
-                    },
-        '30248-9':  function() {
-
-                    },
-        '4679-7':   function() {
-
-                    },
-        '42810-2':  function() {
-
-                    },
-        '20570-8':  function() {
-
-                    },
-        '2132-9':   function() {
-
-                    },
-        '2284-8':   function() {
-
-                    },
-        'default':  function() {
-                        
-                    }              
+        'patient':  function() { },
+        'config':   function() { },
+        'default':  function() { }              
     }
 
     /**
@@ -168,9 +229,9 @@ var observationFactory = (function() {
         // Liste mit Observations aus der Konfiguration kreieren
         createByList: function(configList) {
 
-                        if (configList.defaultReference) {                  // Konfiguration nachschauen                    
-                            for(var i of configList.defaultReference) {  
-                                var r = returnBaseObservationDefinition(i); // Observation erstellen und abholen
+                        if (configList.defaultReference) {                  // Konfiguration nachschauen                                                
+                            for(var i of configList.defaultReference) {                                  
+                                var r = returnBaseObservationDefinition(i, vs.getPatient().gender); // Observation erstellen und abholen
                                 substitutedObservations.obs.push(r);        // ... und ab ins Array der benötigten Observations
                             }
                             vs.addValidation(substitutedObservations.obs);                            
@@ -183,7 +244,7 @@ var observationFactory = (function() {
                         return substitutedObservations.obs;
                     },
 
-        // Konfigurations-Observation gegen Patienten-Observation austauschen und zwar immer die neuester Patientenobservation einfügen
+        // Konfigurations-Observation gegen Patienten-Observation austauschen und zwar immer die neueste Patientenobservation einfügen
         replaceSubsitutedObservationByPatientValues: function(observation) {
                         var pos, d1, d2, ddiff;
 
@@ -219,6 +280,8 @@ var observationFactory = (function() {
 
     // Stelle folgenden Funktionen zur Verfügung
     return {
+        setPatient:         vs.setPatient,
+        getPatient:         vs.getPatient,
         addValidation:      vs.addValidation,
         getValidation:      vs.getValidation,
         createObservs:      substitutedObservations.createByList,
@@ -392,6 +455,49 @@ function returnBaseObservationDefinition() {
     "text" : "" // Text based reference range in an observation
   }],
 
+  "validRange" : [{ // Provides guide for interpretation
+    "low" : {
+        // from Element: extension
+        "value" : 0.0, // Numerical value (with implicit precision)
+        "comparator" : "<", // < | <= | >= | > - how to understand the value
+        "unit" : "", // Unit representation
+        "system" : "http://unitsofmeasure.org/", // C? System that defines coded unit form
+        "code" : "" // Coded form of the unit
+      }, // C? Low Range, if relevant
+    "high" : {
+        // from Element: extension
+        "value" : 0.0, // Numerical value (with implicit precision)
+        "comparator" : ">", // < | <= | >= | > - how to understand the value
+        "unit" : "", // Unit representation
+        "system" : "http://unitsofmeasure.org/", // C? System that defines coded unit form
+        "code" : "" // Coded form of the unit
+      }, // C? High Range, if relevant
+    "type" : {  "coding": "",
+                "text": "" }, // Reference range qualifier
+    "appliesTo" : [{  
+                        "coding": "",
+                        "text": "" 
+                    }], // Reference range population
+    "age" : {                     // from Element: extension
+        "low" : { 
+            // from Element: extension
+            "value" : 0.0, // Numerical value (with implicit precision)
+            "comparator" : "<", // < | <= | >= | > - how to understand the value
+            "unit" : "", // Unit representation
+            "system" : "", // C? System that defines coded unit form
+            "code" : "" // Coded form of the unit
+          }, // C? Low limit
+        "high" :  { 
+            // from Element: extension
+            "value" : 120.0, // Numerical value (with implicit precision)
+            "comparator" : ">", // < | <= | >= | > - how to understand the value
+            "unit" : "", // Unit representation
+            "system" : "", // C? System that defines coded unit form
+            "code" : "" // Coded form of the unit
+          }
+      }, // Applicable age range, if relevant
+    "text" : "" // Text based reference range in an observation
+  }],
   /*
   "related" : [{ // Resource related to this observation
     "type" : "<code>", // has-member | derived-from | sequel-to | replaces | qualified-by | interfered-by
@@ -420,22 +526,31 @@ function returnBaseObservationDefinition() {
   // Wenn ein Konfigurationsobjekt übergeben wurde, dann weise die Werte zur
   if (arguments.length > 0) {
 
-    var configObj = arguments[0];    
+    var configObj = arguments[0], gender = arguments[1] ? arguments[1] : 'male';
+
 
     if (configObj && configObj.required) {
 
         res.code.coding[0].code = configObj.loinc;
         res.code.coding[0].display = configObj.name;
+        
         res.value[0].valueQuantity.value = configObj.value;
         res.value[0].valueQuantity.unit = configObj.unit;
-        res.value[1].valueRange.low.value = configObj.refMin.male ? configObj.refMin.male : configObj.refMin;
+
+        res.value[1].valueRange.low.value = configObj.refMin[gender] ? configObj.refMin[gender] : configObj.refMin;
         res.value[1].valueRange.low.unit = configObj.unit;
-        res.value[1].valueRange.high.value = configObj.refMax.male ? configObj.refMax.male : configObj.refMax;
+        res.value[1].valueRange.high.value = configObj.refMax[gender] ? configObj.refMax[gender] : configObj.refMax;
         res.value[1].valueRange.high.unit = configObj.unit;
-        res.referenceRange[0].low.value = configObj.validMin;
+
+        res.referenceRange[0].low.value = configObj.refMin[gender] ? configObj.refMin[gender] : configObj.refMin;
         res.referenceRange[0].low.unit = configObj.unit;
-        res.referenceRange[0].high.value = configObj.validMax;
+        res.referenceRange[0].high.value = configObj.refMax[gender] ? configObj.refMax[gender] : configObj.refMax;
         res.referenceRange[0].high.unit = configObj.unit;
+
+        res.validRange[0].low.value = configObj.validMin;
+        res.validRange[0].low.unit = configObj.unit;
+        res.validRange[0].high.value = configObj.validMax;
+        res.validRange[0].high.unit = configObj.unit;
     
     }
 
