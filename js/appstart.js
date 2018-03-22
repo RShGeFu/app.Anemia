@@ -21,13 +21,22 @@ $(document).ready(function() {
         $("#lab8").click(function() {
             console.log("app - start: click - lab8");
             if (observationSet) {
-                observationFactory.addValidation(observationSet.getList());
-                //observationFactory.getValidation(observationSet.getList());
+                
+                observationFactory.setPatient(observationSet.getPatient());
+                
+                console.log(observationFactory.getPatient());
+                console.log("GetObsFact: ------------------- ENDE");
+                observationFactory.addValidation(observationSet.getList());                
+                        
+                observationFactory.createObservs(configuration);
+                observationFactory.replaceSubstObservs(observationSet.getList());
+                
+                var obv = observationFactory.getObservs()             
+                console.log(obv);
+                for(var i = 0; i < obv.length; i++) {                
+                    obv[i].validate();
+                }            
             }
-            //console.log("[0]: " + JSON.stringify(observationSet.getList() ? observationSet.getList()[0] : "Keine Liste ...."));
-            observationFactory.createObservs(configuration);
-            observationFactory.replaceSubstObservs(observationSet.getList());
-            console.log(observationFactory.getObservs());
             console.log("app - end: click - lab8");
         });
     } else {
