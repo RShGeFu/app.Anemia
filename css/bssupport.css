@@ -23,6 +23,11 @@ body {
     margin-bottom: 15px;
 }
 
+.factory {
+    background-color:rgb(220, 200, 100);    
+    margin-bottom: 15px;    
+}
+
 .navbar {
     color: rgba(255, 255, 255, 0.5);
 }
