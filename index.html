@@ -42,7 +42,8 @@
   <!-- Der Entscheidungs- und Berechnungsalgorithmus -->
   <script src="js/decision.js"></script>
 
-  <!-- Akquise und Visualisierung der demographischen, klinischen, laborchemischen Daten sowie der Entscheidungs- und Berechnungsresultate -->
+  <!-- 1. Form der Datenverarbeitung:
+        Akquise und Visualisierung der demographischen, klinischen, laborchemischen Daten sowie der Entscheidungs- und Berechnungsresultate -->
   <script src="js/data.js"></script>  
   <script src="js/patient.js"></script>
   <script src="js/results.js"></script>
@@ -50,8 +51,11 @@
   <!-- Die Anbindung an einen FHIR-Server -->
   <script src="js/fhir.request.js"></script>
 
-  <!-- Beim Start der App ausführen ... -->
+  <!-- 2. Form der Datenverarbeitung:
+        Das Aufbereiten von Observations und die direkte Verwendung in der Business-Logik -->
   <script src="js/factory.js"></script>
+  
+  <!-- Beim Start der App ausführen ... -->
   <script src="js/appstart.js"></script>
 
 </head>
@@ -229,7 +233,8 @@
             </tbody>
           </table>
         </div>
-      </div>            
+      </div>
+      <div id="labfactory-card"></div>
     </div>
 
     <div class="col-sm-4">      
