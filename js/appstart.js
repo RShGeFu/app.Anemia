@@ -19,26 +19,30 @@ $(document).ready(function() {
      */
     if (true) {
         $("#lab8").click(function() {
-            console.log("app - start: click - lab8");
+
+            // Observations gefunden ...
             if (observationSet) {
+
+                // Verarbeiten von nativen Observations
+                observationFactory.init(observationSet.getList(), observationSet.getPatient(), configuration);
                 
-                observationFactory.setPatient(observationSet.getPatient());
-                
-                console.log(observationFactory.getPatient());
-                console.log("GetObsFact: ------------------- ENDE");
-                observationFactory.addValidation(observationSet.getList());                
-                        
-                observationFactory.createObservs(configuration);
-                observationFactory.replaceSubstObservs(observationSet.getList());
-                
-                var obv = observationFactory.getObservs()             
+                // Ergebnis als Dataset für den Entscheidungsprozess
+                var dataSet = observationFactory.resultDec();
+                console.log(validatePatientLaboratoryObservations(dataSet));
+
+                // Ergebnis als Array von weiterverwendbaren Observations
+                var obv = observationFactory.result();
                 console.log(obv);
-                for(var i = 0; i < obv.length; i++) {                
-                    obv[i].validate();
-                }            
             }
+            
+            // Darstellung als Patientenkarte ...
+            var card = cardFactory();   
+            card.init("test");
+            card.display("#labfactory-card");            
+
             console.log("app - end: click - lab8");
-        });
+
+        });        
     } else {
         $("#lab8").hide();
     }
