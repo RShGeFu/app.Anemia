@@ -319,17 +319,19 @@ function validatePatientLaboratoryObservations(dataset) {
     var content = [];    
     for(var i = 0; i < configuration.defaultReference.length; i++) {        
         if (configuration.defaultReference[i].required) {            
-            content.push(configuration.defaultReference[i]['id']);     // Suchen und Übernehmen der Pflichtparameter aus der Konfiguration            
+            content.push(configuration.defaultReference[i]['id']);     // Suchen und Übernehmen der Pflichtparameter aus der Konfiguration         
         }
     }
     
     /* Nur falls das Dataset vom Typ und von der ID her passt, dann ... */
     if (dataset.type == 'key-val-ref' && dataset.id == 'labor') {
         
+        var pos, posRef;
         /* Durchlaufe die Daten und ... */        
         for(var i in dataset.kval) {
-            var pos = content.indexOf(dataset.kval[i]['id']),
-                posRef = configuration.defaultReference.findIndex(j => j.id === content[pos]);            
+            // Suche 
+            pos = content.indexOf(dataset.kval[i]['id']);
+            posRef = configuration.defaultReference.findIndex(j => j.id === content[pos]);            
             
             /* ... streiche die vorhandenen IDs aus dem Prüf-Array*/
             content.splice(pos, pos+1);
