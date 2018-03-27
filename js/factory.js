@@ -13,9 +13,12 @@ var observationFactory = (function() {
 
         patient:        "",
 
+        // Merke Dir den geladenen Patienten
         setPatient:     function(p) {
                             vs.patient = p;
                         },
+
+        // Stelle den geladenen Patienten zur Verfügung
         getPatient:     function() {
                             return vs.patient;
                         },
@@ -23,15 +26,20 @@ var observationFactory = (function() {
         // Einhängen einer Validierungsfunktion
         addValidation: function(observations) {
 
+            // Wenn Observations gefunden wurden ...
             if (observations) {                
-                for(var i = 0; i < observations.length; i++) {
 
+                // Gehe die Liste durch ...
+                for(var i = 0; i < observations.length; i++) {
+                    
+                    // ... und hole die beötigte Validierungsfunktion je nach LOINC-Code ...
                     if (validationPerLOINC[observations[i].code.coding[0].code]) {
                         var func = validationPerLOINC[observations[i].code.coding[0].code];
                     } else {
                         var func = validationPerLOINC['default'];                        
                     }
 
+                    // und erstelle eine Property mit dieser Funktion
                     if (!('validate' in observations[i])) {
                         Object.defineProperty(observations[i], 'validate', { value: func() } );
                     }
@@ -44,9 +52,69 @@ var observationFactory = (function() {
         // Einhängen einer Visualisierung der Observation
         addVisualisation: function(observations) {
 
+            var ident = "";
+
+            // Wenn Observations gefunden wurden
+            if (observations) {
+                for(var i = 0; i < observations.length; i++) {
+
+                    // Wenn eine ID vorhanden ist ...
+                    if ('id' in observations[i]) {
+                        ident = observations[i].id;
+                    } else {
+                        ident = "";
+                    }                    
+
+                    // ... hole die entsprechende HTML-Visualisierung
+                    if (ident === "appAnem-test") {
+                        var func = visualisationPerIdentifier['config'];
+                    } else if (ident != "") {
+                        var func = visualisationPerIdentifier['patient'];
+                    } else {
+                        var func = visualisationPerIdentifier['default'];
+                    }
+
+                    // ... und erstelle eine Property dazu
+                    if (!('asHTMLTableRow' in observations[i])) {
+                        Object.defineProperty(observations[i], 'asHTMLTableRow', { value: func } );
+                    }
+
+                }
+            }
+
+        },
+
+        /**
+         * Einhängen einer Hilfsfunktion - liefert einen 'verkürzten' Datensatz für das Decision-Modul
+         * Im Prinzip wäre die direkte Übergabe der Observation an den Entscheidungsalgorithmus möglich - dieser müsste die
+         * Observation 'verstehen' */        
+        addFetchingDecisionCriteria: function(observations) {
+
+            // Wenn Observations vorhanden sind ...
+            if (observations) {
+        
+                // ... hänge in jede Observation eine Funktion, die einen minimalen Umfang an Werten aus der Observation liefert 
+                // (s. Testdatensatz unter data.js!!)
+                for(var i = 0; i < observations.length; i++) {
+
+                    var func = function() {
+                        return {
+                            loinc:  this.code.coding[0].code,
+                            id:     this.code.coding[0].display,
+                            value:  'valueQuantity' in this ? this.valueQuantity.value : this.value[0].valueQuantity.value
+                        }
+                    }
+
+                    if (!('fetchDecisionCriterion' in observations[i])) {
+                        Object.defineProperty(observations[i], 'fetchDecisionCriterion', { value: func } );
+                    }
+                }            
+            
+            }
         },
         
-        getValidation: function(observations) {
+        // Validierung der Observation-Liste durchführen 
+        doValidation: function(observations) {
             
             if (observations) {
                 for(var i = 0; i < observations.length; i++) {
@@ -200,9 +268,7 @@ var observationFactory = (function() {
         } else {
             this.interpretation.coding[0].code = 'nvn';
             this.interpretation.text = 'not valid / no value';                            
-        }
-
-        console.log(this);
+        } 
 
     }
 
@@ -210,10 +276,47 @@ var observationFactory = (function() {
      * In diesem Objekt sind Visualisierungsfunktionen für die einzelnen Observations enthalten, je nachdem, ob sie vom 
      * Patienten stammen oder aus der Konfigurationsvorgabe
      */
-    var visualisationPerLOINC = {
-        'patient':  function() { },
-        'config':   function() { },
-        'default':  function() { }              
+    var visualisationPerIdentifier = {
+        patient:    function() { 
+                        var htmlStr = "<tr><th scope=\"row\"></th>";
+                        htmlStr += "<td>" + this.code.coding[0].display + "</td>";
+                        htmlStr += "<td><span class=\"badge badge-info\">" + this.interpretation.coding[0].code + "</span></td>";
+                        if ('value' in this) {
+                            htmlStr += "<td>" + this.value.valueQuantity[0].value + "</td>";
+                            htmlStr += "<td>" + this.value.valueQuantity[0].unit + "</td>";
+                        } else {
+                            htmlStr += "<td>" + this.valueQuantity[0].value + "</td>";
+                            htmlStr += "<td>" + this.valueQuantity[0].unit + "</td>";                            
+                        }
+                        htmlStr += "<td>" + this.referenceRange[0].low.value + "</td>";
+                        htmlStr += "<td>-</td>";
+                        htmlStr += "<td>" + this.referenceRange[0].high.value + "</td>";
+                        htmlStr += "</tr>";
+                        return htmlStr;
+                    },
+        config:     function() { 
+                        var htmlStr = "<tr><th scope=\"row\"></th>";
+                        htmlStr += "<td>" + this.code.coding[0].display + "</td>";
+                        htmlStr += "<td><span class=\"badge badge-warning\">" + this.interpretation.coding[0].code + "</span></td>";
+                        if ('value' in this) {
+                            htmlStr += "<td>" + this.value.valueQuantity[0].value + "</td>";
+                            htmlStr += "<td>" + this.value.valueQuantity[0].unit + "</td>";
+                        } else {
+                            htmlStr += "<td>" + this.valueQuantity[0].value + "</td>";
+                            htmlStr += "<td>" + this.valueQuantity[0].unit + "</td>";                            
+                        }
+                        htmlStr += "<td>" + this.referenceRange[0].low.value + "</td>";
+                        htmlStr += "<td>-</td>";
+                        htmlStr += "<td>" + this.referenceRange[0].high.value + "</td>";
+                        htmlStr += "</tr>";
+                        return htmlStr;
+                    },
+        default:    function() { 
+                        var htmlStr = "<tr><th scope=\"row\"></th>";
+                        htmlStr += "<td>no Value</td>";
+                        htmlStr += "</tr>";
+                        return htmlStr; 
+                    }              
     }
 
     /**
@@ -224,7 +327,20 @@ var observationFactory = (function() {
      */
     var substitutedObservations = {
         
+        // Arrays für native Observations und bearbeitete Observations
         obs: [],
+        obsForDecision: [],
+
+        // Grundstruktur des Datasets für die Funktionsrückgabe festlegen
+        // s. Testdatensatz data.js
+        datasetForDecision: {         
+            type: "key-val-ref",
+            id:   "labor",
+            name: "Labor",
+            lang: "en",
+            kval: [],
+            gender: "female"
+        },
         
         // Liste mit Observations aus der Konfiguration kreieren
         createByList: function(configList) {
@@ -234,7 +350,8 @@ var observationFactory = (function() {
                                 var r = returnBaseObservationDefinition(i, vs.getPatient().gender); // Observation erstellen und abholen
                                 substitutedObservations.obs.push(r);        // ... und ab ins Array der benötigten Observations
                             }
-                            vs.addValidation(substitutedObservations.obs);                            
+                            vs.addValidation(substitutedObservations.obs);
+                            vs.addVisualisation(substitutedObservations.obs);                            
                         }
 
                     },
@@ -242,6 +359,30 @@ var observationFactory = (function() {
         // Liste der Observations zur Verfügung stellen
         getList:    function() {
                         return substitutedObservations.obs;
+                    },
+
+        // Stellt die Kriterien für den Entscheidungsalgorithmus zusammen
+        createCriteriaForDecision: function(config, pat) {
+                        
+                        if (substitutedObservations.obs) {
+                            for(var i = 0; i < substitutedObservations.obs.length; i++) {
+                                if ('fetchDecisionCriterion' in substitutedObservations.obs[i]) {
+                                    substitutedObservations.obsForDecision.push(substitutedObservations.obs[i].fetchDecisionCriterion());
+                                }
+                            }
+                            for(var i = 0; i < substitutedObservations.obsForDecision.length; i++) {
+                                var pos = config.defaultReference.findIndex(j => j.loinc == substitutedObservations.obsForDecision[i].loinc);
+                                substitutedObservations.obsForDecision[i].id = config.defaultReference[pos].id;
+                            }
+                            substitutedObservations.datasetForDecision.kval = substitutedObservations.obsForDecision;
+                            substitutedObservations.datasetForDecision.gender = pat.gender ? pat.gender : 'female';
+                        }
+            
+                    },
+
+        // Veröffentlicht die Liste der Entscheidungskriterien
+        getCriteriaForDecision: function() {
+                        return substitutedObservations.datasetForDecision;
                     },
 
         // Konfigurations-Observation gegen Patienten-Observation austauschen und zwar immer die neueste Patientenobservation einfügen
@@ -252,11 +393,13 @@ var observationFactory = (function() {
                             pos = substitutedObservations.obs.findIndex(j => j.code.coding[0].code === observation.code.coding[0].code); // Wo steht die Observation mit entsprechenden LOINC                           
                             if(pos > -1) {
                                 
+                                // Datum berücksichtigen
                                 d1 = new Date(substitutedObservations.obs[pos].effectiveDateTime === 'undefined' ? substitutedObservations.obs[pos].meta.lastUpdated : substitutedObservations.obs[pos].effectiveDateTime),
                                 d2 = new Date(observation.effectiveDateTime === 'undefined' ? observation.meta.lastUpdated : observation.effectiveDateTime);
                                 ddiff = d1.valueOf() - d2.valueOf();
                                 
-                                if (substitutedObservations.obs[pos].identifier === "appAnem-test" || ddiff < 0) {  // Ersetze die eingeschriebene Observation, wenn...
+                                // Austauschen...
+                                if (substitutedObservations.obs[pos].id === "appAnem-test" || ddiff < 0) {  // Ersetze die eingeschriebene Observation, wenn...
                                     substitutedObservations.obs[pos] = observation;
                                 }
 
@@ -278,26 +421,44 @@ var observationFactory = (function() {
 
     }
 
-    // Stelle folgenden Funktionen zur Verfügung
+    /** 
+     * Initialisierung der Factory mit der Liste von Observations, Patientendaten und der Konfigurationsinformationen
+     * Hierbei Anfügen von Validierung und Visualisierung, Zusammenstellen der Wertereihe für den Entscheidungsprozess
+     * aus der Konfiguration heraus. Einfügen der Patienten-Observations in die Wertereihe.
+     */
+    var init = function(obsList, pat, config) {
+        vs.setPatient(pat);                                                                 // Patienten merken
+        vs.addValidation(obsList);                                                          // Validierungsfunktion an die Observation knüpfen
+        vs.addVisualisation(obsList);                                                       // Visualisierungsfunktion an die Observation knüpfen
+        substitutedObservations.createByList(config);                                       // Satz an entscheidungsnotwendigen Observations erstellen
+        substitutedObservations.replaceSubstitutedObservationByPatientValueList(obsList);   // Neueste Patienten-Observations einfügen
+        vs.doValidation(substitutedObservations.getList());                                 // Validierung des zusammengestellen Satzes an Observations durchführen
+        vs.addFetchingDecisionCriteria(substitutedObservations.getList());                  // Datenextraktionsfunktions für originären 
+                                                                                            // Entscheidungsalgorithmus an die Observation knüpfen
+        substitutedObservations.createCriteriaForDecision(config, pat);                     // Datensatz für den originären Entscheidungsalgorithmus erstellen
+    }
+
+    /**
+     * Stelle folgenden Funktionen zur Verfügung
+     * Initialiserung und Ergebnis
+     */
     return {
-        setPatient:         vs.setPatient,
-        getPatient:         vs.getPatient,
-        addValidation:      vs.addValidation,
-        getValidation:      vs.getValidation,
-        createObservs:      substitutedObservations.createByList,
-        replaceSubstObservs:substitutedObservations.replaceSubstitutedObservationByPatientValueList,
-        getObservs:         substitutedObservations.getList
+        init:               init,
+        resultDec:          substitutedObservations.getCriteriaForDecision, // Datensatz für den originären Entscheidungsalgorithmus liefern
+        result:             substitutedObservations.getList                 // Bearbeitete Observations liefern
     }
 
 })();
 
 /**
  * Stelle eine Observation zusammen ...
+ * s. Definition auf https://www.hl7.org/fhir/ bzw. https://www.hl7.org/fhir/observation.html
  */
 function returnBaseObservationDefinition() {    
 
   var res = {
   "resourceType" : "Observation",
+  "id" : "appAnem-test", // Business Identifier for observation
   "meta" : {
       "versionId":"1.0",
       "lastUpdated": new Date().toString(),
@@ -309,9 +470,7 @@ function returnBaseObservationDefinition() {
             ]
     },  // from Resource: id, meta, implicitRules, and language
         // from DomainResource: text, contained, extension, and modifierExtension
-  
-  "identifier" : "appAnem-test", // Business Identifier for observation
-        //"basedOn" : [{ Reference(CarePlan|DeviceRequest|ImmunizationRecommendation|MedicationRequest|NutritionOrder|ProcedureRequest|ReferralRequest) }], // Fulfills plan, proposal or order
+  //"basedOn" : [{ Reference(CarePlan|DeviceRequest|ImmunizationRecommendation|MedicationRequest|NutritionOrder|ProcedureRequest|ReferralRequest) }], // Fulfills plan, proposal or order
   
   "status" : "preliminary", // R!  registered | preliminary | final | amended +
   "category" : { 
@@ -523,11 +682,10 @@ function returnBaseObservationDefinition() {
   }]*/
   }
 
-  // Wenn ein Konfigurationsobjekt übergeben wurde, dann weise die Werte zur
+  // Wenn ein Konfigurationsobjekt übergeben wurde und benötigt wird, dann weise die Werte zur
   if (arguments.length > 0) {
 
     var configObj = arguments[0], gender = arguments[1] ? arguments[1] : 'male';
-
 
     if (configObj && configObj.required) {
 
@@ -559,6 +717,55 @@ function returnBaseObservationDefinition() {
   return res;
 }
 
+/**
+ * Closure für die Erstellung einer Patientenkarte mit oder ohne einer Tabelle
+ * Liefert eine Funktion, die die Karte nach vorgegebenen Parametern erstelle
+ */
 var cardFactory = (function() {
+
+    return function() {
+
+        var htmlString = "", 
+            bgColor = "#111111",
+            title = "",
+            withTable = false;
+
+        function initCard(parameters) {
+        
+            var htmlTableString = "", title = "";
+        
+            if (typeof parameters === 'string') {
+                htmlTableString = parameters;
+                title           = "Card";
+                bgColor         = "#ffffff";
+                withTable       = false;
+            } else if (typeof parameters === 'object') {
+                htmlTableString = parameters.content;
+                title           = parameters.title;
+                bgColor         = parameters.background;
+                withTable       = parameters.withTable;
+            }
+        
+            htmlString  = "<div id=\"labfactory-card\ class=\"card factory\">";
+            htmlString += "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"fact" + title + "\">" + title + "<span></h4>";
+            htmlString += withTable ? "<table class=\"table table-hover table-sm\"><tbody>" : "";
+            htmlString += htmlTableString; 
+            htmlString += withTable ? "</tbody></table>" : "";
+            htmlString += "</div></div>";
+        }
+
+        function displayCard(destination) {
+
+            $(destination).html(htmlString);
+            $(destination).css("background", bgColor);
+        
+        }
+
+        return {
+            init:       initCard,        
+            display:    displayCard
+        }
+
+    }   
 
 })();
