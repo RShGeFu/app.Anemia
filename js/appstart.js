@@ -27,18 +27,22 @@ $(document).ready(function() {
                 observationFactory.init(observationSet.getList(), observationSet.getPatient(), configuration);
                 
                 // Ergebnis als Dataset für den Entscheidungsprozess
-                var dataSet = observationFactory.resultDec();
+                var dataSet = observationFactory.resultNativeDataset();
                 console.log(validatePatientLaboratoryObservations(dataSet));
 
                 // Ergebnis als Array von weiterverwendbaren Observations
-                var obv = observationFactory.result();
+                var obv = observationFactory.resultProcessedObservations();
                 console.log(obv);
             }
             
             // Darstellung als Patientenkarte ...
             var card = cardFactory();   
-            card.init("test");
-            card.display("#labfactory-card");            
+            card.init({
+                content:    obv,
+                title:      'Laboratory Data',
+                background: '#f4efa6'                
+            });
+            card.display("#laboratory-card");            
 
             console.log("app - end: click - lab8");
 
