@@ -277,38 +277,59 @@ var observationFactory = (function() {
      * Patienten stammen oder aus der Konfigurationsvorgabe
      */
     var visualisationPerIdentifier = {
-        patient:    function() { 
-                        var htmlStr = "<tr><th scope=\"row\"></th>";
-                        htmlStr += "<td>" + this.code.coding[0].display + "</td>";
-                        htmlStr += "<td><span class=\"badge badge-info\">" + this.interpretation.coding[0].code + "</span></td>";
-                        if ('value' in this) {
-                            htmlStr += "<td>" + this.value.valueQuantity[0].value + "</td>";
-                            htmlStr += "<td>" + this.value.valueQuantity[0].unit + "</td>";
+        patient:    function() {
+                
+                        var bdColor;
+                        if (this.interpretation.coding[0].code.substring(0, 2) === 'nv') {
+                            bdColor = 'badge-info';
+                        } else if (this.interpretation.coding[0].code === 'ok') {
+                            bdColor = 'badge-success';
                         } else {
-                            htmlStr += "<td>" + this.valueQuantity[0].value + "</td>";
-                            htmlStr += "<td>" + this.valueQuantity[0].unit + "</td>";                            
+                            bdColor = 'badge-danger';
+                        }
+                
+                        var htmlStr = "<tr><th scope=\"row\">" + this.code.coding[0].display + "</th>";
+                        //htmlStr += "<td>" + this.code.coding[0].display + "</td>";
+                        htmlStr += "<td><span class=\"badge " + bdColor + "\">" + this.interpretation.coding[0].code + "</span></td>";
+                        if ('value' in this) {
+                            htmlStr += "<td>" + this.value[0].valueQuantity.value + "</td>";
+                            htmlStr += "<td>" + this.value[0].valueQuantity.unit + "</td>";
+                        } else {
+                            htmlStr += "<td>" + this.valueQuantity.value + "</td>";
+                            htmlStr += "<td>" + this.valueQuantity.unit + "</td>";                            
                         }
                         htmlStr += "<td>" + this.referenceRange[0].low.value + "</td>";
                         htmlStr += "<td>-</td>";
                         htmlStr += "<td>" + this.referenceRange[0].high.value + "</td>";
                         htmlStr += "</tr>";
+                        
                         return htmlStr;
                     },
         config:     function() { 
-                        var htmlStr = "<tr><th scope=\"row\"></th>";
-                        htmlStr += "<td>" + this.code.coding[0].display + "</td>";
-                        htmlStr += "<td><span class=\"badge badge-warning\">" + this.interpretation.coding[0].code + "</span></td>";
-                        if ('value' in this) {
-                            htmlStr += "<td>" + this.value.valueQuantity[0].value + "</td>";
-                            htmlStr += "<td>" + this.value.valueQuantity[0].unit + "</td>";
+                
+                        var bdColor;
+                        if (this.interpretation.coding[0].code.substring(0, 2) === 'nv') {
+                            bdColor = 'badge-warning';
+                        } else if (this.interpretation.coding[0].code === 'ok') {
+                            bdColor = 'badge-success';
                         } else {
-                            htmlStr += "<td>" + this.valueQuantity[0].value + "</td>";
-                            htmlStr += "<td>" + this.valueQuantity[0].unit + "</td>";                            
+                            bdColor = 'badge-danger';
                         }
-                        htmlStr += "<td>" + this.referenceRange[0].low.value + "</td>";
+    
+                        var htmlStr = "<tr><small><th scope=\"row\">" + this.code.coding[0].display + "</th></small>";
+                        //htmlStr += "<td>" + this.code.coding[0].display + "</td>";
+                        htmlStr += "<td><small><span class=\"badge " + bdColor +  "\">" + this.interpretation.coding[0].code + "</span></small></td>";
+                        htmlStr += "<td><small><input id=\"" + this.code.coding[0].code + "\" class=\"ds_values_gf2\" size=\"2\" type=\"text\" value=\"0\"></input></small></td>";                        
+                        if ('value' in this) {
+                            htmlStr += "<td><small>" + this.value[0].valueQuantity.unit + "</small></td>";
+                        } else {
+                            htmlStr += "<td><small>" + this.valueQuantity.unit + "</small></td>";                            
+                        }
+                        htmlStr += "<td><small>" + this.referenceRange[0].low.value + "</small></td>";
                         htmlStr += "<td>-</td>";
-                        htmlStr += "<td>" + this.referenceRange[0].high.value + "</td>";
+                        htmlStr += "<td><small>" + this.referenceRange[0].high.value + "</small></td>";
                         htmlStr += "</tr>";
+                        
                         return htmlStr;
                     },
         default:    function() { 
@@ -443,9 +464,9 @@ var observationFactory = (function() {
      * Initialiserung und Ergebnis
      */
     return {
-        init:               init,
-        resultDec:          substitutedObservations.getCriteriaForDecision, // Datensatz für den originären Entscheidungsalgorithmus liefern
-        result:             substitutedObservations.getList                 // Bearbeitete Observations liefern
+        init:                           init,
+        resultNativeDataset:            substitutedObservations.getCriteriaForDecision, // Datensatz für den originären Entscheidungsalgorithmus liefern
+        resultProcessedObservations:    substitutedObservations.getList                 // Bearbeitete Observations liefern
     }
 
 })();
@@ -727,23 +748,34 @@ var cardFactory = (function() {
 
         var htmlString = "", 
             bgColor = "#111111",
-            title = "",
-            withTable = false;
+            title = "Card",
+            withTable = false,
+            params;        
 
         function initCard(parameters) {
         
             var htmlTableString = "", title = "";
-        
+            
             if (typeof parameters === 'string') {
+                
                 htmlTableString = parameters;
                 title           = "Card";
                 bgColor         = "#ffffff";
                 withTable       = false;
+
             } else if (typeof parameters === 'object') {
-                htmlTableString = parameters.content;
-                title           = parameters.title;
-                bgColor         = parameters.background;
-                withTable       = parameters.withTable;
+
+                params = parameters.content;    
+                
+                for(var i = 0; i < parameters.content.length; i++) {
+                    if ('asHTMLTableRow' in parameters.content[i]) {
+                        htmlTableString += parameters.content[i].asHTMLTableRow();    
+                    }
+                }                
+                
+                title           = parameters.title ? parameters.title : 'Card';
+                bgColor         = parameters.background ? parameters.background : '#112233';
+                withTable       = true;                
             }
         
             htmlString  = "<div id=\"labfactory-card\ class=\"card factory\">";
@@ -754,10 +786,24 @@ var cardFactory = (function() {
             htmlString += "</div></div>";
         }
 
-        function displayCard(destination) {
+        function reactToUser() {            
+            var pos = params.findIndex(j => j.code.coding[0].code === this.id);
+            alert(JSON.stringify(params[pos]));
+            $(this).css({
+                "background-color": "#ffbfbf",
+                "transition": "0.5s all ease-in-out"
+            });        
+        }
 
-            $(destination).html(htmlString);
-            $(destination).css("background", bgColor);
+        function displayCard(destination) {
+                        
+            $(destination).fadeOut(500, function() {
+                $(destination).css("display", "none");
+                $(destination).html(htmlString);
+                $(destination).css("background", bgColor);
+                $(destination).fadeIn(500);
+                $(".ds_values_gf2").change(reactToUser);                
+            });
         
         }
 
