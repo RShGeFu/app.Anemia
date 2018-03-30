@@ -18,31 +18,42 @@ $(document).ready(function() {
      *  Test-Code: Button, mit dem die Kapselung von (Business-)Logik in der FHIR-Struktur implementiert wird
      */
     if (true) {
-        $("#lab8").click(function() {
+        $("#lab8").click(function() {            
 
+            var obv = [],
+                pCard;
+
+            if (pCard) {
+                $("#laboratory-card").html(pCard);
+            }
+            
             // Observations gefunden ...
             if (observationSet) {
 
                 // Verarbeiten von nativen Observations
-                observationFactory.init(observationSet.getList(), observationSet.getPatient(), configuration);
+                observationFactory.init(observationSet.getList(), observationSet.getPatient(), configuration, "ds_values_gf2");
                 
                 // Ergebnis als Dataset für den Entscheidungsprozess
                 var dataSet = observationFactory.resultNativeDataset();
                 console.log(validatePatientLaboratoryObservations(dataSet));
 
                 // Ergebnis als Array von weiterverwendbaren Observations
-                var obv = observationFactory.resultProcessedObservations();
+                obv = observationFactory.resultProcessedObservations();
                 console.log(obv);
             }
             
             // Darstellung als Patientenkarte ...
+            pCard = $("#laboratory-card").html();
             var card = cardFactory();   
             card.init({
-                content:    obv,
-                title:      'Laboratory Data',
-                background: '#f4efa6'                
+                patient:        observationSet.getPatient(),
+                config:         configuration,
+                content:        obv,
+                title:          'Laboratory Data',
+                background:     '#f4efa6',
+                reactOn:        'ds_values_gf2'              
             });
-            card.display("#laboratory-card");            
+            card.display("laboratory-card");            
 
             console.log("app - end: click - lab8");
 
