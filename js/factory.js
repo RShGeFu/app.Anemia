@@ -12,6 +12,12 @@ var observationFactory = (function() {
     var vs = {
 
         patient:        "",
+        clName:         "inpReact",
+
+        // Merke Dir den Klassennamen für die Reaktion auf Usereingaben
+        setClassName:   function(cn) {
+                            vs.clName = cn;
+                        },
 
         // Merke Dir den geladenen Patienten
         setPatient:     function(p) {
@@ -67,18 +73,31 @@ var observationFactory = (function() {
 
                     // ... hole die entsprechende HTML-Visualisierung
                     if (ident === "appAnem-test") {
-                        var func = visualisationPerIdentifier['config'];
+                        var func = visualisationPerIdentifier['config'],
+                            func2 = writeAndValidatePerIdentifer['config'],
+                            prop = vs['clName'];                            
                     } else if (ident != "") {
-                        var func = visualisationPerIdentifier['patient'];
+                        var func = visualisationPerIdentifier['patient'],
+                            func2 = writeAndValidatePerIdentifer['patient'],
+                            prop = 'patient';
                     } else {
-                        var func = visualisationPerIdentifier['default'];
+                        var func = visualisationPerIdentifier['default'],
+                            func2 = writeAndValidatePerIdentifer['default'],
+                            prop = 'default';
                     }
 
-                    // ... und erstelle eine Property dazu
+                    // ... und erstelle drei Property dazu (Visualisierung und die Reaktion auf Usereingaben)
                     if (!('asHTMLTableRow' in observations[i])) {
                         Object.defineProperty(observations[i], 'asHTMLTableRow', { value: func } );
                     }
+                    
+                    if (!('writeValueAndValidate' in observations[i])) {
+                        Object.defineProperty(observations[i], 'writeValueAndValidate', { value: func2 } );
+                    }
 
+                    if (!('onChange' in observations[i])) {
+                        Object.defineProperty(observations[i], 'onChange', { value: prop } );
+                    }
                 }
             }
 
@@ -276,7 +295,7 @@ var observationFactory = (function() {
      * In diesem Objekt sind Visualisierungsfunktionen für die einzelnen Observations enthalten, je nachdem, ob sie vom 
      * Patienten stammen oder aus der Konfigurationsvorgabe
      */
-    var visualisationPerIdentifier = {
+    var visualisationPerIdentifier = {        
         patient:    function() {
                 
                         var bdColor;
@@ -287,9 +306,8 @@ var observationFactory = (function() {
                         } else {
                             bdColor = 'badge-danger';
                         }
-                
-                        var htmlStr = "<tr><th scope=\"row\">" + this.code.coding[0].display + "</th>";
-                        //htmlStr += "<td>" + this.code.coding[0].display + "</td>";
+
+                        var htmlStr = "<tr><th scope=\"row\">" + this.code.coding[0].display + "</th>";                        
                         htmlStr += "<td><span class=\"badge " + bdColor + "\">" + this.interpretation.coding[0].code + "</span></td>";
                         if ('value' in this) {
                             htmlStr += "<td>" + this.value[0].valueQuantity.value + "</td>";
@@ -309,17 +327,29 @@ var observationFactory = (function() {
                 
                         var bdColor;
                         if (this.interpretation.coding[0].code.substring(0, 2) === 'nv') {
-                            bdColor = 'badge-warning';
+                            bdColor = 'badge-info';
                         } else if (this.interpretation.coding[0].code === 'ok') {
                             bdColor = 'badge-success';
                         } else {
                             bdColor = 'badge-danger';
                         }
-    
-                        var htmlStr = "<tr><small><th scope=\"row\">" + this.code.coding[0].display + "</th></small>";
-                        //htmlStr += "<td>" + this.code.coding[0].display + "</td>";
-                        htmlStr += "<td><small><span class=\"badge " + bdColor +  "\">" + this.interpretation.coding[0].code + "</span></small></td>";
-                        htmlStr += "<td><small><input id=\"" + this.code.coding[0].code + "\" class=\"ds_values_gf2\" size=\"2\" type=\"text\" value=\"0\"></input></small></td>";                        
+                    
+                        var getValue;
+                        if ('value' in this) {
+                            getValue = this.value[0].valueQuantity.value;
+                        } else {
+                            getValue = this.valueQuantity.value;
+                        }
+                        getValue = getValue == null || getValue == 'undefined' ? 0 : getValue;
+
+                        var changeColor = '#ffffff';
+                        if ('alreadyChanged' in this) {
+                            changeColor = this['alreadyChanged'];
+                        }
+
+                        var htmlStr = "<tr><small><th scope=\"row\">" + this.code.coding[0].display + "</th></small>";                        
+                        htmlStr += "<td><small><span id=\"" + this.onChange + "_badge_" + this.code.coding[0].code + "\" class=\"badge " + bdColor +  "\">" + this.interpretation.coding[0].code + "</span></small></td>";
+                        htmlStr += "<td><small><input id=\"" + this.code.coding[0].code + "\" class=\"" + this.onChange + "\" size=\"2\" type=\"text\" value=\"" + getValue + "\" style=\"background: " + changeColor + ";\"></input></small></td>";                        
                         if ('value' in this) {
                             htmlStr += "<td><small>" + this.value[0].valueQuantity.unit + "</small></td>";
                         } else {
@@ -333,11 +363,32 @@ var observationFactory = (function() {
                         return htmlStr;
                     },
         default:    function() { 
-                        var htmlStr = "<tr><th scope=\"row\"></th>";
-                        htmlStr += "<td>no Value</td>";
+                        var htmlStr = "<tr><th scope=\"row\">NO</th>";
+                        htmlStr += "<td>Value</td>";
                         htmlStr += "</tr>";
                         return htmlStr; 
                     }              
+    }    
+
+    var writeAndValidatePerIdentifer = {        
+        patient:    function(v) {
+
+                    },
+        config:     function(v, c) { 
+                        if ('value' in this) {
+                            this.value[0].valueQuantity.value = v;
+                        } else {
+                            this.valueQuantity.value = v;
+                        }
+                        this.validate();
+                        if (!('alreadyChanged' in this)) {
+                            Object.defineProperty(this, 'alreadyChanged', { value: c } );
+                        }
+                    
+                    },
+        default:    function(v) {
+
+                    }
     }
 
     /**
@@ -366,11 +417,15 @@ var observationFactory = (function() {
         // Liste mit Observations aus der Konfiguration kreieren
         createByList: function(configList) {
 
-                        if (configList.defaultReference) {                  // Konfiguration nachschauen                                                
+                        if (configList.defaultReference) {                  // Konfiguration nachschauen       
+                            
+                            substitutedObservations.obs = [];                                         
+                            
                             for(var i of configList.defaultReference) {                                  
                                 var r = returnBaseObservationDefinition(i, vs.getPatient().gender); // Observation erstellen und abholen
                                 substitutedObservations.obs.push(r);        // ... und ab ins Array der benötigten Observations
                             }
+                            
                             vs.addValidation(substitutedObservations.obs);
                             vs.addVisualisation(substitutedObservations.obs);                            
                         }
@@ -386,6 +441,9 @@ var observationFactory = (function() {
         createCriteriaForDecision: function(config, pat) {
                         
                         if (substitutedObservations.obs) {
+                            
+                            substitutedObservations.datasetForDecision = [];
+
                             for(var i = 0; i < substitutedObservations.obs.length; i++) {
                                 if ('fetchDecisionCriterion' in substitutedObservations.obs[i]) {
                                     substitutedObservations.obsForDecision.push(substitutedObservations.obs[i].fetchDecisionCriterion());
@@ -395,8 +453,10 @@ var observationFactory = (function() {
                                 var pos = config.defaultReference.findIndex(j => j.loinc == substitutedObservations.obsForDecision[i].loinc);
                                 substitutedObservations.obsForDecision[i].id = config.defaultReference[pos].id;
                             }
+
                             substitutedObservations.datasetForDecision.kval = substitutedObservations.obsForDecision;
                             substitutedObservations.datasetForDecision.gender = pat.gender ? pat.gender : 'female';
+
                         }
             
                     },
@@ -447,7 +507,8 @@ var observationFactory = (function() {
      * Hierbei Anfügen von Validierung und Visualisierung, Zusammenstellen der Wertereihe für den Entscheidungsprozess
      * aus der Konfiguration heraus. Einfügen der Patienten-Observations in die Wertereihe.
      */
-    var init = function(obsList, pat, config) {
+    var init = function(obsList, pat, config, classNameForUserReaction) {
+        vs.setClassName(classNameForUserReaction);                                          // Elemente für User-Reaktion auf UI zugänglich machen
         vs.setPatient(pat);                                                                 // Patienten merken
         vs.addValidation(obsList);                                                          // Validierungsfunktion an die Observation knüpfen
         vs.addVisualisation(obsList);                                                       // Visualisierungsfunktion an die Observation knüpfen
@@ -746,65 +807,114 @@ var cardFactory = (function() {
 
     return function() {
 
-        var htmlString = "", 
-            bgColor = "#111111",
-            title = "Card",
-            withTable = false,
-            params;        
+        var htmlString      = "", 
+            htmlTableString = "",
+            title           = "Card",
+            bgColor         = "#111111",            
+            withTable       = false,            
+            params          = [],
+            destination     = "",
+            reactOn         = "inpReact",
+            config          = "",          
+        // Grundstruktur des Datasets für die Funktionsrückgabe festlegen
+        // s. Testdatensatz data.js
+            datasetForDecision = {         
+                    type: "key-val-ref",
+                    id:   "labor",
+                    name: "Labor",
+                    lang: "en",
+                    kval: [],
+                    gender: "female"
+                };        
 
         function initCard(parameters) {
         
-            var htmlTableString = "", title = "";
-            
-            if (typeof parameters === 'string') {
-                
+            if (typeof parameters === 'string') {                
                 htmlTableString = parameters;
                 title           = "Card";
                 bgColor         = "#ffffff";
                 withTable       = false;
-
             } else if (typeof parameters === 'object') {
-
-                params = parameters.content;    
-                
-                for(var i = 0; i < parameters.content.length; i++) {
-                    if ('asHTMLTableRow' in parameters.content[i]) {
-                        htmlTableString += parameters.content[i].asHTMLTableRow();    
-                    }
-                }                
-                
-                title           = parameters.title ? parameters.title : 'Card';
-                bgColor         = parameters.background ? parameters.background : '#112233';
-                withTable       = true;                
+                datasetForDecision.gender   = parameters.patient ? parameters.patient.gender : "female";
+                config                      = parameters.config;
+                params                      = parameters.content;    
+                title                       = parameters.title ? parameters.title : 'Card';
+                bgColor                     = parameters.background ? parameters.background : '#112233';
+                withTable                   = true;
+                reactOn                     = parameters.reactOn;                   
             }
-        
-            htmlString  = "<div id=\"labfactory-card\ class=\"card factory\">";
+
+        }
+
+        function setHTMLString() {
+            
+            htmlString = "";
+            htmlTableString = "";     
+            
+            for(var i = 0; i < params.length; i++) {
+                if ('asHTMLTableRow' in params[i]) {
+                    htmlTableString += params[i].asHTMLTableRow();    
+                }
+            }                            
+                        
             htmlString += "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"fact" + title + "\">" + title + "<span></h4>";
             htmlString += withTable ? "<table class=\"table table-hover table-sm\"><tbody>" : "";
             htmlString += htmlTableString; 
             htmlString += withTable ? "</tbody></table>" : "";
-            htmlString += "</div></div>";
+            htmlString += "</div>";            
+
         }
 
-        function reactToUser() {            
+        function reactToUser() {
             var pos = params.findIndex(j => j.code.coding[0].code === this.id);
-            alert(JSON.stringify(params[pos]));
-            $(this).css({
-                "background-color": "#ffbfbf",
-                "transition": "0.5s all ease-in-out"
-            });        
+            if (pos > -1) {
+                params[pos].writeValueAndValidate(this.value, '#ffbfbf');
+                let thisId = this.id;
+                setHTMLString();                
+                $("#" + destination).html(htmlString);
+                $("." + reactOn).change(reactToUser);
+                $("#" + thisId).css({
+                    "background-color": "#ffbfbf",
+                    "transition": "0.5s all ease-in-out"
+                });
+                createDecisionList();
+                console.log(datasetForDecision);
+                console.log(validatePatientLaboratoryObservations(datasetForDecision));
+                console.log(params);
+            }
         }
 
-        function displayCard(destination) {
+        function displayCard(dest) {
+
+            destination = dest;
+            
+            setHTMLString();
                         
-            $(destination).fadeOut(500, function() {
-                $(destination).css("display", "none");
-                $(destination).html(htmlString);
-                $(destination).css("background", bgColor);
-                $(destination).fadeIn(500);
-                $(".ds_values_gf2").change(reactToUser);                
+            $("#" + destination).fadeOut(500, function() {
+                $("#" + destination).css("display", "none");
+                $("#" + destination).html(htmlString);
+                $("#" + destination).css("background", bgColor);
+                $("#" + destination).fadeIn(500);
+                $("." + reactOn).change(reactToUser);                
             });
         
+        }
+
+        function createDecisionList() {
+                        
+            if (params) {
+                datasetForDecision.kval = [];
+                for(var i = 0; i < params.length; i++) {
+                    if ('fetchDecisionCriterion' in params[i]) {
+                        datasetForDecision.kval.push(params[i].fetchDecisionCriterion());
+                    }
+                }
+                for(var i = 0; i < datasetForDecision.kval.length; i++) {
+                    var pos = config.defaultReference.findIndex(j => j.loinc == datasetForDecision.kval[i].loinc);
+                    datasetForDecision.kval[i].id = config.defaultReference[pos].id;
+                }                                
+            }
+
         }
 
         return {
