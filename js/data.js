@@ -441,19 +441,27 @@ function getAllRemainingObservationsFromTheServer(requestedUrl, items, count) {
 }
 
 /**
- * Funktion für die Lieferung von Labordaten eines Patienten
+ * Die (Hilfs-)Funktion liefert die Basisstruktur für die native Datenstruktur, die an den Entscheidungsalgorithmus und die Kartenvisualisierung weiter-
+ * gegeben wird
  */
-function getPatientLaboratoryObservations() {
-    
-    // Grundstruktur des Datasets für die Funktionsrückgabe festlegen
-    var dataSet = {         
+function getDataSetBasis() {
+    return{         
         type: "key-val-ref",
         id:   "labor",
         name: "Labor",
         lang: "en",
         kval: [],
         gender: "female"
-    };
+    }
+}
+
+/**
+ * Funktion für die Lieferung von Labordaten eines Patienten
+ */
+function getPatientLaboratoryObservations() {
+    
+    // Grundstruktur des Datasets für die Funktionsrückgabe festlegen
+    var dataSet = getDataSetBasis();
 
     /* Wenn Argumente an die Funktion übergeben werden ... */
     if (arguments.length == 2) {
