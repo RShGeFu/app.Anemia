@@ -23,7 +23,7 @@ var getTranslationList = (function() {
                         { id: "lab3a",      attr: "",       de: "Geschlecht", en: "Sex" },
                         { id: "lab4",       attr: "",       de: "ID", en: "ID" },
                         { id: "lab5",       attr: "",       de: "Diagnosen", en: "Diagnoses" },
-                        { id: "lab6",       attr: "",       de: "Einstellungen", en: "Settings" },
+                        { id: "lab6",       attr: "",       de: "Hilfe", en: "Help" },
                         { id: "lab6",       attr: "href",   de: "images/german.png", en: "images/english.png"},
                         { id: "lab7",       attr: "",       de: "Patientendaten neu laden", en: "Reload patient data" },                        
                         { id: "lab7a",      attr: "",       de: "Keine Diagnosen verfügbar", en: "No diagnosis available" },
