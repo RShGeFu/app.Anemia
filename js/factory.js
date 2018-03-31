@@ -10,9 +10,9 @@ var observationFactory = (function() {
      * Das Objekt beinhaltet Funktionen um Konfigurations- oder Patienten-Observations in ihrer Funktionalität zu ergänzen
      */
     var vs = {
-
-        patient:        "",
-        clName:         "inpReact",
+        
+        patient:        "",             // Patientendaten (als Observation)
+        clName:         "inpReact",     // Name des Class-Selectors für die Reaktion auf Usereingaben (für das Inputfeld gedacht)
 
         // Merke Dir den Klassennamen für die Reaktion auf Usereingaben
         setClassName:   function(cn) {
@@ -71,7 +71,7 @@ var observationFactory = (function() {
                         ident = "";
                     }                    
 
-                    // ... hole die entsprechende HTML-Visualisierung
+                    // ... hole die entsprechende HTML-Visualisierung und der Reaktion auf User-Eingabe
                     if (ident === "appAnem-test") {
                         var func = visualisationPerIdentifier['config'],
                             func2 = writeAndValidatePerIdentifer['config'],
@@ -173,6 +173,7 @@ var observationFactory = (function() {
         'default':  function() { return function() { }; }              
     }
 
+    // Validierungsfunktion für eine Laborobservation
     function validateLab() {
 
         // In der Konfiguration den zur Observation passenden Wert heraussuchen - Hier wäre ein Mapping für semantisch gleiche LOINCs denkbar ...
@@ -295,9 +296,11 @@ var observationFactory = (function() {
      * In diesem Objekt sind Visualisierungsfunktionen für die einzelnen Observations enthalten, je nachdem, ob sie vom 
      * Patienten stammen oder aus der Konfigurationsvorgabe
      */
-    var visualisationPerIdentifier = {        
+    var visualisationPerIdentifier = { 
+        // Kommt die Observation vom Patienten, zeige sie ohne Veränderungsmöglichkeit an       
         patient:    function() {
                 
+                        // Die Farbkodierung der Interpretation
                         var bdColor;
                         if (this.interpretation.coding[0].code.substring(0, 2) === 'nv') {
                             bdColor = 'badge-info';
@@ -307,6 +310,7 @@ var observationFactory = (function() {
                             bdColor = 'badge-danger';
                         }
 
+                        // Die Tabellenform/Spalten der einzelnen Werte erzeugen
                         var htmlStr = "<tr><th scope=\"row\">" + this.code.coding[0].display + "</th>";                        
                         htmlStr += "<td><span class=\"badge " + bdColor + "\">" + this.interpretation.coding[0].code + "</span></td>";
                         if ('value' in this) {
@@ -321,10 +325,14 @@ var observationFactory = (function() {
                         htmlStr += "<td>" + this.referenceRange[0].high.value + "</td>";
                         htmlStr += "</tr>";
                         
+                        // Gib diesen zusammengesetzten HTML-String zurück
                         return htmlStr;
                     },
+
+        // Ist die Observation generiert, dann gib ihr die Möglichkeit zur Usereingabe...
         config:     function() { 
                 
+                        // Die Farbkodierung der Interpretation
                         var bdColor;
                         if (this.interpretation.coding[0].code.substring(0, 2) === 'nv') {
                             bdColor = 'badge-info';
@@ -334,6 +342,7 @@ var observationFactory = (function() {
                             bdColor = 'badge-danger';
                         }
                     
+                        // Hole den aktuellen Wert der Observation
                         var getValue;
                         if ('value' in this) {
                             getValue = this.value[0].valueQuantity.value;
@@ -342,13 +351,17 @@ var observationFactory = (function() {
                         }
                         getValue = getValue == null || getValue == 'undefined' ? 0 : getValue;
 
+                        // War die Observation in ihrem Wert schon mal verändert?
                         var changeColor = '#ffffff';
                         if ('alreadyChanged' in this) {
                             changeColor = this['alreadyChanged'];
                         }
 
+                        // Setze den HTML-String in Tabellenform ...
                         var htmlStr = "<tr><small><th scope=\"row\">" + this.code.coding[0].display + "</th></small>";                        
                         htmlStr += "<td><small><span id=\"" + this.onChange + "_badge_" + this.code.coding[0].code + "\" class=\"badge " + bdColor +  "\">" + this.interpretation.coding[0].code + "</span></small></td>";
+                        
+                        // ... mit einem Inputfeld mit dem aktuellen Wert der Observation zusammen ...
                         htmlStr += "<td><small><input id=\"" + this.code.coding[0].code + "\" class=\"" + this.onChange + "\" size=\"2\" type=\"text\" value=\"" + getValue + "\" style=\"background: " + changeColor + ";\"></input></small></td>";                        
                         if ('value' in this) {
                             htmlStr += "<td><small>" + this.value[0].valueQuantity.unit + "</small></td>";
@@ -360,20 +373,28 @@ var observationFactory = (function() {
                         htmlStr += "<td><small>" + this.referenceRange[0].high.value + "</small></td>";
                         htmlStr += "</tr>";
                         
+                        // Gib den zusammengesetzten HTML-String zurück
                         return htmlStr;
                     },
+        
+        // Mache einen Default-String für einen nicht vorhersehbaren Ausnahmefall
         default:    function() { 
                         var htmlStr = "<tr><th scope=\"row\">NO</th>";
                         htmlStr += "<td>Value</td>";
                         htmlStr += "</tr>";
                         return htmlStr; 
                     }              
-    }    
-
+    }
+    
+    /**
+     * In diesem Objekt ist hinterlegt, ob und wie eine Observation verändert werden kann (wenn ein User etwas eingegeben hat)
+     */
     var writeAndValidatePerIdentifer = {        
+        // Kommt die Observation vom Patienten -> keine Änderungsmöglichkeiten
         patient:    function(v) {
 
                     },
+        // Ist es einer aus der Konfiguration heraus generierte Observation, dann ist sie änderbar
         config:     function(v, c) { 
                         if ('value' in this) {
                             this.value[0].valueQuantity.value = v;
@@ -386,6 +407,8 @@ var observationFactory = (function() {
                         }
                     
                     },
+        // Eine Reaktionsmöglichkeit für einen unvorhergesehene Fall -> keine Änderungsmöglichkeit (damit es zu keinem Programmabbruch kommt, 
+        // wenn die Funktion aufgerufen wird )
         default:    function(v) {
 
                     }
@@ -405,29 +428,22 @@ var observationFactory = (function() {
 
         // Grundstruktur des Datasets für die Funktionsrückgabe festlegen
         // s. Testdatensatz data.js
-        datasetForDecision: {         
-            type: "key-val-ref",
-            id:   "labor",
-            name: "Labor",
-            lang: "en",
-            kval: [],
-            gender: "female"
-        },
+        datasetForDecision: getDataSetBasis(),
         
         // Liste mit Observations aus der Konfiguration kreieren
         createByList: function(configList) {
 
-                        if (configList.defaultReference) {                  // Konfiguration nachschauen       
+                        if (configList.defaultReference) {                  // Konfiguration nachschauen - gibt es sie? (Sicherheitshalber wegen Programmstabilität)
                             
-                            substitutedObservations.obs = [];                                         
+                            substitutedObservations.obs = [];               // Das Feld initialisieren (sonst wird beim erneuten Aufruf die Liste zu lange)
                             
-                            for(var i of configList.defaultReference) {                                  
-                                var r = returnBaseObservationDefinition(i, vs.getPatient().gender); // Observation erstellen und abholen
-                                substitutedObservations.obs.push(r);        // ... und ab ins Array der benötigten Observations
+                            for(var i of configList.defaultReference) {                               
+                                var r = returnBaseObservationDefinition(i, vs.getPatient().gender); // Observation erstellen und abholen ...
+                                substitutedObservations.obs.push(r);                                // ... und ab ins Array der benötigten Observations
                             }
-                            
-                            vs.addValidation(substitutedObservations.obs);
-                            vs.addVisualisation(substitutedObservations.obs);                            
+
+                            vs.addValidation(substitutedObservations.obs);      // Hänge die Validierungsfunktion an
+                            vs.addVisualisation(substitutedObservations.obs);   // Hänge die Visualisierungsfunktion an
                         }
 
                     },
@@ -437,23 +453,27 @@ var observationFactory = (function() {
                         return substitutedObservations.obs;
                     },
 
-        // Stellt die Kriterien für den Entscheidungsalgorithmus zusammen
+        // Die Kriterien für den Entscheidungsalgorithmus zusammenstellen - wird benötigt, um den nativen Entscheidungsalgorithmus bedienen zu können
         createCriteriaForDecision: function(config, pat) {
                         
-                        if (substitutedObservations.obs) {
+                        if (substitutedObservations.obs) {                          // Gibt des das Array? Sicherheitshalber wegen Programmstabilität
                             
-                            substitutedObservations.datasetForDecision = [];
-
+                            substitutedObservations.datasetForDecision.kval = [];   // Das Feld initialisieren (sonst wird beim erneuten Aufruf die Liste zu lange)
+                            
+                            // Aus der Observation die benötigten Daten abholen und in einer eigenen Liste speichern...
                             for(var i = 0; i < substitutedObservations.obs.length; i++) {
                                 if ('fetchDecisionCriterion' in substitutedObservations.obs[i]) {
                                     substitutedObservations.obsForDecision.push(substitutedObservations.obs[i].fetchDecisionCriterion());
                                 }
                             }
+                            // Die Liste nachbearbeiten: Nicht jeder Name eine Observation entspricht einer ID für den nativen Entscheidungsalgorithmus...
+                            // ... aber der LOINC-Code: Anpassung der ID noch erforderlich
                             for(var i = 0; i < substitutedObservations.obsForDecision.length; i++) {
                                 var pos = config.defaultReference.findIndex(j => j.loinc == substitutedObservations.obsForDecision[i].loinc);
                                 substitutedObservations.obsForDecision[i].id = config.defaultReference[pos].id;
                             }
 
+                            // Liste in den nativen Datensatz einfügen
                             substitutedObservations.datasetForDecision.kval = substitutedObservations.obsForDecision;
                             substitutedObservations.datasetForDecision.gender = pat.gender ? pat.gender : 'female';
 
@@ -525,9 +545,9 @@ var observationFactory = (function() {
      * Initialiserung und Ergebnis
      */
     return {
-        init:                           init,
+        init:                           init,                                           // Initalisierungsfunktion
         resultNativeDataset:            substitutedObservations.getCriteriaForDecision, // Datensatz für den originären Entscheidungsalgorithmus liefern
-        resultProcessedObservations:    substitutedObservations.getList                 // Bearbeitete Observations liefern
+        resultProcessedObservations:    substitutedObservations.getList                 // Datensatz der bearbeitete Observations liefern
     }
 
 })();
@@ -696,6 +716,12 @@ function returnBaseObservationDefinition() {
     "text" : "" // Text based reference range in an observation
   }],
 
+  /**
+   * EIGENE ERWEITERUNG FÜR DIE VALIDIERUNG - ANGELEHNT AN DEN REFERENZBEREICH
+   * ES GIBT AUCH EINEN WERTEBEREICH FÜR BIOLOGISCH MÖGLICHE WERTE!!
+   * BEI ZULÄSSIGEN USEREINGABEN MUSS EIN SOLCHER BEREICH BERÜCKSICHTIGT WERDEN, UM VÖLLIG UNSINNIGE EINGABEN
+   * VERMEIDEN ZU KÖNNEN
+   */
   "validRange" : [{ // Provides guide for interpretation
     "low" : {
         // from Element: extension
@@ -767,16 +793,19 @@ function returnBaseObservationDefinition() {
   // Wenn ein Konfigurationsobjekt übergeben wurde und benötigt wird, dann weise die Werte zur
   if (arguments.length > 0) {
 
-    var configObj = arguments[0], gender = arguments[1] ? arguments[1] : 'male';
+    var configObj = arguments[0], gender = arguments[1] ? arguments[1] : 'male';    // Das Geschlecht ist zur Referenzparameter-Entscheidung wichtig!
 
     if (configObj && configObj.required) {
 
+        // LOINC und Name
         res.code.coding[0].code = configObj.loinc;
         res.code.coding[0].display = configObj.name;
         
+        // Wert an sich
         res.value[0].valueQuantity.value = configObj.value;
         res.value[0].valueQuantity.unit = configObj.unit;
 
+        // Referenzbereiche
         res.value[1].valueRange.low.value = configObj.refMin[gender] ? configObj.refMin[gender] : configObj.refMin;
         res.value[1].valueRange.low.unit = configObj.unit;
         res.value[1].valueRange.high.value = configObj.refMax[gender] ? configObj.refMax[gender] : configObj.refMax;
@@ -787,6 +816,7 @@ function returnBaseObservationDefinition() {
         res.referenceRange[0].high.value = configObj.refMax[gender] ? configObj.refMax[gender] : configObj.refMax;
         res.referenceRange[0].high.unit = configObj.unit;
 
+        // Validitätsbereich
         res.validRange[0].low.value = configObj.validMin;
         res.validRange[0].low.unit = configObj.unit;
         res.validRange[0].high.value = configObj.validMax;
@@ -805,8 +835,10 @@ function returnBaseObservationDefinition() {
  */
 var cardFactory = (function() {
 
+    // Als Funktion, um mehrere Karten basteln zu können...
     return function() {
 
+        // Definition der benötigten Parameter in der Karte
         var htmlString      = "", 
             htmlTableString = "",
             title           = "Card",
@@ -816,17 +848,11 @@ var cardFactory = (function() {
             destination     = "",
             reactOn         = "inpReact",
             config          = "",          
-        // Grundstruktur des Datasets für die Funktionsrückgabe festlegen
-        // s. Testdatensatz data.js
-            datasetForDecision = {         
-                    type: "key-val-ref",
-                    id:   "labor",
-                    name: "Labor",
-                    lang: "en",
-                    kval: [],
-                    gender: "female"
-                };        
+            // Grundstruktur des Datasets für die Funktionsrückgabe festlegen
+            // s. Testdatensatz data.js
+            datasetForDecision = getDataSetBasis();
 
+        // Initialisierungsfunktion, je nach übergebenen Parametern
         function initCard(parameters) {
         
             if (typeof parameters === 'string') {                
@@ -846,6 +872,8 @@ var cardFactory = (function() {
 
         }
 
+        // Die Karte visualisieren - ein Ort, d.h. ein DOM-Objekt (<div class="card"></div>) für die Karte muß existieren, um den String dort
+        // hinschreiben zu können
         function setHTMLString() {
             
             htmlString = "";
@@ -865,51 +893,62 @@ var cardFactory = (function() {
 
         }
 
+        // Auf die Usereingaben in ein Input-Feld reagieren - Das Inputfeld hat die ID des zugehörigen LOINCs,
+        // anhand derer die zugehörige Observation aus der Liste gefunden wird
+        // Potentielle Erweiterung (bisher noch keine zündende Idee...): der Callback-Funktion des Inputfeldes wird die Observation bekannt gemacht...
         function reactToUser() {
             var pos = params.findIndex(j => j.code.coding[0].code === this.id);
+            
+            // Wenn die Observation existiert ...
             if (pos > -1) {
-                params[pos].writeValueAndValidate(this.value, '#ffbfbf');
-                let thisId = this.id;
+
+                // Ändere den Wert und kennzeichne sie, dass sie verändert wurde
+                params[pos].writeValueAndValidate(this.value, '#ffbfbf');                
+
+                // Setze die Karte zusammen, schreibe sie an Ort und Stelle und hänge die Callbacks (wieder) an
                 setHTMLString();                
                 $("#" + destination).html(htmlString);
                 $("." + reactOn).change(reactToUser);
-                $("#" + thisId).css({
-                    "background-color": "#ffbfbf",
-                    "transition": "0.5s all ease-in-out"
-                });
+                
+                // Generiere eine Liste der Kriterien für den nativen Entscheidungsalgorithmus
                 createDecisionList();
+                
+                // Zeige das Ergebnis auf der Konsole an
                 console.log(datasetForDecision);
                 console.log(validatePatientLaboratoryObservations(datasetForDecision));
                 console.log(params);
             }
         }
 
+        // Funktion: Lass die ursprüngliche Karte verschwinden und lass die neu generierte Karte erscheinen
         function displayCard(dest) {
 
             destination = dest;
             
             setHTMLString();
                         
-            $("#" + destination).fadeOut(500, function() {
+            $("#" + destination).fadeOut(1000, function() {
                 $("#" + destination).css("display", "none");
                 $("#" + destination).html(htmlString);
                 $("#" + destination).css("background", bgColor);
-                $("#" + destination).fadeIn(500);
+                $("#" + destination).fadeIn(300);
                 $("." + reactOn).change(reactToUser);                
             });
         
         }
 
+        // Hilfsfunktion - s. auch observationFactory.createCriteriaForDecision
+        // Die Kriterien für den Entscheidungsalgorithmus zusammenstellen - wird benötigt, um den nativen Entscheidungsalgorithmus bedienen zu können        
         function createDecisionList() {
                         
-            if (params) {
-                datasetForDecision.kval = [];
-                for(var i = 0; i < params.length; i++) {
+            if (params) {                                                                   // Gibt es Observations?
+                datasetForDecision.kval = [];                                               // Initalisiere die Liste für die Kriterien
+                for(var i = 0; i < params.length; i++) {                                    // Gehe die Observations durch und hole die benötigten Daten
                     if ('fetchDecisionCriterion' in params[i]) {
                         datasetForDecision.kval.push(params[i].fetchDecisionCriterion());
                     }
                 }
-                for(var i = 0; i < datasetForDecision.kval.length; i++) {
+                for(var i = 0; i < datasetForDecision.kval.length; i++) {                   // Passe die benötigten nativen IDs anhand der LOINC-Codes an
                     var pos = config.defaultReference.findIndex(j => j.loinc == datasetForDecision.kval[i].loinc);
                     datasetForDecision.kval[i].id = config.defaultReference[pos].id;
                 }                                
@@ -917,9 +956,10 @@ var cardFactory = (function() {
 
         }
 
+        // Stelle öffentlich zur Verfügung nur zwei Funktionen
         return {
-            init:       initCard,        
-            display:    displayCard
+            init:       initCard,       // Initialisierungsfunktion
+            display:    displayCard     // Visualisierungsfunktion
         }
 
     }   
