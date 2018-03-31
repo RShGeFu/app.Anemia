@@ -183,6 +183,7 @@ var decision = (function() {
                         },
 
         // BMI als Nebenprodukt
+        // MUSS NOCH OPTIMIERT WERDEN!!!
         bmi:            function() {
                             if (valueSet.hasWeight() && valueSet.hasHeight()) {
                                 // Grenzwerte berücksichtigen!!                                
@@ -422,6 +423,24 @@ var decision = (function() {
     return {
         setItem:    valueSet.setItem,
         result:     valueSet.result        
+    }
+
+})();
+
+/**
+ * Idee: Entscheidungsalgorithmus auf dem Boden von Obersations
+ * Closure mit Entwicklungspotential ...
+ */
+var decisionWithObservations = (function() {
+
+    var listOfObservations = [];
+
+    function initDecisionDataset(obs) {
+        this.listOfObservations = obs;
+    }
+
+    return {
+        init:       initDecisionDataset
     }
 
 })();
