@@ -25,7 +25,7 @@ $(document).ready(function() {
                 classSelForUserReact = 'ds_values_gf2';
 
             // Observations gefunden ...
-            if (observationSet) {
+            if (observationSet.getList()) {
 
                 // Verarbeiten von nativen Observations
                 observationFactory.init(observationSet.getList(), observationSet.getPatient(), configuration, classSelForUserReact);
@@ -37,22 +37,25 @@ $(document).ready(function() {
                 // Ergebnis als Array von weiterverwendbaren Observations
                 obv = observationFactory.resultProcessedObservations();
                 console.log(obv);
-            }
-            
-            // Darstellung als Patientenkarte ...            
-            var card = cardFactory();   
-            card.init({
-                patient:        observationSet.getPatient(),
-                config:         configuration,
-                content:        obv,
-                title:          'Laboratory Data',
-                background:     '#f4efa6',
-                reactOn:        classSelForUserReact
-            });
-            //card.init("Test");
-            card.display("laboratory-card");            
+                        
+                // Darstellung als Patientenkarte ...            
+                var card = cardFactory();
+                card.init({
+                    patient:        observationSet.getPatient(),
+                    config:         configuration,
+                    content:        obv,
+                    title:          'Laboratory Data',
+                    background:     '#f4efa6',
+                    reactOn:        classSelForUserReact
+                });
+                //card.init("Test");
+                card.display("laboratory-card");
 
-            console.log("app - end: click - lab8");
+            } else {
+
+                alert("Stand-Alone - No test-data from a test-system!");
+
+            }
 
         });        
     } else {
