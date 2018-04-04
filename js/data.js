@@ -363,12 +363,12 @@ function validatePatientLaboratoryObservations(dataset) {
             /* Falls der Validitätsbereich fehlt ... */
             /* ... setze den maximalen Validitätsbereich auf 2 x den maximalen Referenzbereich */
             if (dataset.kval[i]['validMax'] === "" || dataset.kval[i]['validMax'] == null) {
-                dataset.kval[i]['validMax'] = 2 * dataset.kval[i]['refMax'];
+                dataset.kval[i]['validMax'] = configuration.defaultReference[posRef]['validMax'];
             }
 
             /* ... setze den minimalen Validitätsbereich auf 0 */
             if (dataset.kval[i]['validMin'] === "" || dataset.kval[i]['validMin'] == null) {
-                dataset.kval[i]['validMin'] = 0;
+                dataset.kval[i]['validMin'] = configuration.defaultReference[posRef]['validMin'];
             }
 
         }
