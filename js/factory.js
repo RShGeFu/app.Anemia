@@ -120,7 +120,7 @@ var observationFactory = (function() {
                         return {
                             loinc:  this.code.coding[0].code,
                             id:     this.code.coding[0].display,
-                            value:  'valueQuantity' in this ? this.valueQuantity.value : this.value[0].valueQuantity.value
+                            value:  Number('valueQuantity' in this ? this.valueQuantity.value : this.value[0].valueQuantity.value)
                         }
                     }
 
@@ -269,18 +269,18 @@ var observationFactory = (function() {
                         
         // Bewerte nun ....
         if (val) {
-            if (val < this.referenceRange[0].low.value) {
-                this.interpretation.coding[0].code = 'low';
-                this.interpretation.text = 'low / under normal range';
-            } else if (val < this.validRange[0].low.value) {
+            if (val < this.validRange[0].low.value) {
                 this.interpretation.coding[0].code = 'nvl';
                 this.interpretation.text = 'not valid / under valid range';
-            } else if (val > this.referenceRange[0].high.value) {
-                this.interpretation.coding[0].code = 'high';
-                this.interpretation.text = 'high / above normal range';
+            } else if (val < this.referenceRange[0].low.value) {
+                this.interpretation.coding[0].code = 'low';
+                this.interpretation.text = 'low / under normal range';
             } else if (val > this.validRange[0].high.value) {
                 this.interpretation.coding[0].code = 'nvh';
                 this.interpretation.text = 'not valid / above valid range';
+            } else if (val > this.referenceRange[0].high.value) {
+                this.interpretation.coding[0].code = 'high';
+                this.interpretation.text = 'high / above normal range';
             } else {
                 this.interpretation.coding[0].code = 'ok';
                 this.interpretation.text = 'in normal range';
@@ -301,9 +301,12 @@ var observationFactory = (function() {
         patient:    function() {
                 
                         // Die Farbkodierung der Interpretation
-                        var bdColor;
+                        var bdColor;                        
                         if (this.interpretation.coding[0].code.substring(0, 2) === 'nv') {
-                            bdColor = 'badge-info';
+                            bdColor = 'badge-info';                            
+                            if (this.interpretation.coding[0].code.substring(0, 3) != 'nvn') {
+                                bdColor = 'badge-info';
+                            }
                         } else if (this.interpretation.coding[0].code === 'ok') {
                             bdColor = 'badge-success';
                         } else {
@@ -333,9 +336,12 @@ var observationFactory = (function() {
         config:     function() { 
                 
                         // Die Farbkodierung der Interpretation
-                        var bdColor;
+                        var bdColor;                        
                         if (this.interpretation.coding[0].code.substring(0, 2) === 'nv') {
-                            bdColor = 'badge-info';
+                            bdColor = 'badge-dark';
+                            if (this.interpretation.coding[0].code.substring(0, 3) != 'nvn') {
+                                bdColor = 'badge-info';
+                            }
                         } else if (this.interpretation.coding[0].code === 'ok') {
                             bdColor = 'badge-success';
                         } else {
@@ -424,7 +430,6 @@ var observationFactory = (function() {
         
         // Arrays für native Observations und bearbeitete Observations
         obs: [],
-        obsForDecision: [],
 
         // Grundstruktur des Datasets für die Funktionsrückgabe festlegen
         // s. Testdatensatz data.js
@@ -462,20 +467,19 @@ var observationFactory = (function() {
                             
                             // Aus der Observation die benötigten Daten abholen und in einer eigenen Liste speichern...
                             for(var i = 0; i < substitutedObservations.obs.length; i++) {
-                                if ('fetchDecisionCriterion' in substitutedObservations.obs[i]) {
-                                    substitutedObservations.obsForDecision.push(substitutedObservations.obs[i].fetchDecisionCriterion());
+                                if ('fetchDecisionCriterion' in substitutedObservations.obs[i]) {                                    
+                                    substitutedObservations.datasetForDecision.kval.push(substitutedObservations.obs[i].fetchDecisionCriterion());
                                 }
                             }
                             // Die Liste nachbearbeiten: Nicht jeder Name eine Observation entspricht einer ID für den nativen Entscheidungsalgorithmus...
                             // ... aber der LOINC-Code: Anpassung der ID noch erforderlich
-                            for(var i = 0; i < substitutedObservations.obsForDecision.length; i++) {
-                                var pos = config.defaultReference.findIndex(j => j.loinc == substitutedObservations.obsForDecision[i].loinc);
-                                substitutedObservations.obsForDecision[i].id = config.defaultReference[pos].id;
+                            for(var i = 0; i < substitutedObservations.datasetForDecision.kval.length; i++) {
+                                var pos = config.defaultReference.findIndex(j => j.loinc == substitutedObservations.datasetForDecision.kval[i].loinc);
+                                substitutedObservations.datasetForDecision.kval[i].id = config.defaultReference[pos].id;
                             }
 
                             // Liste in den nativen Datensatz einfügen
-                            substitutedObservations.datasetForDecision.kval = substitutedObservations.obsForDecision;
-                            substitutedObservations.datasetForDecision.gender = pat.gender ? pat.gender : 'female';
+                            substitutedObservations.datasetForDecision.gender = pat.gender ? pat.gender : 'female';                            
 
                         }
             
@@ -839,18 +843,18 @@ var cardFactory = (function() {
     return function() {
 
         // Definition der benötigten Parameter in der Karte
-        var htmlString      = "", 
-            htmlTableString = "",
-            title           = "Card",
-            bgColor         = "#111111",            
-            withTable       = false,            
-            params          = [],
-            destination     = "",
-            reactOn         = "inpReact",
-            config          = "",          
+        var htmlString      = "",                   // Der gesamte HTML-String für die Karte
+            htmlTableString = "",                   // Der String mit der Tabelleneinträge für die Karte
+            title           = "Card",               // Titel der Karte
+            bgColor         = "#111111",            // Hintergrundfarbe - hier mit Defaultwert
+            withTable       = false,                // false: Zunächst nur normale Karte; true: Karte mit Tabelle
+            params          = [],                   // beinhaltet Observations der Laborparameter
+            destination     = "",                   // Ziel, wo die Karte hingeschrieben werden soll
+            reactOn         = "inpReact",           // Name für den Class-Selector für die Callbacks für die Usereingaben
+            config          = null,                 // beinhaltet Konfigurationsvorgaben
             // Grundstruktur des Datasets für die Funktionsrückgabe festlegen
             // s. Testdatensatz data.js
-            datasetForDecision = getDataSetBasis();
+            datasetForDecision = getDataSetBasis(); // Grundstruktur des nativen Datensatzes für den Entscheidungsalgorithmus holen
 
         // Initialisierungsfunktion, je nach übergebenen Parametern
         function initCard(parameters) {
@@ -867,27 +871,31 @@ var cardFactory = (function() {
                 title                       = parameters.title ? parameters.title : 'Card';
                 bgColor                     = parameters.background ? parameters.background : '#112233';
                 withTable                   = true;
-                reactOn                     = parameters.reactOn;                   
+                reactOn                     = parameters.reactOn;
             }
 
         }
 
-        // Die Karte visualisieren - ein Ort, d.h. ein DOM-Objekt (<div class="card"></div>) für die Karte muß existieren, um den String dort
+        // Die Karte zusammensetzen - ein Ort, d.h. ein DOM-Objekt (<div class="card"></div>) für die Karte muß existieren, um den String dort
         // hinschreiben zu können
         function setHTMLString() {
             
-            htmlString = "";
-            htmlTableString = "";     
+            var contentString = "";
+            htmlString = "";            
             
-            for(var i = 0; i < params.length; i++) {
-                if ('asHTMLTableRow' in params[i]) {
-                    htmlTableString += params[i].asHTMLTableRow();    
+            if (htmlTableString === "") {                 
+                for(var i = 0; i < params.length; i++) {
+                    if ('asHTMLTableRow' in params[i]) {
+                        contentString += params[i].asHTMLTableRow();    
+                    }
                 }
-            }                            
+            } else {
+                contentString = htmlTableString;
+            }
                         
             htmlString += "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"fact" + title + "\">" + title + "<span></h4>";
             htmlString += withTable ? "<table class=\"table table-hover table-sm\"><tbody>" : "";
-            htmlString += htmlTableString; 
+            htmlString += contentString; 
             htmlString += withTable ? "</tbody></table>" : "";
             htmlString += "</div>";            
 
@@ -909,14 +917,29 @@ var cardFactory = (function() {
                 setHTMLString();                
                 $("#" + destination).html(htmlString);
                 $("." + reactOn).change(reactToUser);
+                                
+                // Generiere eine Liste der Kriterien für den nativen Entscheidungsalgorithmus und validiere sie
+                createDecisionList();                
+                validatePatientLaboratoryObservations(datasetForDecision);                
                 
-                // Generiere eine Liste der Kriterien für den nativen Entscheidungsalgorithmus
-                createDecisionList();
+                // Eine Entscheidung muß hier dann fallen ... 
+                for(var i = 0; i < datasetForDecision.kval.length; i++) {                    
+                    var result =    testNormalAndValidRange(datasetForDecision.kval[i].value,
+                                                            datasetForDecision.kval[i].refMin,
+                                                            datasetForDecision.kval[i].refMax,
+                                                            datasetForDecision.kval[i].validMin,
+                                                            datasetForDecision.kval[i].validMax);
+                    decision.setItem(datasetForDecision.kval[i]['id'],
+                                     datasetForDecision.kval[i]['value'],
+                                     result.status);                    
+                }
                 
-                // Zeige das Ergebnis auf der Konsole an
-                console.log(datasetForDecision);
-                console.log(validatePatientLaboratoryObservations(datasetForDecision));
-                console.log(params);
+                // Ergebniskarten zusammenstellen und die Farbe ändern
+                $(".results").css({
+                    "background-color": "#ffbfbf",
+                    "transition": "0.5s all ease-in-out"
+                });
+                composeResultCards();
             }
         }
 
@@ -927,12 +950,30 @@ var cardFactory = (function() {
             
             setHTMLString();
                         
-            $("#" + destination).fadeOut(1000, function() {
+            $("#" + destination).fadeOut(600, function() {
                 $("#" + destination).css("display", "none");
                 $("#" + destination).html(htmlString);
                 $("#" + destination).css("background", bgColor);
                 $("#" + destination).fadeIn(300);
-                $("." + reactOn).change(reactToUser);                
+                $("." + reactOn).change(reactToUser);
+                                          
+                // Generiere eine Liste der Kriterien für den nativen Entscheidungsalgorithmus und validiere sie
+                createDecisionList();
+                validatePatientLaboratoryObservations(datasetForDecision);
+                
+                // Eine Entscheidung muß hier dann fallen ... 
+                for(var i = 0; i < datasetForDecision.kval.length; i++) {                    
+                    var result =    testNormalAndValidRange(datasetForDecision.kval[i].value,
+                                                            datasetForDecision.kval[i].refMin,
+                                                            datasetForDecision.kval[i].refMax,
+                                                            datasetForDecision.kval[i].validMin,
+                                                            datasetForDecision.kval[i].validMax);
+                    decision.setItem(datasetForDecision.kval[i]['id'],
+                                     datasetForDecision.kval[i]['value'],
+                                     result.status);                    
+                }           
+                composeResultCards();
+
             });
         
         }
@@ -941,7 +982,7 @@ var cardFactory = (function() {
         // Die Kriterien für den Entscheidungsalgorithmus zusammenstellen - wird benötigt, um den nativen Entscheidungsalgorithmus bedienen zu können        
         function createDecisionList() {
                         
-            if (params) {                                                                   // Gibt es Observations?
+            if (params && config) {                                                         // Gibt es Observations und eine Konfiguration?
                 datasetForDecision.kval = [];                                               // Initalisiere die Liste für die Kriterien
                 for(var i = 0; i < params.length; i++) {                                    // Gehe die Observations durch und hole die benötigten Daten
                     if ('fetchDecisionCriterion' in params[i]) {
@@ -951,7 +992,8 @@ var cardFactory = (function() {
                 for(var i = 0; i < datasetForDecision.kval.length; i++) {                   // Passe die benötigten nativen IDs anhand der LOINC-Codes an
                     var pos = config.defaultReference.findIndex(j => j.loinc == datasetForDecision.kval[i].loinc);
                     datasetForDecision.kval[i].id = config.defaultReference[pos].id;
-                }                                
+                }  
+                console.log(datasetForDecision)                              ;
             }
 
         }
