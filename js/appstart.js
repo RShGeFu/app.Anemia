@@ -19,19 +19,16 @@ $(document).ready(function() {
      */
     if (true) {
         $("#lab8").click(function() {            
-
-            var obv = [],
-                pCard;
-
-            if (pCard) {
-                $("#laboratory-card").html(pCard);
-            }
             
+            var obv = [],
+                pCard = $("#laboratory-card").html(),
+                classSelForUserReact = 'ds_values_gf2';
+
             // Observations gefunden ...
             if (observationSet) {
 
                 // Verarbeiten von nativen Observations
-                observationFactory.init(observationSet.getList(), observationSet.getPatient(), configuration, "ds_values_gf2");
+                observationFactory.init(observationSet.getList(), observationSet.getPatient(), configuration, classSelForUserReact);
                 
                 // Ergebnis als Dataset für den Entscheidungsprozess
                 var dataSet = observationFactory.resultNativeDataset();
@@ -42,8 +39,7 @@ $(document).ready(function() {
                 console.log(obv);
             }
             
-            // Darstellung als Patientenkarte ...
-            pCard = $("#laboratory-card").html();
+            // Darstellung als Patientenkarte ...            
             var card = cardFactory();   
             card.init({
                 patient:        observationSet.getPatient(),
@@ -51,8 +47,9 @@ $(document).ready(function() {
                 content:        obv,
                 title:          'Laboratory Data',
                 background:     '#f4efa6',
-                reactOn:        'ds_values_gf2'              
+                reactOn:        classSelForUserReact
             });
+            //card.init("Test");
             card.display("laboratory-card");            
 
             console.log("app - end: click - lab8");
