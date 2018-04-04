@@ -443,8 +443,8 @@ var observationFactory = (function() {
                             substitutedObservations.obs = [];               // Das Feld initialisieren (sonst wird beim erneuten Aufruf die Liste zu lange)
                             
                             for(var i of configList.defaultReference) {                               
-                                var r = returnBaseObservationDefinition(i, vs.getPatient().gender); // Observation erstellen und abholen ...
-                                substitutedObservations.obs.push(r);                                // ... und ab ins Array der benötigten Observations
+                                var r = returnBaseObservationDefinition(i, vs ? vs.getPatient().gender : 'female'); // Observation erstellen und abholen ...
+                                substitutedObservations.obs.push(r);                                                // ... und ab ins Array der benötigten Observations
                             }
 
                             vs.addValidation(substitutedObservations.obs);      // Hänge die Validierungsfunktion an
