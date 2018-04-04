@@ -126,7 +126,7 @@ var getPatientContext = (function() {
         serverTestBaseURL:      "http://hapi.fhir.org/baseDstu2",                                   // Funktioniert!
         
         // Medico-Server
-        serverBase:             "Medico - Server",
+        serverBase:             "KIS - Server",
         serverBaseURL:          "",
 
         // FÜr URL-Parameter
@@ -136,7 +136,7 @@ var getPatientContext = (function() {
         requiredPersonalData:   [ "patLastName", "patFirstName", "patBirthday" ],
         requiredEncounter:      "patEncID",
         requiredUseTestServer:  "fhirTestServer",
-        requiredUseServer:      "MedicoServer"
+        requiredUseServer:      "KIS-Server"
     };
 
     return function(params) {
@@ -240,36 +240,19 @@ var getPatientContext = (function() {
             // FHIR-Echt-Server mit Fallnummer
             } else if (vl.indexOf(configData.requiredUseServer) > -1 && vl.indexOf(configData.requiredEncounter) > -1) {  
                 
+                // Müsste noch implementiert werden ....
                 if (v[configData.requiredUseServer] == 'true') {
                     
                     return function() {
-                        composeCards();        
-                        composeResultCards();                        
-                        return "MEDICO - With encounterID: " + v[configData.requiredEncounter];
+
+                        return "KIS System used ...";
                     }
 
                 } else {
                     
-                    return "Medico - Server not used!";
+                    return "KIS System not accessible";
 
-                }
-            
-            // FHIR-Echt-Server mit Name, Vorname, Geburtsdatum
-            } else if (vl.indexOf(configData.requiredUseServer) > -1 && personalDataComplete) {
-
-                if (v[configData.requiredUseServer] == 'true') {
-
-                    return function() {
-                        composeCards();        
-                        composeResultCards();                        
-                        return "MEDICO - With Name, FirstName, Birthday: " + v[configData.requiredPersonalData[1]];
-                    }
-
-                } else {
-                    
-                    return "Medico - Server not used!";
-                    
-                }
+                }            
 
             // Stand alone, wenn keine entsprechenden Daten geliefert werden
             } else {                                                    
