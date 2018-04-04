@@ -126,10 +126,6 @@ function testNormalAndValidRange(value, refMin, refMax, validMin, validMax) {
     return retVal;
 }
 
-function isValide(dataset) {
-    
-}
-
 /**
  * Funktion für die Erstellung von Tabelleneinträgen zur Visualisierung der erhobenen Laborwerte
  * @param {*} dataSet 
