@@ -90,8 +90,8 @@ var configuration = {
             refMin:         0.83,
             refMax:         1.76,
             unit:           "mg/dl",
-            validMin:       1,
-            validMax:       25
+            validMin:       0.001,
+            validMax:       10
         },
         {            
             id:             "reticulocytepc",
