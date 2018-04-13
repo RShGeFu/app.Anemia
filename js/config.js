@@ -35,7 +35,9 @@ var configuration = {
             validMin:       2.5,
             validMax:       20,
             siFaktor:       0.621,
-            intUnit:        "mmol/l"
+            intUnit:        "mmol/l",
+            acceptFurtherLOINC:
+                            ["", ""]
         },
         {            
             id:             "mcv",
