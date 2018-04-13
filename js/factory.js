@@ -141,6 +141,11 @@ var observationFactory = (function() {
                 }
             }
             
+        },
+
+        // Überlegung - Funktion für das Einfügung eines Extensionblocks in eine Resource...
+        addExtension: function(observations) {
+
         }
 
     }
@@ -180,6 +185,7 @@ var observationFactory = (function() {
         var pos = configuration.defaultReference.findIndex(j => j.loinc === this.code.coding[0].code);
 
         // Liegt ein Validitätsbereich vor? Wenn nicht, dann einführen und mit Werten aus der Konfiguration befüllen...
+        // Eigentlich eine Extension!! Hier noch die Implementation zu überlegen...
         if (!('validRange' in this)) {
             Object.defineProperties(this, {
                 "validRange" : { value: [{ // Provides guide for interpretation
