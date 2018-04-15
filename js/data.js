@@ -97,7 +97,13 @@ function getPatientDemographics() {
         if (arguments[0].resourceType.toString() === "Patient") {
             
             // ... daraus den demographischen Datensatz zusammenstellen
-            var patient = arguments[0];
+            var patient = arguments[0], pg, pf;
+
+            // Unterschied von DSTU2 zu STU3 ...
+            if (patient.name) {
+                pg = patient.name[0].given.join ? patient.name[0].given.join(" ") : patient.name[0].given;
+                pf = patient.name[0].family.join ? patient.name[0].family.join(" ") : patient.name[0].family;
+            }
             
             dataSet = {
 
@@ -108,8 +114,8 @@ function getPatientDemographics() {
                 test: false,
 
                 kval: [ 
-                        { id: "perfirstname",   val: patient.name ?         patient.name[0].given.join(" ") : "-/-" },
-                        { id: "perlastname",    val: patient.name ?         patient.name[0].family.join(" "): "-/-" },
+                        { id: "perfirstname",   val: patient.name ?         pg : "-/-" },
+                        { id: "perlastname",    val: patient.name ?         pf : "-/-" },
                         { id: "perbirthday",    val: patient.birthDate ?    patient.birthDate.toString()    : "-/-" },
                         { id: "permf",          val: patient.gender ?       patient.gender.toString()       : "-/-" },
                         { id: "perencid",       val: patient.id ?           patient.id.toString()           : "-/-" },
