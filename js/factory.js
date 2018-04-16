@@ -71,7 +71,7 @@ var observationFactory = (function() {
                         ident = "";
                     }                    
 
-                    // ... hole die entsprechende HTML-Visualisierung und der Reaktion auf User-Eingabe
+                    // ... hole die entsprechende HTML-Visualisierung und die Reaktion auf User-Eingabe
                     if (ident === "appAnem-test") {
                         var func = visualisationPerIdentifier['config'],
                             func2 = writeAndValidatePerIdentifer['config'],
@@ -86,7 +86,7 @@ var observationFactory = (function() {
                             prop = 'default';
                     }
 
-                    // ... und erstelle drei Property dazu (Visualisierung und die Reaktion auf Usereingaben)
+                    // ... und erstelle drei Properties dazu (Visualisierung und die Reaktion auf Usereingaben)
                     if (!('asHTMLTableRow' in observations[i])) {
                         Object.defineProperty(observations[i], 'asHTMLTableRow', { value: func } );
                     }
@@ -237,7 +237,7 @@ var observationFactory = (function() {
         var pos = configuration.defaultReference.findIndex(j => j.loinc === this.code.coding[0].code);
 
         // Liegt ein Validitätsbereich vor? Wenn nicht, dann einführen und mit Werten aus der Konfiguration befüllen...
-        // Eigentlich eine Extension!! Hier noch die Implementation zu überlegen...
+        // Eigentlich eine Extension!! Hier noch die Implementation zu überlegen, s.o. ...
         if (!('validRange' in this)) {
             Object.defineProperties(this, {
                 "validRange" : { value: [{ // Provides guide for interpretation
@@ -266,6 +266,11 @@ var observationFactory = (function() {
             this.validRange[0].high.unit = configuration.defaultReference[pos].unit;                    
         }
         
+        // *******************************************************************
+        // Alternativ hier befüllen der Extension für den Validitätsbereich...
+        // *******************************************************************
+
+
         // Liegt ein Referenzbereich vor? Wenn nicht, dann einführen und mit Werten aus der Konfiguration befüllen...
         if (!'referenceRange' in this) {
             Object.defineProperties(this, {
