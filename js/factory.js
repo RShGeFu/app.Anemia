@@ -143,11 +143,63 @@ var observationFactory = (function() {
             
         },
 
-        // Überlegung - Funktion für das Einfügung eines Extensionblocks in eine Resource...
-        addExtension: function(observations) {
-
+        /**************************************************************************************************************
+         * Überlegung - Funktion für das Einfügung eines Extensionblocks in eine Resource - hier testweise...        
+         * s.u.:
+         * EIGENE ERWEITERUNG FÜR DIE VALIDIERUNG - ANGELEHNT AN DEN REFERENZBEREICH
+         * ES GIBT AUCH EINEN WERTEBEREICH FÜR BIOLOGISCH MÖGLICHE WERTE!!
+         * BEI ZULÄSSIGEN USEREINGABEN MUSS EIN SOLCHER BEREICH BERÜCKSICHTIGT WERDEN, UM VÖLLIG UNSINNIGE EINGABEN
+         * VERMEIDEN ZU KÖNNEN
+         **************************************************************************************************************/
+        addExtensions: function(observations) {
+            if (observations) {
+                for(var i = 0; i < observations.length; i++) {
+                    if (!('extension' in observations[i])) {
+                        Object.defineProperty(observations[i], 'extension', { value: [] });
+                    }
+                    observations[i].extension.push(
+                                                {
+                                                    "url": "http://xxx.com/validRange", // Test-URL
+                                                    "valueRange" : { 
+                                                        "low" : {
+                                                                        "value" : 0.0, // Numerical value (with implicit precision)
+                                                                        "comparator" : "<", // < | <= | >= | > - how to understand the value
+                                                                        "unit" : "", // Unit representation
+                                                                        "system" : "http://unitsofmeasure.org/", // System that defines coded unit form
+                                                                        "code" : "" // Coded form of the unit
+                                                                }, 
+                                                        "high" : {
+                                                                        "value" : 0.0, // Numerical value (with implicit precision)
+                                                                        "comparator" : ">", // < | <= | >= | > - how to understand the value
+                                                                        "unit" : "", // Unit representation
+                                                                        "system" : "http://unitsofmeasure.org/", // System that defines coded unit form
+                                                                        "code" : "" // Coded form of the unit
+                                                                }
+                                                            }
+                                                });
+                    observations[i].extension.push(
+                                                {
+                                                    "url": "http://xxx.com/validAge", // Test-URL
+                                                    "valueRange" : { 
+                                                                    "low" : { 
+                                                                        "value" : 0.0, // Numerical value (with implicit precision)
+                                                                        "comparator" : "<", // < | <= | >= | > - how to understand the value
+                                                                        "unit" : "", // Unit representation
+                                                                        "system" : "", // C? System that defines coded unit form
+                                                                        "code" : "" // Coded form of the unit
+                                                                    },
+                                                                    "high" :  { 
+                                                                        "value" : 120.0, // Numerical value (with implicit precision)
+                                                                        "comparator" : ">", // < | <= | >= | > - how to understand the value
+                                                                        "unit" : "", // Unit representation
+                                                                        "system" : "", // C? System that defines coded unit form
+                                                                        "code" : "" // Coded form of the unit
+                                                                    }
+                                                                }
+                                                });                                                                            
+                }
+            }
         }
-
     }
 
     /**
@@ -455,6 +507,7 @@ var observationFactory = (function() {
 
                             vs.addValidation(substitutedObservations.obs);      // Hänge die Validierungsfunktion an
                             vs.addVisualisation(substitutedObservations.obs);   // Hänge die Visualisierungsfunktion an
+                            vs.addExtensions(substitutedObservations.obs);       // Testweise: Hänge 'Extensions' ein
                         }
 
                     },
@@ -542,6 +595,8 @@ var observationFactory = (function() {
         vs.setPatient(pat);                                                                 // Patienten merken
         vs.addValidation(obsList);                                                          // Validierungsfunktion an die Observation knüpfen
         vs.addVisualisation(obsList);                                                       // Visualisierungsfunktion an die Observation knüpfen
+        vs.addExtensions(obsList);                                                          // Extensions an die Observation knüpfen
+        console.log(obsList);
         substitutedObservations.createByList(config);                                       // Satz an entscheidungsnotwendigen Observations erstellen
         substitutedObservations.replaceSubstitutedObservationByPatientValueList(obsList);   // Neueste Patienten-Observations einfügen
         vs.doValidation(substitutedObservations.getList());                                 // Validierung des zusammengestellen Satzes an Observations durchführen
