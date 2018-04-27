@@ -157,19 +157,29 @@ var observationFactory = (function() {
                     if (!('extension' in observations[i])) {
                         Object.defineProperty(observations[i], 'extension', { value: [] });
                     }
+                    
+                    // Suche anhand des LOINC in der Konfiguration den Validitätsbereich
+                    var pos = configuration.defaultReference.findIndex(j => j.loinc === (observations[i].code.coding[0].code));
+                    if (pos > -1) {
+                        var vMax = configuration.defaultReference[pos].validMax,
+                            vMin = configuration.defaultReference[pos].validMin;
+                    }
+
+                    // Schiebe für die Extensions Objekte mit den Werten in die Observation...
+                    // Validitätsbereich ... CAVE: gäbe es auch unter der Property 'component', je nach Verwendung in der Business-Logik
                     observations[i].extension.push(
                                                 {
                                                     "url": "http://xxx.com/validRange", // Test-URL
                                                     "valueRange" : { 
                                                         "low" : {
-                                                                        "value" : 0.0, // Numerical value (with implicit precision)
+                                                                        "value" : vMin, // Numerical value (with implicit precision)
                                                                         "comparator" : "<", // < | <= | >= | > - how to understand the value
                                                                         "unit" : "", // Unit representation
                                                                         "system" : "http://unitsofmeasure.org/", // System that defines coded unit form
                                                                         "code" : "" // Coded form of the unit
                                                                 }, 
                                                         "high" : {
-                                                                        "value" : 0.0, // Numerical value (with implicit precision)
+                                                                        "value" : vMax, // Numerical value (with implicit precision)
                                                                         "comparator" : ">", // < | <= | >= | > - how to understand the value
                                                                         "unit" : "", // Unit representation
                                                                         "system" : "http://unitsofmeasure.org/", // System that defines coded unit form
@@ -177,6 +187,7 @@ var observationFactory = (function() {
                                                                 }
                                                             }
                                                 });
+                    // Alter ...
                     observations[i].extension.push(
                                                 {
                                                     "url": "http://xxx.com/validAge", // Test-URL
