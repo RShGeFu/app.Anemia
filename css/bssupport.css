@@ -36,22 +36,22 @@ body {
     min-height: 100%;
     height: auto !important;
     height: 100%;
-    margin: 0 auto -60px;
+    margin: 0 auto -50px;
     background-color: rgb(240, 240, 220);
 }
 
 #push-lg {
-    height: 60px;
+    height: 50px;
 }
 
 #push-sm {
-    height: 30px;
+    height: 25px;
 }
 
 #footer {
     text-align: right;
-    height: 70px;
-    padding-top: 20px;
+    height: 50px;
+    padding-top: 10px;
     padding-left: 30px;
     padding-right: 30px;
     background-color: rgb(240, 220, 175);
