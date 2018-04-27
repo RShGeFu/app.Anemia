@@ -129,7 +129,7 @@ var getPatientContext = (function() {
         serverTestBase:         "TEST - Server",
         serverTestBaseURL:      "http://hapi.fhir.org/baseDstu2",                                   // Funktioniert!
         
-        // Medico-Server
+        // KIS-Server
         serverBase:             "KIS - Server",
         serverBaseURL:          "",
 
