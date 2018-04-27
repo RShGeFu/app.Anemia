@@ -93,7 +93,7 @@ function reactToUserInput() {
                                         $("#" + this.id + "_refMax").html(), 
                                         0, 
                                         $("#" + this.id + "_refMax").html() * 10 );
-
+    
     /* Entscheidungskriterium setzen */    
     decision.setItem(this.id, this.value, tnr.status == 'nv nan' || tnr.status == 'nv nvr' ? null : tnr.status);            
     
@@ -103,7 +103,7 @@ function reactToUserInput() {
                         "transition": "0.5s all ease-in-out"
     });
     $("#" + this.id + "_b").html(tnr.status);
-    $("#" + this.id + "_b").attr("class", "badge badge-secondary");    
+    $("#" + this.id + "_b").attr("class", "badge badge-" + tnr.color);
     /* Farbe des veränderten Input-Feldes auf Rot setzen */
     $(this).css({
         "background-color": "#ffbfbf",
@@ -112,6 +112,10 @@ function reactToUserInput() {
     
     /* Neu entscheiden */
     composeResultCards();
+}
+
+function completeServiceUri() {
+    return "/Observation?_count=50&subject:Patient=";
 }
 
 /**
@@ -136,7 +140,7 @@ var getPatientContext = (function() {
         requiredPersonalData:   [ "patLastName", "patFirstName", "patBirthday" ],
         requiredEncounter:      "patEncID",
         requiredUseTestServer:  "fhirTestServer",
-        requiredUseServer:      "KIS-Server"
+        requiredUseServer:      "KISServer"
     };
 
     return function(params) {
@@ -327,7 +331,8 @@ var getPatientContext = (function() {
                                     },
                                 }).done(function(pt){
                                     
-                                    var url = serviceUri + "/Observation?_count=100&subject:Patient=" + pt.id;
+                                    var url = serviceUri + completeServiceUri() + pt.id;
+                                    
                                     var obs = $.ajax({
                                             url: url,
                                             type: "GET",
@@ -354,8 +359,22 @@ var getPatientContext = (function() {
                                         $("#lab7").hide(); // Verstecken des Reload-Buttons, da nur mit entsprechender Authorisierung ein Reload möglich ist
                                         
                                     }).fail(function(e) {
-                                        alert("No observation found!");
-                                    });                                    
+                                        alert("No observation found! " + JSON.stringify(e));
+                                    }); 
+                                    
+                                    // Als XML ...
+                                    var url2 = serviceUri + "/metadata";
+                                    var obs2 = $.ajax({
+                                            url: url2,
+                                            type: "GET",
+                                            dataType: "json",
+                                            headers: {
+                                                "Authorization": "Bearer " + accessToken.get()
+                                            },
+                                    }).done(function(results) {
+                                        console.log(results);  // Nur Anzeige ... 
+                                        // XML2JSON-Parsing ....
+                                    });
                                     
                                 }).fail(function(e) {
                                     alert("Patient not found!");
