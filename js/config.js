@@ -89,8 +89,8 @@ var configuration = {
             loinc:          "30248-9",
             required:       true,
             value:          null,
-            refMin:         0.83,
-            refMax:         1.76,
+            refMin:         2.0,
+            refMax:         5.0,
             unit:           "mg/dl",
             validMin:       0.001,
             validMax:       10
