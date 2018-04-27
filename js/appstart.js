@@ -7,7 +7,8 @@
 $(document).ready(function() {
     
     /* Patientenkontext herstellen, je nach URL-Parameter */    
-    var pC = getPatientContext(location.search);    
+    var pC = getPatientContext(location.search),
+        params = getKeyValueList(location.search);    
     
     /* Revisualisierung des Fensterinhalts bei Resizing des Fensters, insbesondere der Grafikdarstellung */        
     $(window).resize(function() {
@@ -17,7 +18,7 @@ $(document).ready(function() {
     /**
      *  Test-Code: Button, mit dem die Kapselung von (Business-)Logik in der FHIR-Struktur implementiert wird
      */
-    if (true) {
+    if (params['showFact'] == 'true') {
         $("#lab8").click(function() {            
             
             var obv = [],
