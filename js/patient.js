@@ -190,6 +190,20 @@ function createLabCard(dataset) {
 }
 
 /**
+ * Zwei Hilfsfunktionen, um der EU-DSGVO gerecht zu werden
+ * 1. Zunächst werden alle Observations abgefragt, da die Requests verschiedene Ansatzpunkte haben und bei der Funktion composeCards()
+ *    zusammenlaufen. Hier werden nicht benötigte Observations entfernt.
+ * 2. Personenbezogene Daten werden pseudonymisiert - Nutzung der Funktion im Objekt 'observationSet'
+ */
+function rejectUnnecessaryObservations() {
+    observationSet.rejectObservations(configuration);
+}
+
+function hidePersonalData() {
+    observationSet.hidePatient();    
+}
+
+/**
  * Funktion zur Zusammenstellung aller Patientendaten, die für die Visualisierung und Berechnung erforderlich sind
  * Aufruf am Anfang und bei Betätigen des 'Reload'-Buttons
  */
@@ -217,7 +231,11 @@ function composeCards() {
 
         /* Beschriftung nach eingestellter Sprache */
         actualLanguage = $('#lang-flag').data('actual-lang');
-        translateLabels(actualLanguage);       
+        translateLabels(actualLanguage);
+
+        rejectUnnecessaryObservations();
+
+        hidePersonalData();
 
     } else {
         
