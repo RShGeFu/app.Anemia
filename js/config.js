@@ -37,7 +37,7 @@ var configuration = {
             siFaktor:       0.621,
             intUnit:        "mmol/l",
             acceptFurtherLOINC:
-                            ["", ""]
+                            ["test1", "test2"]
         },
         {            
             id:             "mcv",
@@ -49,7 +49,9 @@ var configuration = {
             refMax:         94.0,
             unit:           "fl",
             validMin:       30.0,
-            validMax:       150            
+            validMax:       150,           
+            acceptFurtherLOINC:
+                            ["test1", "test2"]
         },
         {            
             id:             "crp",
@@ -61,7 +63,9 @@ var configuration = {
             refMax:         5.0,
             unit:           "mg/l",
             validMin:       1,
-            validMax:       600
+            validMax:       600,
+            acceptFurtherLOINC:
+                            ["test1", "test2"]
         },
         {            
             id:             "ferritine",
@@ -81,7 +85,9 @@ var configuration = {
             validMin:       1,
             validMax:       2000,
             siFaktor:       0.474,
-            siUnit:         "pmol/l"
+            siUnit:         "pmol/l",
+            acceptFurtherLOINC:
+                            ["test1", "test2"]
         },
         {            
             id:             "sTFR",
@@ -93,7 +99,9 @@ var configuration = {
             refMax:         5.0,
             unit:           "mg/dl",
             validMin:       0.001,
-            validMax:       10
+            validMax:       10,
+            acceptFurtherLOINC:
+                            ["test1", "test2"]
         },
         {            
             id:             "reticulocytepc",
@@ -105,7 +113,9 @@ var configuration = {
             refMax:         15.0,
             unit:           "%",
             validMin:       1,
-            validMax:       80
+            validMax:       80,
+            acceptFurtherLOINC:
+                            ["test1", "test2"]
         },
         {            
             id:             "reticulocytehb",
@@ -117,7 +127,9 @@ var configuration = {
             refMax:         35,
             unit:           "pg",
             validMin:       1,
-            validMax:       60
+            validMax:       60,
+            acceptFurtherLOINC:
+                            ["test1", "test2"]
         },
         {
             id:             "hematokrit",
@@ -135,7 +147,9 @@ var configuration = {
                             },
             unit:           "%",
             validMin:       1 ,
-            validMax:       65
+            validMax:       65,
+            acceptFurtherLOINC:
+                            ["test1", "test2"]
         },
         {
             id:             "vitb12",
@@ -149,7 +163,9 @@ var configuration = {
             validMin:       1,
             validMax:       6600,
             siFaktor:       0.738,
-            siUnit:         "pmol/l"
+            siUnit:         "pmol/l",
+            acceptFurtherLOINC:
+                            ["test1", "test2"]
         },
         {
             id:             "folicAcid",
@@ -161,7 +177,9 @@ var configuration = {
             refMax:         10.0,
             unit:           "ng/ml",
             validMin:       1,
-            validMax:       150
+            validMax:       150,
+            acceptFurtherLOINC:
+                            ["test1", "test2"]
         }
 
     ]
