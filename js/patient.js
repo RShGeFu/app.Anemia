@@ -70,7 +70,7 @@ function createPatientCard(dataset) {
             str = str + "<tr><th scope=\"row\"></th><td><span id=\"" + dataset.kval[i]['id'] + "\">" + dataset.kval[i]['name'] + "</span><td><span class=\"badge badge-info\">" + dataset.kval[i]['value'] + "</span></td><td><small><input id=\"" + idOfInput + "\" class=\"" + classOfInput + "\" size=\"2\" type=\"text\" value=\"" + dataset.kval[i]['value'] + "\"></input></small></td><td><small>" + dataset.kval[i]['unit'] + "</small></td>";
             str = str + "<td><div class=\"btn-group btn-group-sm\" role=\"group\" aria-label=\"Basic example\">";
             str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-outline-secondary ds_chart_gf\"><i class=\"fa fa-line-chart\"></i></button>";
-            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-outline-secondary ds_request_gf\" " + disab + "><i class=\"glyphicon glyphicon-envelope\"></i></button></div></td></tr>"; //fa fa-chart-arraow-down
+            str = str + "<button id =\"" + dataset.kval[i]['id'] + "\" type=\"button\" class=\"btn btn-outline-secondary ds_request_gf\" " + disab + "><i class=\"fa fa-chart-arrow-down\"></i></button></div></td></tr>";
                         
         }
 
