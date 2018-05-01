@@ -14,11 +14,14 @@ var observationSet = (function() {
         pat = null;
 
     return {
+        // Observations löschen
         clear:      function() { obs = []; },
+        // Observations anfügen
         add:        function(n, o) {                                         
                         obs[n] = [];
                         obs[n].push(o);                                        
                     },
+        // Observations auslesen und liefern
         get:        function(n) {
                         if (typeof n === 'number') {
                             if (n >= 0 && n < obs.length) {
@@ -29,19 +32,105 @@ var observationSet = (function() {
                         }
                         return null;
                     },
-
+        // Liste von Observations festlegen
         addList:    function(l) {
                         this.list = l;
                     },
+        // Liste der Observations abfragen
         getList:    function() {
                         return this.list;
                     },
-
+        // Paitenten merken
         addPatient: function(p) {
-                        this.pat = p;
+                        this.pat = p;                        
                     },
+        // Patienten liefern
         getPatient: function() {
                         return this.pat;
+                    },
+        // Patienten pseudonymisieren
+        hidePatient:function() {
+                        // Wenn ein Patient definiert ist ...
+                        if (this.pat) {
+                            
+                            // ... sein Name vorhanden ist ...                            
+                            if (this.pat.name) {
+                                // ... dann die Initialen definieren ...
+                                var pg = this.pat.name[0].given.join ? this.pat.name[0].given.join(" ") : this.pat.name[0].given,
+                                    pf = this.pat.name[0].family.join ? this.pat.name[0].family.join(" ") : this.pat.name[0].family;
+                                // ... in die Resource schreiben und ...
+                                this.pat.name[0].family = pf ? pf.substring(0, 1) + "." : "";
+                                this.pat.name[0].given = pg ? pg.substring(0, 1) + "." : ""; 
+                                // ... etwaige Textkennungen mit Namen löschen und ...
+                                if (this.pat.name[0].text) {
+                                    this.pat.name[0].text = "";   
+                                }
+                            }
+
+                            // ... das Geburtsdatum verändern ...
+                            if (this.pat.birthDate) {
+                                this.pat.birthDate = "1900-01-01";
+                            }
+                            
+                            // ... und wenn ein Narrativ der Resource vorhanden ist, hier die Initialen des Patienten einfügen
+                            if (this.pat.text) { 
+                                this.pat.text.div = "<div xmlns='http://www.w3.org/1999/xhtml'>" + pf.substring(0, 1) + "." + pg.substring(0, 1) + "." + "</div>";
+                            }
+                        }                        
+                    },
+        // Observations, außer denjenigen der Konfiguration, löschen
+        rejectObservations: function(accept) {
+                        /**
+                         * accept kann sein:
+                         * 1. Array mit Strings, die LOINCs enthalten
+                         * 2. Array mit Objekten, die einen LOINC enthalten bzw. thematisch dazu passend weitere LOINCs in einem eigenen Array,
+                         *      d.h. Objekte aus der Configuraton
+                         */
+
+                        var accepted = [];      // Liste der akzeptierten LOINCs
+
+                        // Akzeptierte LOINCs zusammenstellen aus 'accept' - entweder ein Array von Strings oder Objekten, s.o.
+                        for(var i = 0; i < accept.length; i++) {                            
+                            if ('loinc' in accept[i]) {
+                                accepted.push(accept[i].loinc);                            
+                                if ('acceptFurtherLOINC' in accept[i]) {
+                                    for(var j = 0; j < accept[i].acceptFurtherLOINC.length; j++) {
+                                        accepted.push(accept[i].acceptFurtherLOINC[j]);                                    
+                                    }   
+                                }
+                            } else {
+                                if (typeof accept[i] === 'string') {
+                                    accepted.push(accept[i]);
+                                }
+                            }         
+                        }
+
+                        // 'obs' enthält bereits nur die Daten, die in der Configuration definiert sind ...
+                        // 'list' ist zu bereinigen
+                        for(var i = 0; i < this.list.length; i++) {
+                            var pos = accepted.findIndex(j => j === this.list[i].code.coding[0].code);
+                            if (pos == -1) {
+                                this.list.splice(i, 1);
+                                i -= 1;                 // Nach dem Entfernen eines Elements Zähler um eine Position zurücksetzen, 
+                                                        // um auf dem nachgerutschten Element ggf. das Splicing wieder beginnen
+                            }
+                        }
+
+                        // Visualisierung des Ergebnisses - aktuell ausgeschaltet
+                        // Ein Möglichkeit wäre das Ein-/Ausschalten über URL-Parameter zu steuern ...
+                        if (false) {
+                            var count = 0;
+                            console.log(this.list);
+                            for(var i = 0; i < this.list.length; i++) {
+                                var pos = accepted.findIndex(j => j === this.list[i].code.coding[0].code);
+                                console.log(pos);
+                                if (pos > -1) {
+                                    count += 1;
+                                }
+                            }
+                            console.log(count);
+                        }
+
                     }
     }
 
@@ -429,7 +518,7 @@ function getAllRemainingObservationsFromTheServer(requestedUrl, items, count) {
                             items.push(result.entry[i].resource);
                         }
                     }
-                    observationSet.addList(items); // Es kommt die aktuelle Liste in die ObservationSet
+                    observationSet.addList(items); // Es kommt die aktuelle Liste in die ObservationSet                    
                     
                     // Wenn eine weitere Datenseite auf dem Server liegt ...
                     if ('link' in result) {               
@@ -709,7 +798,7 @@ function getPatientLaboratoryObservations() {
                 },
                 {            
                     id:             "sTFR",                    
-                    value:          1.0,
+                    value:          3.0,
                 },
                 {            
                     id:             "reticulocytepc",
