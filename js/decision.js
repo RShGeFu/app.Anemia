@@ -325,26 +325,27 @@ var decision = (function() {
                                                     // D: Makrozytäre Anämie bei Vit B12-Mangel
                                                     // E: Substitution
                                                     valueSet.pushResults("diag-13", "recom-13");
+                                                } else {                                                    
+                                                    if (valueSet.hasFolicAcid()) {
+                                                        if (valueSet.isFolicAcidLow()) {
+                                                            // D: Makrozytäre Anämie bei Folsäure-Mangel
+                                                            // E: Subistution
+                                                            valueSet.pushResults("diag-14", "recom-14");
+                                                        } else {
+                                                            // D: V.a. Hypoplastische/Infiltrative/Dyserythropoietische KM-Störung
+                                                            // E: Knochenmarkszytologie
+                                                            valueSet.pushResults("diag-8", "recom-8");                                                      
+                                                        }
+                                                    } else {
+                                                        // D: Makrozytäre Anämie
+                                                        // E: Folsäure bestimmen
+                                                        valueSet.pushResults("diag-15", "recom-16");                           
+                                                    }                                                            
                                                 }
                                             } else {
                                                 // D: Makrozytäre Anämie
                                                 // E: Vitamin B12 bestimmen
                                                 valueSet.pushResults("diag-15", "recom-15");                           
-                                            }
-                                            if (valueSet.hasFolicAcid()) {
-                                                if (valueSet.isFolicAcidLow()) {
-                                                    // D: Makrozytäre Anämie bei Folsäure-Mangel
-                                                    // E: Subistution
-                                                    valueSet.pushResults("diag-14", "recom-14");
-                                                } else {
-                                                    // D: V.a. Hypoplastische/Infiltrative/Dyserythropoietische KM-Störung
-                                                    // E: Knochenmarkszytologie
-                                                    valueSet.pushResults("diag-8", "recom-8");                                                      
-                                                }
-                                            } else {
-                                                // D: Makrozytäre Anämie
-                                                // E: Folsäure bestimmen
-                                                valueSet.pushResults("diag-15", "recom-16");                           
                                             }
                                         }
                                     }
