@@ -16,6 +16,11 @@ var configuration = {
     
     limitRPI:                           2,           // Grenzwert für den Retikulozytenproduktionsindex
 
+    weightLow:                          40,          // Grenzwerte für die BMI-Berechnung
+    weightHigh:                         200,
+    heightLow:                          120,
+    heightHigh:                         220,
+
     defaultReference: [                              // Ab hier werden Labor-Referenzparameter für User-Eingaben angegeben
         {                 
             id:             "hemoglobin",

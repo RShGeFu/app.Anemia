@@ -188,20 +188,20 @@ var decision = (function() {
                             if (valueSet.hasWeight() && valueSet.hasHeight()) {
                                 var w = 0, h = 0, t = "";
                                 // Grenzwerte berücksichtigen!!                                                                
-                                if (Number(valueSet.weight.value).valueOf() < 40) {
+                                if (Number(valueSet.weight.value).valueOf() < configuration.weightLow) {
                                     w = 40;
                                     t = "< ";
-                                } else if (Number(valueSet.weight.value).valueOf() > 200) {
+                                } else if (Number(valueSet.weight.value).valueOf() > configuration.weightHigh) {
                                         w = 200;
                                         t = "> ";
                                 } else {
                                     w = Number(valueSet.weight.value).valueOf();
                                 }
 
-                                if (Number(valueSet.height.value).valueOf() < 120) {
+                                if (Number(valueSet.height.value).valueOf() < configuration.heightLow) {
                                     h = 120;
                                     t = "> ";
-                                } else if (Number(valueSet.height.value).valueOf() > 220) {
+                                } else if (Number(valueSet.height.value).valueOf() > configuration.heightHigh) {
                                         h = 220;
                                         t = "< ";
                                 } else {
