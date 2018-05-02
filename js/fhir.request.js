@@ -114,6 +114,10 @@ function reactToUserInput() {
     composeResultCards();
 }
 
+/**
+ * Hilfsfunktion completeServiceUri(): mit dieser Funktion wird ein String für die AJAX-Anfrage an den FHIR-Server geliefert, die die eigentliche
+ * URL noch weiter ergänzt. Damit könnte eine Variabilität in den Abfrageparametern ermöglicht werden
+ */
 function completeServiceUri() {
     // Denkbar: Bereits hier Angabe von Search-Parameters (z.B. LOINCs), um nur bestimmte Observations zu bekommen (Datensparsamkeit/Privacy by design),
     // Bei Versuch mit '/Observation?code=http://loinc.org|718-7&_count=50&subject:Patient=': KEINE Serverantwort
@@ -183,65 +187,59 @@ var getPatientContext = (function() {
                 
                 if (v[configData.requiredUseTestServer] == 'true') {
                     
-                    if (navigator.userAgent.search("Firefox") > 0) {                                        
-                        // Funktioniert mit FireFox - nicht mit Chrome und IE
-                        return function() {
+                    return function() {
                         
-                            alert(configData.serverTestBase + " (FHIR): " + configData.serverTestBaseURL);
+                        alert(configData.serverTestBase + " (FHIR): " + configData.serverTestBaseURL);
                     
-                            // Client initialisieren
-                            var smart = FHIR.client({
-                                    serviceUrl:     configData.serverTestBaseURL,
-                                    patientId:      v[configData.requiredEncounter]                 
-                                });
+                        // Client initialisieren
+                        var smart = FHIR.client({
+                                serviceUrl:     configData.serverTestBaseURL,
+                                patientId:      v[configData.requiredEncounter]                 
+                            });
                         
-                            // Daten abrufen - zunächst den Namen eines Patienten
-                            smart.patient.read().then(function(pt) {                    
+                        // Daten abrufen - zunächst den Namen eines Patienten
+                        smart.patient.read().then(function(pt) {                    
                                     
-                                    smart.patient.api.fetchAll( { type: "Observation" } ).then(function(results) {
-                                    
-                                        // Patientendaten und Ergebnisse zusammenstellen und visualisieren                                       
-                                        composeCards(pt, results);                                   
-                                        composeResultCards();
-
-                                        /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
-                                        $(".ds_values_gf").change(reactToUserInput);                                                                                       
-                                        $(".ds_chart_gf").click(function() {
-                                            drawLabValGraphs(this.id);
-                                        });                                                                                    
-                                        $(".ds_request_gf").click(function() {
-                                            let pos = configuration.defaultReference.findIndex(i => i.id === this.id);
-                                            alert("Anforderung wird erstellt für: " + configuration.defaultReference[pos].name);
-                                            $(this).attr('disabled', true);
-                                        });                                    
-                                        
-                                    }).fail(function(e) {
-                                        alert("No observation found!");                                    
-                                    });
-
-                                }).fail(function(e) {
-                                    alert(e + " - Patient not found! Starting with test data ...");
-                                    composeCards();                                                                       
+                                smart.patient.api.fetchAll( { type: "Observation" } ).then(function(results) {
+                                
+                                    // Patientendaten und Ergebnisse zusammenstellen und visualisieren                                       
+                                    composeCards(pt, results);                                   
                                     composeResultCards();
 
                                     /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
-                                    $(".ds_values_gf").change(reactToUserInput);                                                                                
+                                    $(".ds_values_gf").change(reactToUserInput);                                                                                       
+                                    $(".ds_chart_gf").click(function() {
+                                        drawLabValGraphs(this.id);
+                                    });                                                                                    
+                                    $(".ds_request_gf").click(function() {
+                                        let pos = configuration.defaultReference.findIndex(i => i.id === this.id);
+                                        alert("Anforderung wird erstellt für: " + configuration.defaultReference[pos].name);
+                                        $(this).attr('disabled', true);
+                                    });                                    
+                                        
+                                }).fail(function(e) {
+                                    alert("No observation found!");                                    
                                 });
 
-                            return "FHIR-Testserver used ...";
-                        }
+                            }).fail(function(e) {
+                                alert(e + " - Patient not found! Starting with test data ...");
+                                composeCards();                                                                       
+                                composeResultCards();
 
-                    } else if (navigator.userAgent.search("Chrome")) {
+                                /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
+                                $(".ds_values_gf").change(reactToUserInput);                                                                                
+                            });
 
-                        alert("Please use Mozilla Firefox!");
-
-                    }                                  
+                        return "FHIR-Testserver used ...";
+                    }
 
                 } else {
                     
                     return "FHIR-Testserver not used!";
 
                 }
+
+//***************************************************************************************************************************************** */
 
             // FHIR-Echt-Server mit Fallnummer
             } else if (vl.indexOf(configData.requiredUseServer) > -1 && vl.indexOf(configData.requiredEncounter) > -1) {  
@@ -259,6 +257,8 @@ var getPatientContext = (function() {
                     return "KIS System not accessible";
 
                 }            
+
+//***************************************************************************************************************************************** */
 
             // Stand alone, wenn keine entsprechenden Daten geliefert werden
             } else {                                                    
