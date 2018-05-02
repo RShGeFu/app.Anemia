@@ -115,6 +115,8 @@ function reactToUserInput() {
 }
 
 function completeServiceUri() {
+    // Denkbar: Bereits hier Angabe von Search-Parameters (z.B. LOINCs), um nur bestimmte Observations zu bekommen (Datensparsamkeit/Privacy by design),
+    // Bei Versuch mit '/Observation?code=http://loinc.org|718-7&_count=50&subject:Patient=': KEINE Serverantwort
     return "/Observation?_count=50&subject:Patient=";
 }
 
@@ -362,8 +364,13 @@ var getPatientContext = (function() {
                                         alert("No observation found! " + JSON.stringify(e));
                                     }); 
                                     
-                                    // Als XML ...
-                                    var url2 = serviceUri + "/metadata";
+
+                                    /** Testbereich...
+                                     *  1. Patient und Observations als XML -> abfragbar, Umwandlung erforderlich
+                                     *  2. Metadata, d.h. Conformance -> abfragbar
+                                     *  3. Definierte ValueSets: observations-codes, days-of-week, ldlcholesterol-codes -> jeweils kein Ergebnis 
+                                     **/
+                                    var url2 = serviceUri + "/ValueSet?name=obs";
                                     var obs2 = $.ajax({
                                             url: url2,
                                             type: "GET",
@@ -375,6 +382,7 @@ var getPatientContext = (function() {
                                         console.log(results);  // Nur Anzeige ... 
                                         // XML2JSON-Parsing ....
                                     });
+
                                     
                                 }).fail(function(e) {
                                     alert("Patient not found!");
