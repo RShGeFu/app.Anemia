@@ -16,7 +16,7 @@ var configuration = {
     
     limitRPI:                           2,           // Grenzwert für den Retikulozytenproduktionsindex
 
-    weightLow:                          40,          // Grenzwerte für die BMI-Berechnung
+    weightLow:                          40,          // Grenzwerte für die BMI-Berechnung 
     weightHigh:                         200,
     heightLow:                          120,
     heightHigh:                         220,
@@ -41,8 +41,12 @@ var configuration = {
             validMax:       20,
             siFaktor:       0.621,
             intUnit:        "mmol/l",
-            acceptFurtherLOINC:
-                            ["test1", "test2"]
+            acceptFurtherLOINC:                      // Im Grunde wäre es besser dieses Array bereits bei loinc als 'Haupt-LOINC'-Array zu verwenden und
+                                                     // das Mapping von LOINCS bereits von Anfang zu berücksichtigen - die Entwicklung der App startete 
+                                                     // mit nur einem Code; das Mapping auf mehrere Codes als Konzept wurde erst im Verlauf überlegt.
+                                                     // Als Weiterentwicklung müsste loinc: ["718-7"] geschrieben und ggf. 'defaultReference.loinc' dann durch
+                                                     // 'defaultReference.loinc[0]' ersetzt werden...
+                            [ ]
         },
         {            
             id:             "mcv",
@@ -56,7 +60,7 @@ var configuration = {
             validMin:       30.0,
             validMax:       150,           
             acceptFurtherLOINC:
-                            ["test1", "test2"]
+                            [ ]
         },
         {            
             id:             "crp",
@@ -70,7 +74,7 @@ var configuration = {
             validMin:       1,
             validMax:       600,
             acceptFurtherLOINC:
-                            ["test1", "test2"]
+                            [ ]
         },
         {            
             id:             "ferritine",
@@ -92,7 +96,7 @@ var configuration = {
             siFaktor:       0.474,
             siUnit:         "pmol/l",
             acceptFurtherLOINC:
-                            ["test1", "test2"]
+                            [ ]
         },
         {            
             id:             "sTFR",
@@ -106,7 +110,7 @@ var configuration = {
             validMin:       0.001,
             validMax:       10,
             acceptFurtherLOINC:
-                            ["test1", "test2"]
+                            [ ]
         },
         {            
             id:             "reticulocytepc",
@@ -120,7 +124,7 @@ var configuration = {
             validMin:       1,
             validMax:       80,
             acceptFurtherLOINC:
-                            ["test1", "test2"]
+                            [ ]
         },
         {            
             id:             "reticulocytehb",
@@ -134,7 +138,7 @@ var configuration = {
             validMin:       1,
             validMax:       60,
             acceptFurtherLOINC:
-                            ["test1", "test2"]
+                            [ ]
         },
         {
             id:             "hematokrit",
@@ -154,7 +158,7 @@ var configuration = {
             validMin:       1 ,
             validMax:       65,
             acceptFurtherLOINC:
-                            ["test1", "test2"]
+                            [ ]
         },
         {
             id:             "vitb12",
@@ -170,7 +174,7 @@ var configuration = {
             siFaktor:       0.738,
             siUnit:         "pmol/l",
             acceptFurtherLOINC:
-                            ["test1", "test2"]
+                            [ ]
         },
         {
             id:             "folicAcid",
@@ -184,7 +188,7 @@ var configuration = {
             validMin:       1,
             validMax:       150,
             acceptFurtherLOINC:
-                            ["test1", "test2"]
+                            [ ]
         }
 
     ]

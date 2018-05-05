@@ -570,7 +570,7 @@ function getPatientLaboratoryObservations() {
         // ... gleich das Patientengeschlecht merken ...        
         dataSet.gender = patient.gender != "" ? patient.gender : "male";
 
-        // ... lege für die einzelnen, in der 'configuration' angelegten Observations (je nach LOINC) je ein Merkfeld an ...
+        // ... lege für die einzelnen, in der 'configuration' angelegten Observations (je nach LOINC) je ein Merkfeld an ...        
         for(var i = 0; i < configuration.defaultReference.length; i++) {
             labValues[configuration.defaultReference[i].loinc] = [];
         }        
@@ -612,7 +612,10 @@ function getPatientLaboratoryObservations() {
                 // (Ein anderes Code-System wird nicht akzeptiert)                
                 for(var j = 0; j < configuration.defaultReference.length; j++) {                                        
                     if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === configuration.defaultReference[j].loinc) {                        
-                        // ... dann merke Dir die Observation in dem eigens angelegten Array                        
+                        // ... dann merke Dir die Observation in dem eigens angelegten Array
+                        // Hier könnte ein Mapping stattfinden - wenn eine Observation gefunden wird, die in 'acceptFurtherLOINC' der
+                        // Konfiguration aufgeführt ist, könnte diese in das Array 'labValues' zusätzlich geschoben werden!
+                        // In der Datenvalidierung später muss dies ggf. berücksichtigt werden
                         labValues[configuration.defaultReference[j].loinc].push(observations[i]);                        
                     }
                 }
