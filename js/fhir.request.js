@@ -121,6 +121,37 @@ function reactToUserInput() {
 function completeServiceUri() {
     // Denkbar: Bereits hier Angabe von Search-Parameters (z.B. LOINCs), um nur bestimmte Observations zu bekommen (Datensparsamkeit/Privacy by design),
     // Bei Versuch mit '/Observation?code=http://loinc.org|718-7&_count=50&subject:Patient=': KEINE Serverantwort
+    // Bei Versuch mit '/Observation?code=718-7&_count=50&subject:Patient=': Server liefert nur die Observations mit Hämoglobin;
+    
+    // Loincs, die gefunden werden sollen, zusammenstellen: Configuration durchwandern
+    var searchLoincs = "";  //Suchstring
+    for(var i = 0; i < configuration.defaultReference.length; i++)   {
+        // Delimiter einfügen
+        if (searchLoincs.length > 0) {
+            searchLoincs += "|";
+        }
+
+        // LOINC anfügen
+        if ('loinc' in configuration.defaultReference[i]) {
+            searchLoincs += configuration.defaultReference[i].loinc;
+            
+            // Evtl. weitere LOINCs nicht vergessen und in derselben Weise anfügen
+            if ('acceptFurtherLOINC' in configuration.defaultReference[i]) {
+                for(var j = 0; j < configuration.defaultReference[i].acceptFurtherLOINC.length; j++) {                    
+                    if (searchLoincs.length > 0) {
+                        searchLoincs += "|";
+                    }
+                    searchLoincs += configuration.defaultReference[i].acceptFurtherLOINC[j];
+                }
+            }
+        }        
+    }
+    
+    var clinicalLoincs = "3141-9|29463-7|8302-2"; // LOINCS für Gewicht und Größe
+    searchLoincs += "|" + clinicalLoincs;
+
+    // Allerdings: /Observation?code=" + searchLoincs + "&_count=50&subject:Patient=" scheitert: Server liefert Fehler - Cross-Origin-Abfrage nicht gestattet
+
     return "/Observation?_count=50&subject:Patient=";
 }
 
@@ -183,6 +214,7 @@ var getPatientContext = (function() {
             /* Unterschiedliche Antworten, je nach URL-Parameter */
 
             // Test-Server FHIR mit Patienten-ID...
+            // Hier Test: Benutzung des als Open-Source verfügbaren FHIR-Clients
             if (vl.indexOf(configData.requiredUseTestServer) > -1 && vl.indexOf(configData.requiredEncounter) > -1) {        
                 
                 if (v[configData.requiredUseTestServer] == 'true') {
@@ -213,7 +245,7 @@ var getPatientContext = (function() {
                                     });                                                                                    
                                     $(".ds_request_gf").click(function() {
                                         let pos = configuration.defaultReference.findIndex(i => i.id === this.id);
-                                        alert("Anforderung wird erstellt für: " + configuration.defaultReference[pos].name);
+                                        alert("Simulation - Anforderung wird erstellt für: " + configuration.defaultReference[pos].name);
                                         $(this).attr('disabled', true);
                                     });                                    
                                         
@@ -241,7 +273,8 @@ var getPatientContext = (function() {
 
 //***************************************************************************************************************************************** */
 
-            // FHIR-Echt-Server mit Fallnummer
+            // hier: z.B. Kontext für FHIR-Echt-Server mit Fallnummer mit den Parametern
+            // [serverBaseURL]?KISServer=true&patEncID=xxx
             } else if (vl.indexOf(configData.requiredUseServer) > -1 && vl.indexOf(configData.requiredEncounter) > -1) {  
                 
                 // Müsste noch implementiert werden ....
@@ -249,7 +282,7 @@ var getPatientContext = (function() {
                     
                     return function() {
 
-                        return "KIS System used ...";
+                        return "KIS System used ... sorry, not implemented";
                     }
 
                 } else {
@@ -260,15 +293,17 @@ var getPatientContext = (function() {
 
 //***************************************************************************************************************************************** */
 
-            // Stand alone, wenn keine entsprechenden Daten geliefert werden
+            // Start der App möglichst mit Daten, die in der Sandbox von SmarthealthIT verfügbar sind
             } else {                                                    
 
                 // Bei Aufruf der App im Kontext Sandbox von SmartHealthIT.org
-                // Copyright - SmartHealthIT.org
+                
+                // Copyright - SmartHealthIT.org - hier Übernahme des größten Teils aus dem Tutorial
+                // Eine Anpassung erfolgte nur bei der konkreten Abfrage der Patienten- und Observation-Resourcen
 
                 // get the URL parameters received from the authorization server
                 var state = getUrlParameter("state");  // session key                                    
-                
+                                
                 if (sessionStorage[state]) {
 
                     return function() {
@@ -317,12 +352,13 @@ var getPatientContext = (function() {
                                 // should get back the access token and the patient ID
                                 accessToken.set(res.access_token);                                
                                 var patientId = res.patient;
-                
-                                // and now we can use these to construct standard FHIR
+                                
+                                // and now it really starts:
+                                // we can use these to construct standard FHIR
                                 // REST calls to obtain patient resources with the
                                 // SMART on FHIR-specific authorization header...
                                 // Let's, for example, grab the patient resource and
-                                // print the patient name on the screen
+                                // his or observerations and feed algorithms ...
                                 var url = serviceUri + "/Patient/" + patientId;
                                 $.ajax({
                                     url: url,
@@ -355,7 +391,7 @@ var getPatientContext = (function() {
                                         });                                                                                    
                                         $(".ds_request_gf").click(function() {
                                             let pos = configuration.defaultReference.findIndex(i => i.id === this.id);
-                                            alert("Anforderung wird erstellt für: " + configuration.defaultReference[pos].name);
+                                            alert("Simulation - Anforderung wird erstellt für: " + configuration.defaultReference[pos].name);
                                             $(this).attr('disabled', true);
                                         });
                                         $("#lab7").hide(); // Verstecken des Reload-Buttons, da nur mit entsprechender Authorisierung ein Reload möglich ist
@@ -366,11 +402,11 @@ var getPatientContext = (function() {
                                     
 
                                     /** Testbereich...
-                                     *  1. Patient und Observations als XML -> abfragbar, Umwandlung erforderlich
+                                     *  1. Patient und Observations als XML -> abfragbar, potentiell Umwandlung erforderlich
                                      *  2. Metadata, d.h. Conformance -> abfragbar
                                      *  3. Definierte ValueSets: observations-codes, days-of-week, ldlcholesterol-codes -> jeweils kein Ergebnis 
                                      **/
-                                    var url2 = serviceUri + "/ValueSet?name=obs";
+                                    var url2 = serviceUri + "/Observation?code=718-7";
                                     var obs2 = $.ajax({
                                             url: url2,
                                             type: "GET",
@@ -400,7 +436,8 @@ var getPatientContext = (function() {
                         }
 
                     }
-
+                
+                // Stand alone, wenn keine entsprechenden Daten geliefert werden
                 } else {
                     
                     return "No authorizsation - App starts only with test data...";
