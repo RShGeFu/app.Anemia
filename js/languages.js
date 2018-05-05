@@ -16,7 +16,7 @@ var getTranslationList = (function() {
         languages:  [ "de", "en" ],
         labels:     [
                         // --- Navigation-Bar
-                        { id: "lang-flag",  attr: "src",    de: "images/german.png", en: "images/english.png"},
+                        { id: "lang-flag",  attr: "src",    de: "images/english.png", en: "images/german.png"},
                         { id: "lab1",       attr: "",       de: "Name", en: "Lastname" },
                         { id: "lab2",       attr: "",       de: "Vorname", en: "Firstname" },
                         { id: "lab3",       attr: "",       de: "Geburtsdatum", en: "Birthday" },
