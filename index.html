@@ -123,19 +123,20 @@
   
   <ul  class="navbar-nav">
     <button id="lab7" class="btn btn-sm btn-outline-success my-2 my-sm-0">Daten laden </button>        
-    <li class="nav-item">
-      <a id="lab6" href="images/german.png" class="nav-item nav-link">Hilfe</a>
-    </li>
+    <button type="button" class="btn btn-sm btn-outline-success my-2 my-sm-0" data-toggle="modal" data-target="#helpModalLong">
+      <span id="lab6">Hilfe</span>
+    </button>
     <li class="nav-item">
       <a onclick="setLanguage()" class="nav-item nav-link">
         <img id="lang-flag" src="images/german.png" width="30" height="20" class="d-inline-block align-top" alt="Wähle Deine Sprache">    
       </a>
     </li>
+    <!-- Link zur HL7.org ausgeblendet, da nicht grundästzlich eine freie Internetverbindung vorausgesetzt werden kann
     <li class="nav-item">
       <a class="nav-item nav-link" href="https://www.hl7.org/fhir/index.html" target="_blank">
         <img id="fhir-flag" src="images/fhir.jpg" width="30" height="20" class="d-inline-block align-top" alt="fhir">          
       </a>
-    </li>
+    </li>-->
   </ul>
 
 </nav>
@@ -313,7 +314,32 @@
 
 </div>
 
-<!-- Modal-Dialoge evtl. noch implementieren... -->
+<!-- Modal-Dialog - Hilfe -->
+<div class="modal fade" id="helpModalLong" tabindex="-1" role="dialog" aria-labelledby="helpModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="helpModalLongTitle"><span id="help-00"></span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><span id="help-01"></span><span id="help-02"></span></p>        
+        <p id="help-03"></p>
+        <p id="help-04"></p>
+        <p id="help-05"></p>
+        <p id="help-06"></p>
+        <p id="help-07"></p>
+        <p id="help-08"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>        
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- Footer -->
 <div id="footer">

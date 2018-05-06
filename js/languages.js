@@ -2,6 +2,10 @@
  * Copyright bei G. Füchsl - 2018
  */
 
+/** SVG-Elemente für die Buttons - Download von FontAwesome */
+var chart = "<svg width=\"20\" height=\"16\" viewBox=\"0 0 512 512\"><path d=\"M500 400c6.6 0 12 5.4 12 12v24c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h24c6.6 0 12 5.4 12 12v324h452zm-356-60v-72c0-6.6-5.4-12-12-12h-24c-6.6 0-12 5.4-12 12v72c0 6.6 5.4 12 12 12h24c6.6 0 12-5.4 12-12zm96 0V140c0-6.6-5.4-12-12-12h-24c-6.6 0-12 5.4-12 12v200c0 6.6 5.4 12 12 12h24c6.6 0 12-5.4 12-12zm96 0V204c0-6.6-5.4-12-12-12h-24c-6.6 0-12 5.4-12 12v136c0 6.6 5.4 12 12 12h24c6.6 0 12-5.4 12-12zm96 0V108c0-6.6-5.4-12-12-12h-24c-6.6 0-12 5.4-12 12v232c0 6.6 5.4 12 12 12h24c6.6 0 12-5.4 12-12z\"/></svg>",
+    cart  = "<svg width=\"20\" height=\"16\" viewbox=\"0 0 576 512\"><path d=\"M504.717 320H211.572l6.545 32h268.418c15.401 0 26.816 14.301 23.403 29.319l-5.517 24.276C523.112 414.668 536 433.828 536 456c0 31.202-25.519 56.444-56.824 55.994-29.823-.429-54.35-24.631-55.155-54.447-.44-16.287 6.085-31.049 16.803-41.548H231.176C241.553 426.165 248 440.326 248 456c0 31.813-26.528 57.431-58.67 55.938-28.54-1.325-51.751-24.385-53.251-52.917-1.158-22.034 10.436-41.455 28.051-51.586L93.883 64H24C10.745 64 0 53.255 0 40V24C0 10.745 10.745 0 24 0h102.529c11.401 0 21.228 8.021 23.513 19.19L159.208 64H551.99c15.401 0 26.816 14.301 23.403 29.319l-47.273 208C525.637 312.246 515.923 320 504.717 320zM403.029 192H360v-60c0-6.627-5.373-12-12-12h-24c-6.627 0-12 5.373-12 12v60h-43.029c-10.691 0-16.045 12.926-8.485 20.485l67.029 67.029c4.686 4.686 12.284 4.686 16.971 0l67.029-67.029c7.559-7.559 2.205-20.485-8.486-20.485z\"/></svg>";
+
 /**
  * Funktion für die Internationalisierung der App als Closure einmalig (nur) hier definiert
  * Übersetzungsliste
@@ -112,7 +116,28 @@ var getTranslationList = (function() {
 
                         // --- Karte für den Laborverlauf
                         { id: "graphs-00",   attr: "",      de: "Kein Parameter für Verlauf gewählt", en: "No Parameter for history selected" },
-                        { id: "graphs-01",   attr: "",      de: "Werteverlauf", en: "Parameter history" }
+                        { id: "graphs-01",   attr: "",      de: "Werteverlauf", en: "Parameter history" },
+
+                        // --- Modaldialog - Hilfe
+                        { id: "help-00",   attr: "",        de: "Hilfe", en: "Help" },
+                        { id: "help-01",   attr: "",        de: "Bei App-Start werden die Klinischen Werte und die Werte der Laborkarte beim KIS abgefragt", 
+                                                            en: "When starting the app, the clinical values and the values of the laboratory card are queried from the KIS" },
+                        { id: "help-02",   attr: "",        de: " und automatisch der Entscheidungsfindung zugeführt.", 
+                                                            en: "and automatically submitted to decision-making." },
+                        { id: "help-03",   attr: "",        de: "Die Werte können geändert und dadurch eine weitere Laborkonstellation simuliert werden.",
+                                                            en: "The values can be changed and thus another laboratory constellation can be simulated." },
+                        { id: "help-04",   attr: "",        de: "Die Farbe des veränderten Wertes und die Farbe der Ergebniskarten verändern sich dadurch!", 
+                                                            en: "The color of the changed value and the color of the result cards are changing consecutively!" },
+                        { id: "help-05",   attr: "",        de: "Rote Ergebniskarten entsprechen immer Simulationen und NICHT mehr der Original-Patientenkonstellation!", 
+                                                            en: "Red result cards always correspond to simulations and NOT to the original patient constellation!" },
+                        { id: "help-06",   attr: "",        de: chart + " - Ein Werteverlauf kann angezeigt werden!", 
+                                                            en: chart + " - A value history can be displayed!" },
+                        { id: "help-07",   attr: "",        de: cart + " - Der betreffende Laborwert kann beim KIS angefordert werden (derzeit nicht implementiert)!", 
+                                                            en: cart + "- The correspondent laboratory value can be requested from the KIS (currently not implemented)" },
+                        { id: "help-08",   attr: "",        de: "Die Quadranten des Eisenplots geben therapeutische Hinweise mit an!", 
+                                                            en: "The quadrants of the iron plot indicate therapeutic options!" },
+                                                            
+                                                        
                     ]        
     }
 

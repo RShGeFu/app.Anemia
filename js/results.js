@@ -204,12 +204,12 @@ function composeResultCards() {
             animation: {
                 // Beschrifte die Quadranten
                 onComplete: function() {
-                    ctx.font = "30px Arial";
+                    ctx.font = "20px Arial";
                     ctx.moveTo(0,0);
-                    ctx.fillText("I",40, 60);
-                    ctx.fillText("IV",40, 240);
-                    ctx.fillText("II",cardWidth/2+15, 60);
-                    ctx.fillText("III",cardWidth/2+15, 240);                    
+                    ctx.fillText("I - EPO",40, 60);
+                    ctx.fillText("IV - EPO + Iron",40, 250);
+                    ctx.fillText("II - Iron",cardWidth/2+15, 60);
+                    ctx.fillText("III - Iron",cardWidth/2+15, 250);                    
                     ctx.stroke();
                 }
             }
