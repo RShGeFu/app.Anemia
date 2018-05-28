@@ -119,6 +119,7 @@ var getTranslationList = (function() {
                         { id: "graphs-01",   attr: "",      de: "Werteverlauf", en: "Parameter history" },
 
                         // --- Modaldialog - Hilfe
+                        { id: "help-cl",   attr: "",        de: "Schließen", en: "Close" },
                         { id: "help-00",   attr: "",        de: "Hilfe", en: "Help" },
                         { id: "help-01",   attr: "",        de: "Bei App-Start werden die Klinischen Werte und die Werte der Laborkarte beim KIS abgefragt", 
                                                             en: "When starting the app, the clinical values and the values of the laboratory card are queried from the KIS" },
@@ -136,7 +137,8 @@ var getTranslationList = (function() {
                                                             en: cart + "- The correspondent laboratory value can be requested from the KIS (currently not implemented)" },
                         { id: "help-08",   attr: "",        de: "Die Quadranten des Eisenplots geben therapeutische Hinweise mit an!", 
                                                             en: "The quadrants of the iron plot indicate therapeutic options!" },
-                                                            
+                        { id: "help-09",   attr: "",        de: "Beschreibung der Laborbewertung: ok - Wert in der Norm, low - Wert erniedrigt, high - Wert erhöht, nv nan - Wert ist keine Zahl, nv nvr - Wert ist biologisch nicht möglich", 
+                                                            en: "Description of the laboratory evaluation: ok - value in the norm range, low - value lowered, high - value increased, nv nan - value is not a number, nv nvr - value is biologically not possible" }                                                            
                                                         
                     ]        
     }
