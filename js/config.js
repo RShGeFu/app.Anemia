@@ -33,12 +33,12 @@ var configuration = {
                                 male:   14.0
                             },
             refMax:         {
-                                female: 14.0,
-                                male: 16.0
+                                female: 16.0,
+                                male: 18.0
                             },
             unit:           "g/dl",
-            validMin:       2.5,
-            validMax:       20,
+            validMin:       2.0,
+            validMax:       22,
             siFaktor:       0.621,
             intUnit:        "mmol/l",
             acceptFurtherLOINC:                      // Im Grunde wäre es besser dieses Array bereits bei loinc als 'Haupt-LOINC'-Array zu verwenden und
@@ -58,7 +58,7 @@ var configuration = {
             refMax:         94.0,
             unit:           "fl",
             validMin:       30.0,
-            validMax:       150,           
+            validMax:       180,           
             acceptFurtherLOINC:
                             [ ]
         },
@@ -68,8 +68,8 @@ var configuration = {
             loinc:          "1988-5",
             required:       true,
             value:          null,
-            refMin:         0.0,
-            refMax:         5.0,
+            refMin:         0.001,
+            refMax:         6.0,
             unit:           "mg/l",
             validMin:       1,
             validMax:       600,
@@ -83,16 +83,16 @@ var configuration = {
             required:       true,
             value:          null,
             refMin:         {
-                                female: 10,
-                                male:   30
+                                female: 22,
+                                male:   34
                             },
             refMax:         {
-                                female: 200,
-                                male:   300
+                                female: 112,
+                                male:   310
                             },
-            unit:           "ng/ml",
+            unit:           "µg/ml",
             validMin:       1,
-            validMax:       2000,
+            validMax:       6000,
             siFaktor:       0.474,
             siUnit:         "pmol/l",
             acceptFurtherLOINC:
@@ -108,7 +108,7 @@ var configuration = {
             refMax:         5.0,
             unit:           "mg/dl",
             validMin:       0.001,
-            validMax:       10,
+            validMax:       50,
             acceptFurtherLOINC:
                             [ ]
         },
@@ -120,7 +120,7 @@ var configuration = {
             value:          null,
             refMin:         7.0,
             refMax:         15.0,
-            unit:           "%",
+            unit:           "%o",
             validMin:       1,
             validMax:       80,
             acceptFurtherLOINC:
@@ -148,15 +148,15 @@ var configuration = {
             value:          null,
             refMin:         {
                                 female: 37,
-                                male:   43
+                                male:   40
                             },
             refMax:         {
-                                female: 45,
-                                male:   49
+                                female: 47,
+                                male:   54
                             },
             unit:           "%",
             validMin:       1 ,
-            validMax:       65,
+            validMax:       75,
             acceptFurtherLOINC:
                             [ ]
         },
@@ -166,11 +166,11 @@ var configuration = {
             loinc:          "2132-9",
             required:       true,
             value:          null,
-            refMin:         310,
-            refMax:         1100,
+            refMin:         200,
+            refMax:         300,
             unit:           "pg/ml",
             validMin:       1,
-            validMax:       6600,
+            validMax:       3000,
             siFaktor:       0.738,
             siUnit:         "pmol/l",
             acceptFurtherLOINC:
@@ -183,10 +183,10 @@ var configuration = {
             required:       true,
             value:          null,
             refMin:         2.0,
-            refMax:         10.0,
+            refMax:         50.0,
             unit:           "ng/ml",
-            validMin:       1,
-            validMax:       150,
+            validMin:       0.001,
+            validMax:       150.0,
             acceptFurtherLOINC:
                             [ ]
         }
