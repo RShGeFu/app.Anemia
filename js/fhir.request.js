@@ -166,7 +166,7 @@ var getPatientContext = (function() {
     var configData = {        
         // Testserver
         serverTestBase:         "TEST - Server",
-        serverTestBaseURL:      "http://hapi.fhir.org/baseDstu2",                                   // Funktioniert!
+        serverTestBaseURL:      [ "http://hapi.fhir.org/baseDstu2", "http://hapi.fhir.org/baseDstu3" ],  // Funktionieren beide!
         
         // KIS-Server
         serverBase:             "KIS - Server",
@@ -219,15 +219,18 @@ var getPatientContext = (function() {
             // Hier Test: Benutzung des als Open-Source verfügbaren FHIR-Clients
             if (vl.indexOf(configData.requiredUseTestServer) > -1 && vl.indexOf(configData.requiredEncounter) > -1) {        
                 
-                if (v[configData.requiredUseTestServer] == 'true') {
+                if (v[configData.requiredUseTestServer] > -1 && v[configData.requiredUseTestServer] < configData.serverTestBaseURL.length) {
                     
                     return function() {
+
+                        var server = configData.serverTestBase,
+                            serverURL = configData.serverTestBaseURL[v[configData.requiredUseTestServer]];
                         
-                        alert(configData.serverTestBase + " (FHIR): " + configData.serverTestBaseURL);
+                        alert(server + " (FHIR): " + serverURL);
                     
                         // Client initialisieren
                         var smart = FHIR.client({
-                                serviceUrl:     configData.serverTestBaseURL,
+                                serviceUrl:     serverURL,
                                 patientId:      v[configData.requiredEncounter]                 
                             });
                         
