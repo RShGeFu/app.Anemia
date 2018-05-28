@@ -797,7 +797,7 @@ function getPatientLaboratoryObservations() {
                 },
                 {            
                     id:             "ferritine",                    
-                    value:          20.0,
+                    value:          25.0,
                 },
                 {            
                     id:             "sTFR",                    

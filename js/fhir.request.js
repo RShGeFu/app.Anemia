@@ -87,12 +87,14 @@ function getUrlParameter(sParam)
  */
 function reactToUserInput() {
             
-    /* Referenzbereich abgreifen */                    
-    var tnr = testNormalAndValidRange(  this.value, 
-                                        $("#" + this.id + "_refMin").html(), 
-                                        $("#" + this.id + "_refMax").html(), 
-                                        0, 
-                                        $("#" + this.id + "_refMax").html() * 10 );
+    /* Referenzbereich abgreifen */    
+    var posRef = configuration.defaultReference.findIndex(j => j.id === this.id);
+
+    var tnr = testNormalAndValidRange(  Number(this.value), 
+                                        Number($("#" + this.id + "_refMin").html()),            // Umgehen der Abfrage des Patientengeschlechts aus configuration
+                                        Number($("#" + this.id + "_refMax").html()), 
+                                        Number(configuration.defaultReference[posRef].validMin), 
+                                        Number(configuration.defaultReference[posRef].validMax));
     
     /* Entscheidungskriterium setzen */    
     decision.setItem(this.id, this.value, tnr.status == 'nv nan' || tnr.status == 'nv nvr' ? null : tnr.status);            

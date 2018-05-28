@@ -169,8 +169,8 @@ var configuration = {
             refMin:         200,
             refMax:         300,
             unit:           "pg/ml",
-            validMin:       1,
-            validMax:       3000,
+            validMin:       1.0,
+            validMax:       3000.0,
             siFaktor:       0.738,
             siUnit:         "pmol/l",
             acceptFurtherLOINC:

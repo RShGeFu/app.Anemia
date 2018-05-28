@@ -96,11 +96,12 @@ function createPatientCard(dataset) {
 function testNormalAndValidRange(value, refMin, refMax, validMin, validMax) {
 
     /* Auch wirklich vom Typ Number */
+    value = Number(value);
     refMin = Number(refMin);
     refMax = Number(refMax);
     validMin = Number(validMin);
     validMax = Number(validMax);
-
+    
     /* Zunächst ist alles ok! */
     var retVal = { status: 'ok', color: 'success' };
     
