@@ -58,7 +58,7 @@ function createPatientCard(dataset) {
     if (dataset.type == "key-val") {
         
         /* Überschrift erstellen ... */        
-        str = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"" + dataset.id + "\">" + dataset.name + "<span></h4><table class=\"table table-hover table-sm\"><tbody>";
+        str = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"" + dataset.id + "\">" + dataset.name + "<span></h4><table class=\"table-responsive table-hover table-sm\"><tbody>";
         
         for(i = 0; i < dataset.kval.length; i++) {
             
@@ -149,7 +149,7 @@ function createLabCard(dataset) {
     if (dataset.type == "key-val-ref") {
 
           /* Überschrift erstellen */        
-        str = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"" + dataset.id + "\">" + dataset.name + "<span></h4><table class=\"table table-hover table-sm\"><tbody>";
+        str = "<div class=\"card-body\"><h4 class=\"card-title\"><span id=\"" + dataset.id + "\">" + dataset.name + "<span></h4><table class=\"table-responsive table-hover table-sm\"><tbody>";
         
         /* Zeile für Zeile aus den übergebenen Daten zuammenführen */
         for(i = 0; i < dataset.kval.length; i++) {            
