@@ -540,7 +540,7 @@ function getAllRemainingObservationsFromTheServer(requestedUrl, items, count) {
  * gegeben wird
  */
 function getDataSetBasis() {
-    return{         
+    return {         
         type: "key-val-ref",
         id:   "labor",
         name: "Labor",
@@ -567,8 +567,8 @@ function getPatientLaboratoryObservations() {
             labValues = [],
             extract = [];
         
-        // ... gleich das Patientengeschlecht merken ...        
-        dataSet.gender = patient.gender != "" ? patient.gender : "male";
+        // ... gleich das Patientengeschlecht merken, sofern vorhanden, ansonsten wie bei den Testdaten 'weiblich' eintragen ...
+        dataSet.gender = patient.gender != "" && typeof patient.gender != 'undefined' ? patient.gender : "female";
 
         // ... lege für die einzelnen, in der 'configuration' angelegten Observations (je nach LOINC) je ein Merkfeld an ...        
         for(var i = 0; i < configuration.defaultReference.length; i++) {
