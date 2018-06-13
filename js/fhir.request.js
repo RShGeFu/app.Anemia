@@ -88,13 +88,21 @@ function getUrlParameter(sParam)
 function reactToUserInput() {
             
     /* Referenzbereich abgreifen */    
-    var posRef = configuration.defaultReference.findIndex(j => j.id === this.id);
+    var posRef = configuration.defaultReference.findIndex(j => j.id === this.id), 
+        vMin = 0,       // Default-Werte, die verwendet werden, wenn eine id in der configuration nicht gefunden werden (in der Applikation v.a. Größe/Gewicht)...
+        vMax = 260;     // - " -
+
+    if (posRef != -1) { // Die Default-Werte werden ersetzt, wenn eine id in der configuration gefunden sind ...
+        vMin = configuration.defaultReference[posRef].validMin;
+        vMax = configuration.defaultReference[posRef].validMax;
+    }
 
     var tnr = testNormalAndValidRange(  Number(this.value), 
                                         Number($("#" + this.id + "_refMin").html()),            // Umgehen der Abfrage des Patientengeschlechts aus configuration
                                         Number($("#" + this.id + "_refMax").html()), 
-                                        Number(configuration.defaultReference[posRef].validMin), 
-                                        Number(configuration.defaultReference[posRef].validMax));
+                                        Number(vMin), 
+                                        Number(vMax)
+                                    );
     
     /* Entscheidungskriterium setzen */    
     decision.setItem(this.id, this.value, tnr.status == 'nv nan' || tnr.status == 'nv nvr' ? null : tnr.status);            
