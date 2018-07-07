@@ -125,13 +125,13 @@ var decision = (function() {
         rpi:            function() {
                             if (valueSet.hasHematokrit() && valueSet.hasReticulocytes()) {
                                 let shift = 1;
-                                if (valueSet.hematokrit.value <= 35) {
+                                if (valueSet.hematokrit.value <= 40) {      // 35 in der Literatur, hier die Werte der verlinkten Präsentation
                                     shift = 1.5;
                                 }
-                                if (valueSet.hematokrit.value <= 25) {
+                                if (valueSet.hematokrit.value <= 30) {      // 25 in der Literatur
                                     shift = 2;
                                 }
-                                if (valueSet.hematokrit.value <= 15) {
+                                if (valueSet.hematokrit.value <= 20) {      // 15 in der Literatur
                                     shift = 2.5;
                                 }                                
                                 return Math.round(valueSet.reticulocytepc.value * valueSet.hematokrit.value / shift / 45 * 10) / 10;                                
@@ -325,8 +325,8 @@ var decision = (function() {
                                 // Mikrozytäre Anämie differenzieren
                                 valueSet.executeMicrocyticDecisionBranch();
                             } else {
-                                if (valueSet.hasHematokrit()) {
-                                    if (valueSet.isRPIHigh(valueSet.rpi())) {
+                                if (valueSet.hasHematokrit()) {                                    
+                                    if (valueSet.isRPIHigh()) {
                                         // D: Hämolyse, Akute Blutung
                                         // E: Diagnostik und ...
                                         valueSet.pushResults("diag-12", "recom-12");
