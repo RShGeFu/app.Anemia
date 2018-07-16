@@ -146,12 +146,12 @@ function completeServiceUri() {
             searchLoincs += configuration.defaultReference[i].loinc;
             
             // Evtl. weitere LOINCs nicht vergessen und in derselben Weise anfügen
-            if ('acceptFurtherLOINC' in configuration.defaultReference[i]) {
-                for(var j = 0; j < configuration.defaultReference[i].acceptFurtherLOINC.length; j++) {                    
+            if ('acceptedLOINC' in configuration.defaultReference[i]) {
+                for(var j = 0; j < configuration.defaultReference[i].acceptedLOINC.length; j++) {                    
                     if (searchLoincs.length > 0) {
                         searchLoincs += "|";
                     }
-                    searchLoincs += configuration.defaultReference[i].acceptFurtherLOINC[j];
+                    searchLoincs += configuration.defaultReference[i].acceptedLOINC[j];
                 }
             }
         }        

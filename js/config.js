@@ -41,12 +41,15 @@ var configuration = {
             validMax:       22,
             siFaktor:       0.621,
             intUnit:        "mmol/l",
-            acceptFurtherLOINC:                      // Im Grunde wäre es besser dieses Array bereits bei loinc als 'Haupt-LOINC'-Array zu verwenden und
+            acceptedLOINC:                           // Im Grunde wäre es überlegenswert dieses Array bereits bei loinc als 'Haupt-LOINC'-Array zu verwenden und
                                                      // das Mapping von LOINCS bereits von Anfang zu berücksichtigen - die Entwicklung der App startete 
                                                      // mit nur einem Code; das Mapping auf mehrere Codes als Konzept wurde erst im Verlauf überlegt.
-                                                     // Als Weiterentwicklung müsste loinc: ["718-7"] geschrieben und ggf. 'defaultReference.loinc' dann durch
+                                                     // Als Weiterentwicklung könnte loinc: ["718-7"] geschrieben und ggf. 'defaultReference.loinc' dann durch
                                                      // 'defaultReference.loinc[0]' ersetzt werden...
-                            [ ]
+                            ["718-7", "30350-3", "30313-1", "20509-6", "14775-1" ]
+                                                     // Das Array enthält an Position 0 nochmals den führenden LOINC-Code. Eine Anpassung/Umstellung der 
+                                                     // Business-Logik auf dieses Array als 'Haupt-LOINC'-Array könnte damit leichter erfolgen,
+                                                     // z.B. als: defaultReference.acceptedLOINC[0]
         },
         {            
             id:             "mcv",
@@ -59,8 +62,7 @@ var configuration = {
             unit:           "fl",
             validMin:       30.0,
             validMax:       180,           
-            acceptFurtherLOINC:
-                            [ ]
+            acceptedLOINC:  ["787-2" ]
         },
         {            
             id:             "crp",
@@ -73,8 +75,7 @@ var configuration = {
             unit:           "mg/l",
             validMin:       1,
             validMax:       600,
-            acceptFurtherLOINC:
-                            [ ]
+            acceptedLOINC:  ["1988-5" ]
         },
         {            
             id:             "ferritine",
@@ -95,8 +96,7 @@ var configuration = {
             validMax:       6000,
             siFaktor:       0.474,
             siUnit:         "pmol/l",
-            acceptFurtherLOINC:
-                            [ ]
+            acceptedLOINC:  ["2276-4" ]
         },
         {            
             id:             "sTFR",
@@ -109,8 +109,7 @@ var configuration = {
             unit:           "mg/dl",
             validMin:       0.001,
             validMax:       50,
-            acceptFurtherLOINC:
-                            [ ]
+            acceptedLOINC:  ["30248-9" ]
         },
         {            
             id:             "reticulocytepc",
@@ -123,8 +122,7 @@ var configuration = {
             unit:           "%",
             validMin:       0.001,
             validMax:       25.0,
-            acceptFurtherLOINC:
-                            [ ]
+            acceptedLOINC:  ["4679-7" ]
         },
         {            
             id:             "reticulocytehb",
@@ -137,8 +135,7 @@ var configuration = {
             unit:           "pg",
             validMin:       1,
             validMax:       60,
-            acceptFurtherLOINC:
-                            [ ]
+            acceptedLOINC:  ["42810-2" ]
         },
         {
             id:             "hematokrit",
@@ -157,8 +154,7 @@ var configuration = {
             unit:           "%",
             validMin:       1 ,
             validMax:       75,
-            acceptFurtherLOINC:
-                            [ ]
+            acceptedLOINC:  ["20570-8" ]
         },
         {
             id:             "vitb12",
@@ -173,8 +169,7 @@ var configuration = {
             validMax:       3000.0,
             siFaktor:       0.738,
             siUnit:         "pmol/l",
-            acceptFurtherLOINC:
-                            [ ]
+            acceptedLOINC:  ["2132-9" ]
         },
         {
             id:             "folicAcid",
@@ -187,8 +182,7 @@ var configuration = {
             unit:           "ng/ml",
             validMin:       0.001,
             validMax:       150.0,
-            acceptFurtherLOINC:
-                            [ ]
+            acceptedLOINC:  ["2284-8" ]
         }
 
     ]

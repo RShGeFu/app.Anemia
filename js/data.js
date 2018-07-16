@@ -93,9 +93,9 @@ var observationSet = (function() {
                         for(var i = 0; i < accept.length; i++) {                            
                             if ('loinc' in accept[i]) {
                                 accepted.push(accept[i].loinc);                            
-                                if ('acceptFurtherLOINC' in accept[i]) {
-                                    for(var j = 0; j < accept[i].acceptFurtherLOINC.length; j++) {
-                                        accepted.push(accept[i].acceptFurtherLOINC[j]);                                    
+                                if ('acceptedLOINC' in accept[i]) {
+                                    for(var j = 0; j < accept[i].acceptedLOINC.length; j++) {
+                                        accepted.push(accept[i].acceptedLOINC[j]);                                    
                                     }   
                                 }
                             } else {
@@ -613,7 +613,7 @@ function getPatientLaboratoryObservations() {
                 for(var j = 0; j < configuration.defaultReference.length; j++) {                                        
                     if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === configuration.defaultReference[j].loinc) {                        
                         // ... dann merke Dir die Observation in dem eigens angelegten Array
-                        // Hier könnte ein Mapping stattfinden - wenn eine Observation gefunden wird, die in 'acceptFurtherLOINC' der
+                        // Hier könnte ein Mapping stattfinden - wenn eine Observation gefunden wird, die in 'acceptedLOINC' der
                         // Konfiguration aufgeführt ist, könnte diese in das Array 'labValues' zusätzlich geschoben werden!
                         // In der Datenvalidierung später muss dies ggf. berücksichtigt werden
                         labValues[configuration.defaultReference[j].loinc].push(observations[i]);                        
