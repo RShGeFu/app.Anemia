@@ -613,10 +613,21 @@ function getPatientLaboratoryObservations() {
                 for(var j = 0; j < configuration.defaultReference.length; j++) {                                        
                     if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === configuration.defaultReference[j].loinc) {                        
                         // ... dann merke Dir die Observation in dem eigens angelegten Array
-                        // Hier könnte ein Mapping stattfinden - wenn eine Observation gefunden wird, die in 'acceptedLOINC' der
-                        // Konfiguration aufgeführt ist, könnte diese in das Array 'labValues' zusätzlich geschoben werden!
-                        // In der Datenvalidierung später muss dies ggf. berücksichtigt werden
-                        labValues[configuration.defaultReference[j].loinc].push(observations[i]);                        
+                        labValues[configuration.defaultReference[j].loinc].push(observations[i]);
+                    }
+
+                    // Hier findet ein Mapping statt - wenn eine Observation gefunden wird, die in 'acceptedLOINC' der
+                    // Konfiguration aufgeführt ist, könnte diese in das Array 'labValues' zusätzlich geschoben werden!
+                    // In der Datenvalidierung später muss dies ggf. berücksichtigt werden
+                    // Derzeit sind die Observations doppelt vorhanden....
+                    if (observations[i].code.coding[0].system === 'http://loinc.org' && 
+                        configuration.defaultReference[j].acceptedLOINC.find(
+                                                                        // Anonyme Funktion zur Entscheidung
+                                                                        function(toTest) {
+                                                                            return toTest == observations[i].code.coding[0].code;
+                                                                        })) {
+                        alert("Juhu!");
+                        labValues[configuration.defaultReference[j].loinc].push(observations[i]);
                     }
                 }
             }
