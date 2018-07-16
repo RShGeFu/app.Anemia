@@ -187,6 +187,7 @@ var getPatientContext = (function() {
         requiredPersonalData:   [ "patLastName", "patFirstName", "patBirthday" ],
         requiredEncounter:      "patEncID",
         requiredUseTestServer:  "fhirTestServer",
+        requiredUseForSmart:    "smart",
         requiredUseServer:      "KISServer"
     };
 
@@ -284,11 +285,26 @@ var getPatientContext = (function() {
 
                 }
 
+            // Test-Server SmartOnFHIR - SmartHealthIT.org...
+            // Direkter Start ohne Authentifizierung!!
+            // Hier Test: Benutzung des als Open-Source verfügbaren FHIR-Clients                
+            } else if (vl.indexOf("code") > -1 && vl.indexOf("state") > -1) {
+                return function() {
+                    FHIR.oauth2.ready(function(smart){
+                        alert(JSON.stringify(smart.patient) + " - Juhu!");
+
+                        // So - hier noch wie oben die Daten abfragen ...
+
+                    });
+                    return "SmartHealthIT - App Launcher successfully used!"
+                }
+            }
+
 //***************************************************************************************************************************************** */
 
             // hier: z.B. Kontext für FHIR-Echt-Server mit Fallnummer mit den Parametern
             // [serverBaseURL]?KISServer=true&patEncID=xxx
-            } else if (vl.indexOf(configData.requiredUseServer) > -1 && vl.indexOf(configData.requiredEncounter) > -1) {  
+            else if (vl.indexOf(configData.requiredUseServer) > -1 && vl.indexOf(configData.requiredEncounter) > -1) {  
                 
                 // Müsste noch implementiert werden ....
                 if (v[configData.requiredUseServer] == 'true') {
@@ -309,14 +325,20 @@ var getPatientContext = (function() {
             // Start der App möglichst mit Daten, die in der Sandbox von SmarthealthIT verfügbar sind
             } else {                                                    
 
-                // Bei Aufruf der App im Kontext Sandbox von SmartHealthIT.org
+                /******************************************************************************************************************
+                 * Alter Aufruf: Mit Umstellung des Zugangs zum Testserver von SmartHealthIT.org ist keine Authentifizierung über *
+                 * launch.html und des folgenden Scripts mehr notwendig ...                                                       *
+                 ******************************************************************************************************************/
+
+                // Bei Aufruf der App nur im Kontext der 'alten' Sandbox von SmartHealthIT.org - Start über Authentifizierung!!
+                //                                                                               ----------------------------!!
                 
                 // Copyright - SmartHealthIT.org - hier Übernahme des größten Teils aus dem Tutorial
                 // Eine Anpassung erfolgte nur bei der konkreten Abfrage der Patienten- und Observation-Resourcen
 
                 // get the URL parameters received from the authorization server
                 var state = getUrlParameter("state");  // session key                                    
-                                
+                
                 if (sessionStorage[state]) {
 
                     return function() {
@@ -327,7 +349,7 @@ var getPatientContext = (function() {
                         
                         // load the app parameters stored in the session    
                         if (sessionStorage[state]) {
-        
+
                             var params = JSON.parse(sessionStorage[state]);  // load app session
     
                             var tokenUri = params.tokenUri;
@@ -373,6 +395,7 @@ var getPatientContext = (function() {
                                 // Let's, for example, grab the patient resource and
                                 // his or observerations and feed algorithms ...
                                 var url = serviceUri + "/Patient/" + patientId;
+                                
                                 $.ajax({
                                     url: url,
                                     type: "GET",

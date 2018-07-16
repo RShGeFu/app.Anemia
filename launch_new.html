@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <script src="https://rawgithub.com/smart-on-fhir/client-js/master/dist/fhir-client.js"></script> -->
+    <script type="text/javascript" src="lib/fhirclient/fhir-client.js"></script>
+    <script>
+      FHIR.oauth2.authorize({
+          "client": {
+              "client_id": "appAnemia",
+              "scope":  "patient/*.read launch/patient"
+          },
+          "server": "https://launch.smarthealthit.org/v/r3/sim/eyJoIjoiMSIsImoiOiIxIn0/fhir"
+      });
+    </script>
+  </head>
+  <body>
+      Loading Application: appAnemia...
+  </body>
+</html>
