@@ -289,15 +289,54 @@ var getPatientContext = (function() {
             // Direkter Start ohne Authentifizierung!!
             // Hier Test: Benutzung des als Open-Source verfügbaren FHIR-Clients                
             } else if (vl.indexOf("code") > -1 && vl.indexOf("state") > -1) {
+                
                 return function() {
+                
                     FHIR.oauth2.ready(function(smart){
-                        alert(JSON.stringify(smart.patient) + " - Juhu!");
 
+                        alert("Get patient ...");
+                        
+                        smart.patient.read().then(function(pt) {                    
+                                    
+                            alert("Get observations ...");
+
+                            smart.patient.api.fetchAll( { type: "Observation" } ).then(function(results) {
+                            
+                                // Patientendaten und Ergebnisse zusammenstellen und visualisieren                                       
+                                composeCards(pt, results);                                   
+                                composeResultCards();
+
+                                /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
+                                $(".ds_values_gf").change(reactToUserInput);                                                                                       
+                                $(".ds_chart_gf").click(function() {
+                                    drawLabValGraphs(this.id);
+                                });                                                                                    
+                                $(".ds_request_gf").click(function() {
+                                    let pos = configuration.defaultReference.findIndex(i => i.id === this.id);
+                                    alert("Simulation - Anforderung wird erstellt für: " + configuration.defaultReference[pos].name);
+                                    $(this).attr('disabled', true);
+                                });                                    
+                                $("#lab7").hide(); // Verstecken des Reload-Buttons, da nur mit entsprechender Authorisierung ein Reload möglich ist    
+
+                            }).fail(function(e) {
+                                alert("No observation found!");                                    
+                            });
+
+                        }).fail(function(e) {
+                            alert(e + " - Patient not found! Starting with test data ...");
+                            composeCards();                                                                       
+                            composeResultCards();
+
+                            /* Feldänderungen, d.h. User-Eingaben wahrnehmen */
+                            $(".ds_values_gf").change(reactToUserInput);                                                                                
+                        });
                         // So - hier noch wie oben die Daten abfragen ...
 
                     });
+
                     return "SmartHealthIT - App Launcher successfully used!"
                 }
+
             }
 
 //***************************************************************************************************************************************** */
