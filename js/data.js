@@ -604,13 +604,14 @@ function getPatientLaboratoryObservations() {
             
         }
 
-        // ... gehe dann die Observations durch ...
+        // ... gehe dann die Observations durch ...        
         for(var i = 0; i < observations.length; i++) {            
             // ... wenn es tatsächlich eine Observation ist (nochmals eine Datenvalidierung!)...            
             if (observations[i].resourceType === "Observation") {      
                 // ... dann schaue nach, ob es sich um LOINCs und den LOINC-Code des in der Konfiguration festgelegt Laborwertes handelt ...
                 // (Ein anderes Code-System wird nicht akzeptiert)                
                 for(var j = 0; j < configuration.defaultReference.length; j++) {                                        
+                    
                     if (observations[i].code.coding[0].system === 'http://loinc.org' && observations[i].code.coding[0].code === configuration.defaultReference[j].loinc) {                        
                         // ... dann merke Dir die Observation in dem eigens angelegten Array
                         labValues[configuration.defaultReference[j].loinc].push(observations[i]);
@@ -619,19 +620,28 @@ function getPatientLaboratoryObservations() {
                     // Hier findet ein Mapping statt - wenn eine Observation gefunden wird, die in 'acceptedLOINC' der
                     // Konfiguration aufgeführt ist, könnte diese in das Array 'labValues' zusätzlich geschoben werden!
                     // In der Datenvalidierung später muss dies ggf. berücksichtigt werden
-                    // Derzeit sind die Observations doppelt vorhanden....
+                    
+                    // Derzeit sind die Observations partiell doppelt vorhanden, da oben isoliert ein einzelner LOINC-Code abgefragt wird
+                    // und hier das Array 'acceptedLOINC' durchgegangen wird, das den Code nochmals enthält....
                     if (observations[i].code.coding[0].system === 'http://loinc.org' && 
                         configuration.defaultReference[j].acceptedLOINC.find(
                                                                         // Anonyme Funktion zur Entscheidung
                                                                         function(toTest) {
                                                                             return toTest == observations[i].code.coding[0].code;
-                                                                        })) {
-                        alert("Juhu!");
-                        labValues[configuration.defaultReference[j].loinc].push(observations[i]);
+                                                                        })) {                        
+                        labValues[configuration.defaultReference[j].loinc].push(observations[i]);                        
                     }
                 }
             }
         }
+
+        // Mapping für die Hämoglobin-Konzentration (mit LOINC-Code 718-7) zeigen ...
+        // ...damit Versuch semantische Interoperabilität herzustellen.
+        var codes = "";
+        for(var i = 0; i < labValues['718-7'].length; i++) {
+            codes += labValues['7-18-7'][i].code.coding[0].code + "\n";
+        }
+        alert(codes === "" ? "Keine LOINC-Codes für Hämoglobin-Konzentration enthalten ..." : "Enthaltene LOINC-Codes für Hämoglobin-Konzentration: \n" + codes);
 
         // ... dann ...
         for(var i = 0; i < configuration.defaultReference.length; i++) {
