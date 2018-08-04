@@ -144,6 +144,12 @@ var decision = (function() {
                             }
                             return false;
                         },
+        isRPI0:         function() {
+                            if (valueSet.rpi() == 0) {
+                                return true;
+                            }
+                            return false;
+                        },
     
         // Transferrin-Rezeptor-Ferritin-Index mit Bewertungsfunktion 
         tfrFIndex:      function() {
@@ -325,8 +331,12 @@ var decision = (function() {
                                 // Mikrozytäre Anämie differenzieren
                                 valueSet.executeMicrocyticDecisionBranch();
                             } else {
-                                if (valueSet.hasHematokrit()) {                                    
-                                    if (valueSet.isRPIHigh()) {
+                                if (valueSet.hasHematokrit()) {
+                                    if (valueSet.isRPI0()) {
+                                        // D: Normo-/Makrozytäre Anämie
+                                        // E: Hämatokrit da, aber noch keine Retikulozyten...
+                                        valueSet.pushResults("diag-17", "recom-17");
+                                    } else if (valueSet.isRPIHigh()) {
                                         // D: Hämolyse, Akute Blutung
                                         // E: Diagnostik und ...
                                         valueSet.pushResults("diag-12", "recom-12");
@@ -591,7 +601,7 @@ var decisionWithObservations = (function() {
 
         var val = "";
 
-        // Nur Observations vorhanden sind, gibt es einen Entscheidungsprozess und ein Ergebnis...
+        // Nur wenn Observations vorhanden sind, gibt es einen Entscheidungsprozess und ein Ergebnis...
         if (listOfObservations.length > 0) {
 
             diagnoses = [],     // Arrays ...
@@ -634,11 +644,17 @@ var decisionWithObservations = (function() {
 
                     } else {
 
+                        if (getRPI() == 0) {
+                        
+                            // D: Normo-/Makrozytäre Anämie
+                            // E: Hämatokrit da, aber noch keine Retikulozyten...
+                            pushResults("diag-17", "recom-17");
+                        
                         /**
                          * Werden Retikulozyten (reaktiv) vermehrt produziert?
                          * Retikulozytenproduktionsindex prüfen
                          */                        
-                        if (getRPI() > configuration.limitRPI) {
+                        } else if (getRPI() > configuration.limitRPI) {
                                         
                             // D: Hämolyse, Akute Blutung
                             // E: Diagnostik und ...
@@ -661,8 +677,41 @@ var decisionWithObservations = (function() {
                              */
                             } else {
 
-                            }
+                                if (obs('vitb12').isValue('nv')) {
+                                    
+                                    // D: Makrozytäre Anämie
+                                    // E: Vitamin B12 bestimmen
+                                    pushResults("diag-15", "recom-15");                           
 
+                                } else if (obs('vitb12').isValue('low')) {
+                                    
+                                    // D: Makrozytäre Anämie bei Vit B12-Mangel
+                                    // E: Substitution
+                                    pushResults("diag-13", "recom-13");
+
+                                } else {
+
+                                    if (obs('folicAcid').isValue('nv')) {
+                                        
+                                        // D: Makrozytäre Anämie
+                                        // E: Folsäure bestimmen
+                                        pushResults("diag-15", "recom-16");                           
+
+                                    } else if (obs('folicAcid').isValue('low')) {
+                                        
+                                        // D: Makrozytäre Anämie bei Folsäure-Mangel
+                                        // E: Subistution
+                                        pushResults("diag-14", "recom-14");
+
+                                    } else {
+                                        
+                                        // D: V.a. Hypoplastische/Infiltrative/Dyserythropoietische KM-Störung
+                                        // E: Knochenmarkszytologie
+                                        pushResults("diag-8", "recom-8");                                                      
+
+                                    }
+                                }
+                            }
                         }
                     }
                 }
