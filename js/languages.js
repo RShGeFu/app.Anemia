@@ -73,6 +73,7 @@ var getTranslationList = (function() {
                         { id: "diag-13",    attr: "",       de: "Makrozytäre Anämie bei VitB12-Mangel", en: "Macrocytic Anemia, Vit B12 Deficiency" },
                         { id: "diag-14",    attr: "",       de: "Makrozytäre Anämie bei Folsäure-Mangel", en: "Macrocytic Anemia, Folic acid Deficiency" },
                         { id: "diag-15",    attr: "",       de: "Makrozytäre Anämie", en: "Macrocytic Anemia" },
+                        { id: "diag-17",    attr: "",       de: "Normo-/Makrozytäre Anämie", en: "Normo-/Macrocytic Anemia" },
 
                         // --- Karte für Empfehlungen
                         { id: "recommend-1",attr: "",       de: "Empfohlene Maßnahmen", en: "Recommended Activities" },
@@ -96,6 +97,7 @@ var getTranslationList = (function() {
                         { id: "recom-14",   attr: "",       de: "Folsäure - Substitution", en: "Substitution of Folic acid" },
                         { id: "recom-15",   attr: "",       de: "Vitamin B12 bestimmen", en: "Determine Vitamine B12" },
                         { id: "recom-16",   attr: "",       de: "Folsäure bestimmen", en: "Determine Folic acid" },
+                        { id: "recom-17",   attr: "",       de: "Retikulozyten bestimmen", en: "Determine Reticulocytes" },
 
                         // --- Karte für die Berechnungen
                         { id: "calculation",attr: "",       de: "Berechnete Werte", en: "Calculated Values" },
