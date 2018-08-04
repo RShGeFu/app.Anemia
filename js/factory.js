@@ -38,16 +38,29 @@ var observationFactory = (function() {
                 // Gehe die Liste durch ...
                 for(var i = 0; i < observations.length; i++) {
                     
-                    // ... und hole die beötigte Validierungsfunktion je nach LOINC-Code ...
+                    // ... und hole die benötigte Validierungsfunktion je nach LOINC-Code ...
                     if (validationPerLOINC[observations[i].code.coding[0].code]) {
                         var func = validationPerLOINC[observations[i].code.coding[0].code];
                     } else {
                         var func = validationPerLOINC['default'];                        
                     }
 
-                    // und erstelle eine Property mit dieser Funktion
+                    // und erstelle eine Property mit dieser Funktion ...
                     if (!('validate' in observations[i])) {
                         Object.defineProperty(observations[i], 'validate', { value: func() } );
+                    }
+
+                     // und hänge eine Rückgabe-Funktion für die Validierung/Interpretation ein
+                    if (!('isValue' in observations[i])) {
+                        Object.defineProperty(observations[i], 'isValue', { value: function(interpret) { 
+                                                                                        if ('interpretation' in this) {
+                                                                                            var testInterpret = this.interpretation.coding[0].code.toUpperCase().substr(0, interpret.length);                                                                                            
+                                                                                            return testInterpret === interpret.toUpperCase();
+                                                                                        }
+                                                                                        return false;
+                                                                                    } 
+                                                                            } 
+                        );
                     }
 
                 }
@@ -442,7 +455,7 @@ var observationFactory = (function() {
                         htmlStr += "<td><small><span id=\"" + this.onChange + "_badge_" + this.code.coding[0].code + "\" class=\"badge " + bdColor +  "\">" + this.interpretation.coding[0].code + "</span></small></td>";
                         
                         // ... mit einem Inputfeld mit dem aktuellen Wert der Observation zusammen ...
-                        htmlStr += "<td><small><input id=\"" + this.code.coding[0].code + "\" class=\"" + this.onChange + "\" size=\"2\" type=\"text\" value=\"" + getValue + "\" style=\"background: " + changeColor + ";\"></input></small></td>";                        
+                        htmlStr += "<td><small><input id=\"" + this.code.coding[0].code + "\" class=\"" + this.onChange + "\" size=\"2\" type=\"text\" value=\"" + getValue + "\" style=\"background: " + changeColor + ";\"></input></small></td>";                                                
                         if ('value' in this) {
                             htmlStr += "<td><small>" + this.value[0].valueQuantity.unit + "</small></td>";
                         } else {
@@ -949,6 +962,11 @@ var cardFactory = (function() {
                 bgColor                     = parameters.background ? parameters.background : '#112233';
                 withTable                   = true;
                 reactOn                     = parameters.reactOn;
+
+                // Entscheidung über das Observation-Set params
+                decisionWithObservations.init(params);
+                alert(decisionWithObservations.getResult());                
+
             }
 
         }
@@ -988,8 +1006,8 @@ var cardFactory = (function() {
             if (pos > -1) {
 
                 // Ändere den Wert und kennzeichne sie, dass sie verändert wurde
-                params[pos].writeValueAndValidate(this.value, '#ffbfbf');                
-
+                params[pos].writeValueAndValidate(this.value, '#ffbfbf');
+                                
                 // Setze die Karte zusammen, schreibe sie an Ort und Stelle und hänge die Callbacks (wieder) an
                 setHTMLString();                
                 $("#" + destination).html(htmlString);
@@ -997,8 +1015,8 @@ var cardFactory = (function() {
                                 
                 // Generiere eine Liste der Kriterien für den nativen Entscheidungsalgorithmus und validiere sie
                 createDecisionList();                
-                validatePatientLaboratoryObservations(datasetForDecision);                
-                
+                validatePatientLaboratoryObservations(datasetForDecision);
+
                 // Eine Entscheidung muß hier dann fallen ... 
                 for(var i = 0; i < datasetForDecision.kval.length; i++) {                    
                     var result =    testNormalAndValidRange(datasetForDecision.kval[i].value,
@@ -1010,7 +1028,10 @@ var cardFactory = (function() {
                                      datasetForDecision.kval[i]['value'],
                                      result.status);                    
                 }
-                
+
+                // ODER: Führe die Entscheidung mit der Liste der Observations aus ...
+                alert(decisionWithObservations.getResult());
+
                 // Ergebniskarten zusammenstellen und die Farbe ändern
                 $(".results").css({
                     "background-color": "#ffbfbf",
@@ -1070,7 +1091,7 @@ var cardFactory = (function() {
                     var pos = config.defaultReference.findIndex(j => j.loinc == datasetForDecision.kval[i].loinc);
                     datasetForDecision.kval[i].id = config.defaultReference[pos].id;
                 }  
-                console.log(datasetForDecision)                              ;
+                console.log(datasetForDecision);
             }
 
         }
