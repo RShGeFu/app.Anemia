@@ -445,20 +445,258 @@ var decision = (function() {
 
 })();
 
-/**
- * Idee: Entscheidungsalgorithmus auf dem Boden von Obersations
- * Closure mit Entwicklungspotential ...
- */
+/***********************************************************************************
+ * Idee bzw. Experimentell: Entscheidungsalgorithmus auf dem Boden von Obersations *
+ * Funktioniert in Zusammenhang mit der globalen Variable 'observationFactory'     *
+ * s. 'factory.js'                                                                 *
+ ***********************************************************************************/
 var decisionWithObservations = (function() {
-
-    var listOfObservations = [];
-
+    
+    var listOfObservations =    [],    // Set von Observations: Enthält die Observations, die als Entscheidungsparameter gelten
+                                       // Zusammengestellt von 'observationFactory'
+        diagnoses =             [],    // Array für die Diagnosen aus dem Entscheidungsalgorithmus
+        recommends =            [],    // Array für die Empfehlungen aus dem Entscheidungsalgorithmus
+        labels =                getTranslationList();    // IDs der UI-Elemente
+                        
+    /**
+     * Initialisierungsfunktion: Die Liste Observations mit den Parametern für die Entscheidungsunterstützung wird übergeben,
+     * nochmals auf Vollständigkeit geprüft (müsste aus factory.js vollständig kommen) und zugewiesen
+     * @param {*} obs 
+     */
     function initDecisionDataset(obs) {
-        this.listOfObservations = obs;
+
+        // Validiere 'obs', ... (wirklich alle benötigten Observations enthalten?)
+        for(var i = 0; i < configuration.defaultReference.length; i++) {           
+            
+            if (obs.find(function(toTest) {                                                                                     
+                                            if ('resourceType' in toTest && toTest.resourceType === 'Observation') {
+                                                return toTest.code.coding[0].code === configuration.defaultReference[i].loinc;
+                                            } else {                                                
+                                                return false;
+                                            }
+                                          }) == -1) {                
+                return;
+            }            
+
+        }
+
+        // ... erst dann weise zu!        
+        listOfObservations = obs;
+    }
+
+    /**
+     * Liefert den Wert einer Observation aus dem Set, ausgehend von der 'id' der 'configuration'
+     * @param {*} parameter 
+     */
+    function getValueOf(parameter) {
+        
+        var o = obs(parameter);     // Nutzt die Funktion obs(), um die betreffende Observation zu erhalten...
+        
+        // ... um den Wert dann zu liefern
+        if (o) {
+            return !o.value ? o.valueQuantity.value : o.value[0].valueQuantity.value;
+        }
+        return -1;
+
+    }
+
+    /**
+     * Liefert die Observation aus dem Set, ausgehend von der 'id' der 'configuration'
+     * @param {*} parameter 
+     */
+    function obs(parameter) {
+        var posP, posO;
+
+        // Hole den entsprechenden LOINC-Code...
+        posP = configuration.defaultReference.findIndex(function(toTest) {                                                            
+                                                            return toTest.id === parameter;
+                                                        });
+        
+        // Wenn der LOINC-Code gefunden ist, dann hole den Wert der entsprechenden Observation...
+        if (posP > -1) {
+            posO = listOfObservations.find(function(toTest) {
+
+                                                if ('resourceType' in toTest && toTest.resourceType === 'Observation') {
+                                                    
+                                                    // Schaut im semantischen Mapping-Array des Parameters nach ....
+                                                    for (var i = 0; i < configuration.defaultReference[posP].acceptedLOINC.length; i++) {
+                                                        if (toTest.code.coding[0].code === configuration.defaultReference[posP].acceptedLOINC[i]) {
+                                                            return true;
+                                                        }
+                                                    }
+                                                    return false;
+
+                                                } else {
+                                                    return false;
+                                                }   
+
+                                            });            
+            return posO;
+        }
+        
+        // Sonst liefe nichts ...
+        return null;        
+    }
+
+    /**
+     * Liefert den Retikulozyten-Produktions-Index
+     */
+    function getRPI() {
+
+        var shift = 1,                      // Hämatologisch vorgegeben...
+            v = getValueOf('hematokrit');   // Hole den Wert aus der Observation über die ID aus der 'configuration'
+
+        if (v <= 40) {      // 35 in der Literatur, hier die Werte der verlinkten Präsentation
+            shift = 1.5;
+        }
+        if (v <= 30) {      // 25 in der Literatur
+            shift = 2;
+        }
+        if (v <= 20) {      // 15 in der Literatur
+            shift = 2.5;
+        }                                
+
+        return Math.round(getValueOf('reticulocytepc') * getValueOf('hematokrit') / shift / 45 * 10) / 10;                                
+
+    }
+
+    /**
+     *  Schiebt Ergebnisse des Entscheidungsprozesses auf den jeweiligen Stack
+     */
+    function pushResults(res, rec) {
+
+        var r; 
+    
+        if (res != null) {
+            r = labels.labels.findIndex(i => i.id === res);
+            // Wenn Diagnose noch nicht auf dem Stack ...
+            if (diagnoses.indexOf(labels.labels[r]) == -1) {
+                diagnoses.push(labels.labels[r]);
+            }
+        }
+
+        if (rec != null) {
+            r = labels.labels.findIndex(i => i.id === rec);
+            // Wenn Empfehlung noch nicht auf dem Stack ...
+            if (recommends.indexOf(labels.labels[r]) == -1) {
+                recommends.push(labels.labels[r]);
+            }
+        }                                                        
+    }    
+
+    /**
+     * Liefert das Ergebnis des Entscheidungsprozesses auf Grundlage eines Sets von Observations
+     */
+    function result() {
+
+        var val = "";
+
+        // Nur Observations vorhanden sind, gibt es einen Entscheidungsprozess und ein Ergebnis...
+        if (listOfObservations.length > 0) {
+
+            diagnoses = [],     // Arrays ...
+            recommends = [];    // re-initialisieren
+
+            if (obs('hemoglobin').isValue('nv')) {
+                
+                // D: Keine Diagnostik möglich
+                // E: Laborbestimmungen empfohlen
+                pushResults("diag-0", "recom-0");                
+
+            /**
+             * Anämie vorhanden?
+             */
+            } else if (obs('hemoglobin').isValue('low')) {
+                
+                if (obs('mcv').isValue('nv')) {
+
+                    // D: Anämie 
+                    // E: MCV bestimmen
+                    pushResults("diag-2", "recom-2");
+
+                /**
+                 * Mikrozytäre Anämie?
+                 */
+                } else if (obs('mcv').isValue('low')) {
+
+                    //executeMicrocyticDecisionBranch();
+
+                /**
+                 * Normozytäre und makrozytäre Anämie
+                 */
+                } else {
+
+                    if (obs('hematokrit').isValue('nv')) {
+                        
+                        // D: Nicht-Mikrozytäre Anämie
+                        // E: Hämatokrit bestimmen
+                        pushResults("diag-3", "recom-3");
+
+                    } else {
+
+                        /**
+                         * Werden Retikulozyten (reaktiv) vermehrt produziert?
+                         * Retikulozytenproduktionsindex prüfen
+                         */                        
+                        if (getRPI() > configuration.limitRPI) {
+                                        
+                            // D: Hämolyse, Akute Blutung
+                            // E: Diagnostik und ...
+                            pushResults("diag-12", "recom-12");
+                            //executeMicrocyticDecisionBranch();
+
+                        } else {
+
+                            /**
+                             * Normozytäre Anämie?
+                             */
+                            if (obs('mcv').isValue('ok')) {
+
+                                // D: V.a. Hypoplastische/Infiltrative/Dyserythropoietische KM-Störung
+                                // E: Knochenmarkszytologie
+                                pushResults("diag-8", "recom-8");
+
+                            /**
+                             * Makrozytäre Anämie!
+                             */
+                            } else {
+
+                            }
+
+                        }
+                    }
+                }
+
+            } else {
+                
+                // D: Keine Anämie
+                // E: Beschwerdebezogende Diagnostik empfohlen
+                pushResults("diag-1", "recom-1");
+
+            }
+                                    
+            // Ergebnis-Verifizierung: Code zur Testergebnis-Generierung und -Anzeige
+            for(var i = 0; i < listOfObservations.length; i++) {
+                val += !listOfObservations[i].value ? listOfObservations[i].valueQuantity.value : listOfObservations[i].value[0].valueQuantity.value + "\n";                
+            }
+
+            return  "OK! " + 
+                    listOfObservations.length + " Einträge:\n" + 
+                    val +
+                    "\nHämoglobin: " + getValueOf('hemoglobin') + " - i.O.: " + obs('hemoglobin').isValue('ok') +
+                    "\nRPI: " + getRPI() +
+                    "\nDiagnosen: " + JSON.stringify(diagnoses) +
+                    "\nEmpfehlungen: " + JSON.stringify(recommends);
+
+        }
+
+        return "Nicht OK!";
+
     }
 
     return {
-        init:       initDecisionDataset
+        init:       initDecisionDataset,
+        getResult:  result
     }
 
 })();
