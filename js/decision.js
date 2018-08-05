@@ -829,9 +829,9 @@ var decisionWithObservations = (function() {
                                     
             // Ergebnis-Verifizierung: Code zur Testergebnis-Generierung und -Anzeige
             for(var i = 0; i < listOfObservations.length; i++) {
-                val += !listOfObservations[i].value ? listOfObservations[i].valueQuantity.value : listOfObservations[i].value[0].valueQuantity.value + "\n";                
+                val += !listOfObservations[i].value ? listOfObservations[i].valueQuantity.value : listOfObservations[i].value[0].valueQuantity.value + "\n";               
             }
-
+            
             return  "OK! " + 
                     listOfObservations.length + " Einträge:\n" + 
                     val +
@@ -842,13 +842,92 @@ var decisionWithObservations = (function() {
 
         }
 
-        return "Nicht OK!";
+        return "N-OK";
+
+    }
+
+    /**
+     * Liefert nach dem FHIR-Standard nach dem Template 'DiagnosticReport' eine Datenstruktur zurück
+     */
+    function getDiagnosticReport() {
+
+        // FHIR-Template für die Resource 'DiagnosticReport'
+        var diagRep = {
+            "resourceType" : "DiagnosticReport",
+                                                                                        // from Resource: id, meta, implicitRules, and language
+                                                                                        // from DomainResource: text, contained, extension, and modifierExtension
+            "identifier" : "appAnemiaDRep" + new Date().getTime(),                      // Business identifier for report
+            //"basedOn" : [{ Reference(CarePlan|ImmunizationRecommendation|MedicationRequest|NutritionOrder|ProcedureRequest|ReferralRequest) }],     
+                                                                                        // What was requested
+            "status" : "preliminary",                                                   // R!  registered | partial | preliminary | final +
+            //"category" : { CodeableConcept },                                         // Service category
+            "code" : { 
+                                                                                        // from Element: extension
+                        "coding" : [{ "code": "appAnemia-DRep" } ],                     // Code defined by a terminology system
+                        "text" : "appAnemia Diagnostic Report"                          // Plain text representation of the concept
+                    },                                                                  // R!  Name/Code for this diagnostic report
+            "subject" : { 
+                                                                                        // from Element: extension
+                        "reference" : "",                                               // C? Literal reference, Relative, internal or absolute URL
+                        "identifier" : "",                                              // Logical reference, when literal reference is not known
+                        "display" : "Patient"                                           // Text alternative for the resource
+            },                                                                          // The subject of the report - usually, but not always, the patient
+            //"context" : { Reference(Encounter|EpisodeOfCare) },                       // Health care event when test ordered
+            // effective[x]: Clinically relevant time/time-period for report. One of these 2:
+            "effectiveDateTime" : "<dateTime>",
+            //"effectivePeriod" : { Period },
+            "issued" : new Date().toString(),                                           // DateTime this version was released
+            "performer" : [{                                                            // Participants in producing the report
+              "role" : {                     
+                        // from Element: extension
+                        "coding" : [{ "system" : "http://xxx.de",
+                                      "code": "cdss",
+                                      "display": "Clinical Decision Supporting System" } ], 
+                                                                                        // Code defined by a terminology system
+                        "text" : "appAnemia - CDSS"                                     // Plain text representation of the concept
+                       }                                                                // Type of performer
+              //"actor" : { Reference(Practitioner|Organization) }                      // R!  Practitioner or Organization  participant
+            }],
+            //"specimen" : [{ Reference(Specimen) }],                                   // Specimens this report is based on
+            "result" : [ ],                                                             // Observations - simple, or complex nested groups
+            //"imagingStudy" : [{ Reference(ImagingStudy|ImagingManifest) }],           // Reference to full details of imaging associated with the diagnostic report
+            //"image" : [{                                                              // Key images associated with this report
+              //"comment" : "<string>",                                                 // Comment about the image (e.g. explanation)
+              //"link" : { Reference(Media) }                                           // R!  Reference to the image source
+            //}],
+            "conclusion" :  "Diagnosen: " + JSON.stringify(diagnoses) + "\nEmpfehlungen: " + JSON.stringify(recommends),
+                                                                                        // Clinical Interpretation of test results
+            //"codedDiagnosis" : [{ CodeableConcept }],                                 // Codes for the conclusion
+            //"presentedForm" : [{ Attachment }]                                        // Entire report as issued
+          },
+          p = observationSet.getPatient(); // Patienten holen
+        
+        // Ergebnis erzeugen
+        result();
+
+        // Bezug zu den für den DiagnosticReport zugrunde liegenden Observations herstellen
+        for(var i = 0; i < listOfObservations.length; i++) {
+            var obToStore = {
+                "reference":    "",
+                "identifier":   'identifier' in listOfObservations[i]? listOfObservations[i].identifier : listOfObservations[i].id,
+                "text":         listOfObservations[i].code.coding[0].code
+            };
+            diagRep.result[i] = obToStore;
+        }
+
+        // Bezug zum Patienten herstellen
+        diagRep.subject.reference = "identifier" in p ? p.identifier : null;
+        diagRep.subject.identifier = "id" in p ? p.id : p.identifier;
+
+        // Zur Verfügung stellen
+        return JSON.stringify(diagRep);
 
     }
 
     return {
-        init:       initDecisionDataset,
-        getResult:  result
+        init:           initDecisionDataset,
+        getResult:      result,
+        getDiagReport:  getDiagnosticReport
     }
 
 })();
