@@ -267,12 +267,12 @@ var decision = (function() {
         /* Unterentscheidungsalgorithmus 'executeMicrocyticDecisionBranch': In diesen Arm mit multiplen Entscheidungen münden 
             zwei(!) übergeordnete Entscheidungswege */
         executeMicrocyticDecisionBranch:
-            function() {                
-                if (valueSet.hasFerritine()) {
-                    if (valueSet.isFerritineLow()) {
+            function() {                                
+                if (valueSet.hasFerritine() && valueSet.hasHB()) {                    
+                    if (valueSet.isFerritineLow() && valueSet.isMicrocytic()) {
                         // D: Eisenmangelanämie
                         // E: Eisensubstitution                        
-                        valueSet.pushResults("diag-6", "recom-6");
+                        valueSet.pushResults("diag-6", "recom-6");                       
                     } else {
                         if (valueSet.hasCRP()) {                            
                             if (valueSet.isCrpOK()) {
@@ -297,21 +297,39 @@ var decision = (function() {
                                         valueSet.pushResults("diag-10", "recom-10");                              
                                     }
                                 } else {
-                                    // D: Mikrozytäre Anämie
-                                    // E: Löslichen Transferrin-Rezeptor bestimmen
-                                    valueSet.pushResults("diag-4", "recom-11");
+                                    if (valueSet.isMicrocytic()) {
+                                        // D: Mikrozytäre Anämie
+                                        // E: Löslichen Transferrin-Rezeptor bestimmen
+                                        valueSet.pushResults("diag-4", "recom-11");
+                                    } else {
+                                        // D: Nicht-Mikrozytäre Anämie
+                                        // E: Löslichen Transferrin-Rezeptor bestimmen
+                                        valueSet.pushResults("diag-3", "recom-11");                                        
+                                    }
                                 }
                             }
                         } else {
-                            // D: Mikrozytäre Anämie
-                            // E: CRP bestimmen
-                            valueSet.pushResults("diag-4", "recom-5");
+                            if (valueSet.isMicrocytic()) {
+                                // D: Mikrozytäre Anämie
+                                // E: CRP bestimmen
+                                valueSet.pushResults("diag-4", "recom-5");
+                            } else {
+                                // D: Nicht-Mikrozytäre Anämie
+                                // E: CRP bestimmen
+                                valueSet.pushResults("diag-3", "recom-5");                                
+                            }
                         }
                     }
                 } else {
-                    // D: Mikrozytäre Anämie
-                    // E: Ferritin bestimmen
-                    valueSet.pushResults("diag-4", "recom-4");
+                    if (valueSet.isMicrocytic()) {
+                        // D: Mikrozytäre Anämie
+                        // E: Ferritin bestimmen
+                        valueSet.pushResults("diag-4", "recom-4");
+                    } else {
+                        // D: Nicht-Mikrozytäre Anämie
+                        // E: Ferritin bestimmen
+                        valueSet.pushResults("diag-3", "recom-4");                        
+                    }
                 }
             },
         
@@ -592,7 +610,92 @@ var decisionWithObservations = (function() {
                 recommends.push(labels.labels[r]);
             }
         }                                                        
-    }    
+    }
+    
+    /**
+     * Liefert ein Teil-Ergebnis des Entscheidungsprozesses auf Grundlage eines Sets von Observations
+     * für den Fall eine Mikrozytären Anämie
+     */
+    function executeMicrocyticDecisionBranch() {
+        if (obs('ferritine').isValue('nv') && obs('mcv').isValue('low')) {
+
+            // D: Mikrozytäre Anämie
+            // E: Ferritin bestimmen
+            pushResults("diag-4", "recom-4");
+            alert("HIER1!");
+
+        } else if (obs('ferritine').isValue('nv') && !obs('mcv').isValue('low')) {
+
+            // D: Nicht-Mikrozytäre Anämie
+            // E: Ferritin bestimmen
+            pushResults("diag-3", "recom-4");            
+        
+        } else if (obs('ferritine').isValue('low') && obs('mcv').isValue('low')) {
+
+            // D: Eisenmangelanämie
+            // E: Eisensubstitution                        
+            pushResults("diag-6", "recom-6");
+
+        } else {
+
+            if (obs('crp').isValue('nv') &&  obs('mcv').isValue('low')) {
+                
+                // D: Mikrozytäre Anämie
+                // E: CRP bestimmen
+                pushResults("diag-4", "recom-5");
+
+            } else if (obs('crp').isValue('nv') && !obs('mcv').isValue('low')) {
+                
+                // D: Nicht-Mikrozytäre Anämie
+                // E: CRP bestimmen
+                pushResults("diag-3", "recom-5");
+
+            } else if (obs('crp').isValue('ok')) {
+
+                if (obs('mcv').isValue('low')) {
+                    
+                    // D: Mikrozytäre Anämie bei V.a. Thalassämie
+                    // E: Thalassämie - Diagnostik
+                    pushResults("diag-7", "recom-7");
+
+                } else {
+                    
+                    // D: Eisenmangel unwahrscheinlich - V.a. Hypoplastische/Infiltrative/Dyserythropoietische KM-Störung
+                    // E: Diagnostik - Knochenmarkszytologie
+                    pushResults("diag-8", "recom-8");
+
+                }
+
+            } else {
+                
+                if (obs('sTFR').isValue('nv') && obs('mcv').isValue('low')) {
+                    
+                    // D: Mikrozytäre Anämie
+                    // E: Löslichen Transferrin-Rezeptor bestimmen
+                    pushResults("diag-4", "recom-11");
+
+                } else if (obs('sTFR').isValue('nv') && !obs('mcv').isValue('low')) {
+                    
+                    // D: Nicht - Mikrozytäre Anämie
+                    // E: Löslichen Transferrin-Rezeptor bestimmen
+                    pushResults("diag-3", "recom-11");
+
+                } else if (obs('sTFR').isValue('ok')) {
+                    
+                    // D: AOD
+                    // E: Spezifische Diagnostik
+                    pushResults("diag-9", "recom-9");                              
+
+                } else {
+                    
+                    // D: Eisenmangel + AOD
+                    // E: Spezifische Diagnostik und Eisensubstiution                                        
+                    pushResults("diag-10", "recom-10");                              
+
+                }
+            }
+        }
+    }
 
     /**
      * Liefert das Ergebnis des Entscheidungsprozesses auf Grundlage eines Sets von Observations
@@ -629,7 +732,7 @@ var decisionWithObservations = (function() {
                  */
                 } else if (obs('mcv').isValue('low')) {
 
-                    //executeMicrocyticDecisionBranch();
+                    executeMicrocyticDecisionBranch();
 
                 /**
                  * Normozytäre und makrozytäre Anämie
@@ -659,7 +762,7 @@ var decisionWithObservations = (function() {
                             // D: Hämolyse, Akute Blutung
                             // E: Diagnostik und ...
                             pushResults("diag-12", "recom-12");
-                            //executeMicrocyticDecisionBranch();
+                            executeMicrocyticDecisionBranch();
 
                         } else {
 
