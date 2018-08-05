@@ -965,8 +965,8 @@ var cardFactory = (function() {
 
                 // Entscheidung über das Observation-Set params
                 decisionWithObservations.init(params);
-                alert(decisionWithObservations.getResult());                
-
+                alert(decisionWithObservations.getResult());
+                alert(decisionWithObservations.getDiagReport());              
             }
 
         }
@@ -1031,6 +1031,7 @@ var cardFactory = (function() {
 
                 // ODER: Führe die Entscheidung mit der Liste der Observations aus ...
                 alert(decisionWithObservations.getResult());
+                alert(decisionWithObservations.getDiagReport());
 
                 // Ergebniskarten zusammenstellen und die Farbe ändern
                 $(".results").css({
