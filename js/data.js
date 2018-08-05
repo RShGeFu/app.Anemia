@@ -639,7 +639,7 @@ function getPatientLaboratoryObservations() {
         // ...damit Versuch semantische Interoperabilität herzustellen.
         var codes = "";
         for(var i = 0; i < labValues['718-7'].length; i++) {
-            codes += labValues['7-18-7'][i].code.coding[0].code + "\n";
+            codes += labValues['718-7'][i].code.coding[0].code + "\n";
         }
         alert(codes === "" ? "Keine LOINC-Codes für Hämoglobin-Konzentration enthalten ..." : "Enthaltene LOINC-Codes für Hämoglobin-Konzentration: \n" + codes);
 
