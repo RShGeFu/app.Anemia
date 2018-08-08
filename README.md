@@ -1,2 +1,2 @@
 # app.Anemia
-FHIR-App für Anämie-Diagnostik
+Anämie-Diagnostik
