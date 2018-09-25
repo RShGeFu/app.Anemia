@@ -18,8 +18,8 @@ $(document).ready(function() {
     /**
      *  Test-Code: Button, mit dem die Kapselung von (Business-)Logik in der FHIR-Struktur implementiert wird
      */
-    //if (params && params['showFact'] == 'true') {
-    if (true) {
+    if (params && params['showFact'] == 'true') {
+    //if (true) {   // Nur benutzt für die Entwicklung, um den Button und die Funktionalität stets zugänglich zu halten
         $("#lab8").click(function() {            
             
             var obv = [],
