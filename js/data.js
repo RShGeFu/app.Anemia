@@ -830,7 +830,7 @@ function getPatientLaboratoryObservations() {
                 },
                 {            
                     id:             "reticulocytehb",
-                    value:          30.0,
+                    value:          30.5,
                 },
                 {
                     id:             "hematokrit",
